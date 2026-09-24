@@ -60,16 +60,6 @@ button,input,select,textarea{font:inherit;color:inherit}
 .vsw .who .avatar{width:38px;height:38px;font-size:.9rem}
 .vsw .who small{display:block;color:var(--rail-mute);font-size:.78rem;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px}
 
-@media (max-width:900px){
-  .app{grid-template-columns:1fr}
-  .rail{position:sticky;top:0;height:auto;z-index:5;padding:12px 14px;gap:10px;flex-direction:row;flex-wrap:wrap;align-items:center}
-  .logo{font-size:1.1rem;padding:0}
-  .logo b{display:inline}
-  .nav{flex-direction:row;order:3;width:100%;overflow-x:auto;gap:4px}
-  .nav button{padding:8px 10px;white-space:nowrap;font-size:.9rem}
-  .vsw{margin:0 0 0 auto;min-width:0;flex:1;max-width:220px}
-  .vsw label,.vsw .who{display:none}
-}
 
 main{min-width:0;display:flex;flex-direction:column}
 .view{padding:30px clamp(16px,3vw,40px) 40px;flex:1}
@@ -84,7 +74,7 @@ main{min-width:0;display:flex;flex-direction:column}
 .num{width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font-weight:800;font-size:.85rem}
 .step h3{margin:3px 0 8px;font-size:1rem;font-weight:800}
 .step h3 span{font-weight:400;color:var(--muted);font-size:.85rem;margin-left:6px}
-input[type=text],input[type=number],select,textarea{width:100%;background:var(--field);border:1.5px solid var(--line);border-radius:12px;padding:11px 13px}
+input[type=text],input[type=number],input[type=date],input[type=password],select,textarea{width:100%;background:var(--field);border:1.5px solid var(--line);border-radius:12px;padding:11px 13px}
 input:focus,select:focus,textarea:focus{border-color:var(--ink);outline:none}
 textarea{resize:vertical;line-height:1.45}
 .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
@@ -256,7 +246,8 @@ textarea{resize:vertical;line-height:1.45}
 .ptable tr[data-st="valide"] td:first-child{box-shadow:inset 5px 0 0 var(--ok)}
 .ptable tr[data-st="revoir"] td:first-child{box-shadow:inset 5px 0 0 var(--warn)}
 .ptable tr[data-st="valide"]{background:color-mix(in srgb,var(--ok) 6%,transparent)}
-.ptable .c-date{font-weight:800;text-transform:capitalize;width:110px;padding-left:14px}
+.ptable .c-date::first-letter{text-transform:uppercase}
+.ptable .c-date{font-weight:800;width:110px;padding-left:14px}
 .ptable select{padding:6px 8px;font-size:.82rem;border-radius:9px;width:auto;max-width:130px}
 .ptable textarea{border:1.5px solid transparent;background:transparent;padding:6px;border-radius:8px;font-size:.88rem;min-height:0;resize:vertical}
 .ptable textarea:hover{border-color:var(--line)}
@@ -293,6 +284,65 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
 .login-card{background:var(--panel);border-radius:22px;padding:30px;width:100%;max-width:380px;display:flex;flex-direction:column;gap:12px}
 .login-card .logo{color:var(--ink);font-size:1.8rem;padding:0;margin-bottom:8px}
 .login-card label{font-weight:700;font-size:.9rem}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .rail{position:sticky;top:0;height:auto;z-index:20;padding:10px 14px;gap:10px;flex-direction:row;align-items:center}
+  .logo{font-size:1.05rem;padding:0;white-space:nowrap}
+  .logo b{display:inline;margin-left:4px}
+  .vsw{margin:0 0 0 auto;padding:0;flex:0 1 200px;min-width:0}
+  .vsw label,.vsw .who{display:none}
+  .vsw select{padding:8px 10px}
+  .nav{position:fixed;left:0;right:0;bottom:0;z-index:30;flex-direction:row;gap:0;background:var(--rail);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));border-top:1px solid rgba(255,255,255,.1)}
+  .nav button{flex:1;min-width:0;flex-direction:column;justify-content:center;gap:3px;padding:7px 2px;font-size:.64rem;font-weight:700;border-radius:10px;text-align:center}
+  .nav button svg{width:21px;height:21px}
+  .nav button[aria-current="page"]{background:rgba(255,255,255,.1);color:#fff}
+  .nav button[aria-current="page"] svg{color:var(--rouge)}
+  main{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
+  .view{padding:20px 14px 28px}
+  .lead{margin-bottom:18px}
+  input,select,textarea{font-size:16px}
+  .btn-go kbd{display:none}
+  .row2{grid-template-columns:1fr}
+  .step{grid-template-columns:28px 1fr;gap:10px}
+  .num{width:26px;height:26px;font-size:.8rem}
+  .tiles{grid-template-columns:repeat(2,1fr)}
+  .stage{border-radius:18px;padding:16px 10px 16px;scroll-margin-top:72px}
+  .stage-top{padding:0 4px}
+  .void{padding:18px 6px 24px}
+  .void .big{font-size:2rem}
+  .fold{left:-4px;right:-4px}
+  .stage-actions .sbtn{flex:1 1 auto}
+  .ret{flex-wrap:wrap}
+  .ret input{min-width:0}
+  .ideas,.hist{grid-template-columns:1fr}
+  .plan-top{flex-direction:column;align-items:stretch}
+  .plan-top select{max-width:none}
+  .plan-actions{margin-left:0;flex-wrap:wrap}
+  .plan-actions .btn{flex:1}
+  .vtabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+  .vtab{white-space:nowrap}
+}
+@media (max-width:760px){
+  .tbl-wrap{overflow:visible;border:0;background:none;border-radius:0}
+  .ptable{min-width:0;font-size:.92rem}
+  .ptable thead{display:none}
+  .ptable,.ptable tbody,.ptable tr,.ptable td{display:block;width:auto !important}
+  .ptable tr.wk td{background:none;padding:16px 2px 8px;font-size:1.05rem;border:0}
+  .ptable tr[data-i]{background:var(--panel);border:1.5px solid var(--line);border-top:5px solid var(--line);border-radius:16px;margin-bottom:12px;padding:12px}
+  .ptable tr[data-st="valide"]{border-top-color:var(--ok)}
+  .ptable tr[data-st="revoir"]{border-top-color:var(--warn)}
+  .ptable tr[data-st] td:first-child{box-shadow:none}
+  .ptable td{border:0;padding:4px 0}
+  .ptable td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;font-weight:800;color:var(--muted);margin:6px 0 3px}
+  .ptable .c-date{padding:0 0 6px;font-size:1.02rem}
+  .ptable td.c-obj,.ptable td.c-fmt{display:inline-block;margin-right:6px}
+  .ptable select{max-width:none}
+  .ptable textarea{width:100%;border-color:var(--line);background:var(--field)}
+  .val{flex-direction:row}
+  .val button{flex:1;padding:9px}
+  .ptable .c-act{flex-direction:row;padding-top:8px}
+  .ptable .c-act .btn{flex:1}
+}
 </style>
 </head>
 <body>
@@ -1092,6 +1142,7 @@ function showCard(v){
 async function run(input, meta){
   if (!sample) { msg("La génération marche quand la page est ouverte dans Claude.", true); return; }
   const v = getVoix(meta.voixId); showCard(v);
+  if (matchMedia("(max-width:1150px)").matches) $(".stage").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
   $("#li-text").textContent = ""; $("#hooks-box").hidden = true; $("#notes-box").hidden = true; $("#checks").innerHTML = ""; $("#b-save").hidden = true;
   ctl = new AbortController(); setBusy(true); msg("Écriture en cours…");
   let raw = "";
@@ -1338,15 +1389,15 @@ function renderPlanning(){
     const written = s.postId && posts.some(p => p.id === s.postId);
     rows += `<tr data-i="${i}" data-st="${esc(s.statut)}">
       <td class="c-date">${esc(fmtDay(s.date))}</td>
-      <td><select class="sl-obj" aria-label="Objectif">${s.objectif ? "" : `<option value="" selected>À choisir</option>`}${["attraction","qualification","conversion"].map(o => `<option value="${o}" ${s.objectif === o ? "selected" : ""}>${OBJ_LABEL[o]}</option>`).join("")}</select></td>
-      <td><select class="sl-fmt" aria-label="Format">${s.format && FMT_LABEL[s.format] ? "" : `<option value="" selected>À choisir</option>`}${FORMATS.filter(f => f[0] !== "auto").map(([v, l]) => `<option value="${v}" ${s.format === v ? "selected" : ""}>${l}</option>`).join("")}</select></td>
-      <td class="c-sujet"><textarea class="sl-sujet" rows="3" aria-label="Sujet" placeholder="Sujet à définir">${esc(s.sujet)}</textarea>${s.question ? `<small>${esc(s.question)}</small>` : ""}</td>
-      <td class="c-hook"><textarea class="sl-hook" rows="3" aria-label="Accroche envisagée">${esc(s.accroche || "")}</textarea></td>
-      <td class="c-val"><div class="val">
+      <td class="c-obj"><select class="sl-obj" aria-label="Objectif">${s.objectif ? "" : `<option value="" selected>À choisir</option>`}${["attraction","qualification","conversion"].map(o => `<option value="${o}" ${s.objectif === o ? "selected" : ""}>${OBJ_LABEL[o]}</option>`).join("")}</select></td>
+      <td class="c-fmt"><select class="sl-fmt" aria-label="Format">${s.format && FMT_LABEL[s.format] ? "" : `<option value="" selected>À choisir</option>`}${FORMATS.filter(f => f[0] !== "auto").map(([v, l]) => `<option value="${v}" ${s.format === v ? "selected" : ""}>${l}</option>`).join("")}</select></td>
+      <td class="c-sujet" data-label="Sujet"><textarea class="sl-sujet" rows="3" aria-label="Sujet" placeholder="Sujet à définir">${esc(s.sujet)}</textarea>${s.question ? `<small>${esc(s.question)}</small>` : ""}</td>
+      <td class="c-hook" data-label="Accroche envisagée"><textarea class="sl-hook" rows="3" aria-label="Accroche envisagée">${esc(s.accroche || "")}</textarea></td>
+      <td class="c-val" data-label="Validation"><div class="val">
         <button type="button" class="v-ok" aria-pressed="${s.statut === "valide"}">Validé</button>
         <button type="button" class="v-rv" aria-pressed="${s.statut === "revoir"}">À revoir</button>
       </div></td>
-      <td class="c-ret"><textarea class="sl-ret" rows="3" aria-label="Retour client" placeholder="Retour du client">${esc(s.retour || "")}</textarea></td>
+      <td class="c-ret" data-label="Retour client"><textarea class="sl-ret" rows="3" aria-label="Retour client" placeholder="Retour du client">${esc(s.retour || "")}</textarea></td>
       <td class="c-act"><button class="btn btn-s go" data-go>${written ? "Voir le post" : "Écrire"}</button><button class="btn btn-s" data-re>Autre sujet</button></td>
     </tr>`;
   });
