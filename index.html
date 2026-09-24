@@ -632,7 +632,7 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
   async function api(method, url, body) {
     const r = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
     if (r.status === 401) { showLogin(); throw err("not_granted"); }
-    if (!r.ok) throw err("db_error");
+    if (!r.ok) { const j = await r.json().catch(() => ({})); throw err("db_error" + (j.detail ? " : " + j.detail : j.status ? " " + j.status : "")); }
     return r.json();
   }
   const db = {
