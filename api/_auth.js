@@ -1,15 +1,18 @@
 import crypto from "node:crypto";
 
+// Sans variable APP_PASSWORD dans Vercel : accès direct, sans mot de passe.
+export const passwordOn = () => !!process.env.APP_PASSWORD;
+
 export function token() {
-  const secret = process.env.AUTH_SECRET || "";
-  const pwd = process.env.APP_PASSWORD || "";
-  return crypto.createHmac("sha256", secret).update("studio:" + pwd).digest("hex");
+  const secret = process.env.AUTH_SECRET || "studio";
+  return crypto.createHmac("sha256", secret).update("studio:" + (process.env.APP_PASSWORD || "")).digest("hex");
 }
 
 export function isAuthed(req) {
+  if (!passwordOn()) return true;
   const raw = req.headers.cookie || "";
   const m = raw.match(/(?:^|;\s*)studio_auth=([a-f0-9]+)/);
-  if (!m || !process.env.APP_PASSWORD || !process.env.AUTH_SECRET) return false;
+  if (!m) return false;
   const a = Buffer.from(m[1]), b = Buffer.from(token());
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
