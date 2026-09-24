@@ -1,0 +1,6 @@
+{
+  "name": "studio-linkedin",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" }
+}

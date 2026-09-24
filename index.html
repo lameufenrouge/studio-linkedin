@@ -1,0 +1,1575 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Studio LinkedIn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rouge:#C8102E; --rouge-deep:#9E0B23; --on-rouge:#FFFFFF; --blush:#FBE7EA;
+  --ink:#201517; --rail:#1E1416; --rail-ink:#F4ECEC; --rail-mute:#A8989A;
+  --bg:#F6F2F1; --panel:#FFFFFF; --line:#E6DDDC; --field:#FFFFFF; --muted:#72676A;
+  --ok:#1D7A4B; --warn:#B45F06; --mark:#FFE9A8; --mark-ink:#4F3A00;
+  --card:#FFFFFF; --card-ink:#191919; --card-sub:#6B6B6B;
+  --shadow:0 30px 60px -20px rgba(60,0,10,.45);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --rouge:#D81E3C; --rouge-deep:#7E0A1C; --blush:#3A1A20;
+    --ink:#F2EAEA; --rail:#120C0D; --bg:#1A1415; --panel:#231C1D; --line:#3B3133; --field:#1C1617; --muted:#A99C9E;
+    --ok:#5CC08D; --warn:#E8A34E; --mark:#5A4610; --mark-ink:#FFE7A3;
+    --card:#1D2226; --card-ink:#ECECEC; --card-sub:#9AA0A6; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --rouge:#D81E3C; --rouge-deep:#7E0A1C; --blush:#3A1A20;
+  --ink:#F2EAEA; --rail:#120C0D; --bg:#1A1415; --panel:#231C1D; --line:#3B3133; --field:#1C1617; --muted:#A99C9E;
+  --ok:#5CC08D; --warn:#E8A34E; --mark:#5A4610; --mark-ink:#FFE7A3;
+  --card:#1D2226; --card-ink:#ECECEC; --card-sub:#9AA0A6; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15.5px;line-height:1.5;font-variation-settings:"wdth" 100}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--rouge);outline-offset:2px}
+.x{font-stretch:125%;font-variation-settings:"wdth" 125}
+.n{font-stretch:75%;font-variation-settings:"wdth" 75}
+
+.app{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:100%}
+/* Rail */
+.rail{background:var(--rail);color:var(--rail-ink);padding:26px 16px 20px;display:flex;flex-direction:column;gap:26px;position:sticky;top:0;height:100vh;height:100dvh}
+.logo{font-weight:900;font-size:1.55rem;line-height:.95;letter-spacing:-.01em;padding:0 8px}
+.logo b{display:block;color:var(--rouge)}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{display:flex;align-items:center;gap:12px;background:none;border:0;color:var(--rail-mute);padding:10px 12px;border-radius:10px;cursor:pointer;text-align:left;font-weight:600}
+.nav button svg{width:19px;height:19px;flex:none}
+.nav button:hover{color:var(--rail-ink);background:rgba(255,255,255,.05)}
+.nav button[aria-current="page"]{background:var(--rouge);color:#fff}
+.vsw{margin-top:auto;padding:0 4px}
+.vsw label{display:block;font-size:.78rem;color:var(--rail-mute);margin-bottom:6px}
+.vsw select{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:var(--rail-ink);border-radius:10px;padding:10px}
+.vsw select option{color:#000}
+.vsw .who{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+.vsw .who .avatar{width:38px;height:38px;font-size:.9rem}
+.vsw .who small{display:block;color:var(--rail-mute);font-size:.78rem;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px}
+
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .rail{position:sticky;top:0;height:auto;z-index:5;padding:12px 14px;gap:10px;flex-direction:row;flex-wrap:wrap;align-items:center}
+  .logo{font-size:1.1rem;padding:0}
+  .logo b{display:inline}
+  .nav{flex-direction:row;order:3;width:100%;overflow-x:auto;gap:4px}
+  .nav button{padding:8px 10px;white-space:nowrap;font-size:.9rem}
+  .vsw{margin:0 0 0 auto;min-width:0;flex:1;max-width:220px}
+  .vsw label,.vsw .who{display:none}
+}
+
+main{min-width:0;display:flex;flex-direction:column}
+.view{padding:30px clamp(16px,3vw,40px) 40px;flex:1}
+.view[hidden]{display:none}
+.h{font-weight:900;font-size:clamp(1.9rem,3.6vw,2.8rem);line-height:1;letter-spacing:-.02em;margin:0 0 8px}
+.lead{color:var(--muted);margin:0 0 26px;max-width:62ch}
+
+/* Écrire */
+.ecrire{display:grid;grid-template-columns:minmax(0,430px) minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:1150px){.ecrire{grid-template-columns:1fr}}
+.step{display:grid;grid-template-columns:34px 1fr;gap:12px;margin-bottom:22px}
+.num{width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font-weight:800;font-size:.85rem}
+.step h3{margin:3px 0 8px;font-size:1rem;font-weight:800}
+.step h3 span{font-weight:400;color:var(--muted);font-size:.85rem;margin-left:6px}
+input[type=text],input[type=number],select,textarea{width:100%;background:var(--field);border:1.5px solid var(--line);border-radius:12px;padding:11px 13px}
+input:focus,select:focus,textarea:focus{border-color:var(--ink);outline:none}
+textarea{resize:vertical;line-height:1.45}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+@media (max-width:480px){.tiles{grid-template-columns:repeat(2,1fr)}}
+.tile{border:1.5px solid var(--line);background:var(--panel);border-radius:12px;padding:9px 10px;cursor:pointer;text-align:left;line-height:1.2}
+.tile b{display:block;font-size:.88rem;font-weight:800}
+.tile small{color:var(--muted);font-size:.74rem}
+.tile[aria-pressed="true"]{border-color:var(--rouge);background:var(--blush)}
+.tiles.dim .tile{opacity:.4}
+.modele-pick{margin-top:9px}
+.seg{display:flex;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+.seg button{flex:1;border:0;background:none;padding:9px 6px;cursor:pointer;font-weight:600;font-size:.88rem}
+.seg button+button{border-left:1.5px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}
+.btn{border:1.5px solid var(--line);background:var(--panel);border-radius:11px;padding:9px 15px;cursor:pointer;font-weight:700}
+.btn:hover{border-color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-go{display:flex;justify-content:space-between;align-items:center;width:100%;background:var(--rouge);color:#fff;border:0;border-radius:14px;padding:17px 20px;font-size:1.15rem;font-weight:900;cursor:pointer}
+.btn-go:hover{background:var(--rouge-deep)}
+.btn-go:disabled{opacity:.6;cursor:wait}
+.btn-go kbd{font:inherit;font-weight:500;font-size:.78rem;opacity:.75}
+.btn-s{padding:6px 11px;font-size:.85rem}
+.msg{font-size:.9rem;color:var(--muted);margin-top:10px;min-height:1.3em}
+.msg.err{color:var(--rouge)}
+
+/* Scène */
+.stage-col{position:sticky;top:20px;display:flex;flex-direction:column;gap:16px}
+@media (max-width:1150px){.stage-col{position:static}}
+.stage{background:var(--rouge);border-radius:22px;padding:26px clamp(14px,3vw,34px) 22px;color:#fff;position:relative;overflow:hidden}
+.stage-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:10px;flex-wrap:wrap}
+.stage-top .t{font-weight:800;font-size:.9rem;opacity:.9}
+.meter{display:flex;align-items:center;gap:8px;font-size:.82rem;font-weight:600}
+.meter .bar{width:110px;height:6px;background:rgba(255,255,255,.25);border-radius:9px;overflow:hidden}
+.meter .bar i{display:block;height:100%;width:0;background:#fff;border-radius:9px;transition:width .3s}
+.void{padding:30px 6px 40px}
+.void .big{font-weight:900;font-size:clamp(2.2rem,5vw,3.8rem);line-height:.95;letter-spacing:-.02em;margin:0 0 14px}
+.void p{margin:0;opacity:.85;max-width:44ch}
+.li-card{background:var(--card);color:var(--card-ink);border-radius:12px;max-width:555px;margin:0 auto;box-shadow:var(--shadow);font-family:-apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:14px;line-height:1.43}
+.li-head{display:flex;gap:10px;padding:14px 16px 6px;align-items:center}
+.avatar{width:48px;height:48px;border-radius:50%;background:var(--rouge);color:#fff;display:grid;place-items:center;font-weight:800;flex:none;font-family:"Archivo",system-ui,sans-serif;border:2px solid rgba(255,255,255,.9)}
+.li-name{font-weight:600}
+.li-sub{color:var(--card-sub);font-size:12px}
+.li-body{position:relative;padding:6px 16px 16px}
+.li-text{white-space:pre-wrap;word-wrap:break-word;outline:none;min-height:8em}
+.li-text:focus{box-shadow:inset 0 0 0 1px var(--line);border-radius:4px}
+.li-text mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2px}
+.fold{position:absolute;left:-10px;right:-10px;top:calc(6px + 3 * 1.43em);border-top:2px dashed var(--rouge);pointer-events:none}
+.fold span{position:absolute;right:16px;top:-11px;background:var(--rouge);color:#fff;font-size:11px;font-weight:700;padding:1px 9px;border-radius:9px;font-family:"Archivo",system-ui,sans-serif}
+.li-foot{border-top:1px solid rgba(128,128,128,.2);display:flex;justify-content:space-around;padding:8px;color:var(--card-sub);font-size:13px;font-weight:600}
+.caret::after{content:"▍";color:var(--rouge);animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.caret::after{animation:none}.meter .bar i{transition:none}}
+.stage-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px}
+.sbtn{background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.35);color:#fff;border-radius:11px;padding:9px 15px;font-weight:700;cursor:pointer}
+.sbtn:hover{background:rgba(255,255,255,.24)}
+.sbtn.w{background:#fff;color:var(--rouge);border-color:#fff}
+.sbtn:disabled{opacity:.5;cursor:not-allowed}
+
+.board{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:700px){.board{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px}
+.panel h4{margin:0 0 10px;font-size:.95rem;font-weight:800}
+.full{grid-column:1/-1}
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:7px;font-size:.9rem}
+.checks li{display:flex;gap:9px;align-items:baseline}
+.checks .ic{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:.7rem;font-weight:900;color:#fff;transform:translateY(3px)}
+.checks .ok .ic{background:var(--ok)}
+.checks .warn .ic{background:var(--warn)}
+.hook{display:block;width:100%;text-align:left;border:1.5px solid var(--line);background:var(--field);border-radius:11px;padding:10px 12px;cursor:pointer;line-height:1.4;margin-bottom:7px;font-size:.92rem}
+.hook:hover{border-color:var(--rouge)}
+.hook small{display:block;color:var(--rouge);margin-top:4px;font-size:.76rem;font-weight:700}
+.ret{display:flex;gap:8px}
+.ret input{flex:1;min-width:0}
+.quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.chip{border:1.5px solid var(--line);background:var(--field);border-radius:999px;padding:5px 11px;font-size:.82rem;cursor:pointer;font-weight:600}
+.chip:hover{border-color:var(--ink)}
+.notes{font-size:.88rem;color:var(--muted);white-space:pre-wrap;margin:0}
+
+/* Idées */
+.idea-bar{display:grid;grid-template-columns:1.3fr 1fr 140px auto;gap:10px;align-items:end;margin-bottom:26px}
+@media (max-width:900px){.idea-bar{grid-template-columns:1fr}}
+.idea-bar label{display:block;font-weight:700;font-size:.85rem;margin-bottom:5px}
+.ideas{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.idea{background:var(--panel);border:1.5px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.idea .tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:.74rem;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--blush);color:var(--rouge)}
+.tag.g{background:var(--bg);color:var(--muted)}
+.idea .hk{font-weight:800;font-size:1.08rem;line-height:1.25;margin:0}
+.idea .an{margin:0;color:var(--muted);font-size:.9rem}
+.idea .q{margin:0;font-size:.85rem;border-left:3px solid var(--rouge);padding-left:10px}
+.idea .ib{display:flex;gap:8px;margin-top:auto;padding-top:4px}
+.idea .ib .go{flex:1;background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.star[aria-pressed="true"]{background:var(--rouge);color:#fff;border-color:var(--rouge)}
+.sub{font-weight:900;font-size:1.3rem;margin:34px 0 14px}
+.skel .idea{min-height:190px;background:linear-gradient(90deg,var(--panel),var(--bg),var(--panel));background-size:200% 100%;animation:sh 1.4s linear infinite}
+@keyframes sh{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.skel .idea{animation:none}}
+
+/* Modèles & Voix */
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:1000px){.two{grid-template-columns:1fr}}
+.field{margin-bottom:13px}
+.field label{display:block;font-weight:700;font-size:.88rem;margin-bottom:5px}
+.hint{color:var(--muted);font-weight:400;font-size:.8rem}
+.mcard{background:var(--panel);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:12px}
+.mcard h5{margin:0 0 6px;font-size:1.05rem;font-weight:800}
+.mcard ol{margin:8px 0 0;padding-left:20px;font-size:.88rem}
+.mcard p{margin:0;font-size:.88rem;color:var(--muted)}
+.mcard .ib{display:flex;gap:8px;margin-top:12px}
+.vtabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.vtab{border:1.5px solid var(--line);background:var(--panel);border-radius:999px;padding:7px 14px;cursor:pointer;font-weight:700}
+.vtab[aria-current="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.callout{background:var(--rouge);color:#fff;border-radius:18px;padding:20px;margin-bottom:16px}
+.callout h4{margin:0 0 6px;font-size:1.1rem;font-weight:900}
+.callout p{margin:0 0 12px;opacity:.9;font-size:.92rem}
+.callout textarea{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.35);color:#fff}
+.callout textarea::placeholder{color:rgba(255,255,255,.7)}
+
+
+.pb-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:22px}
+.pb-stats div{background:var(--rouge);color:#fff;border-radius:18px;padding:18px}
+.pb-stats b{display:block;font-size:2.2rem;font-weight:900;line-height:1;margin-bottom:8px}
+.pb-stats span{font-size:.88rem;opacity:.9}
+.pb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.pb h3{margin:0 0 8px;font-size:1.1rem;font-weight:900}
+.pb p{margin:0 0 10px;font-size:.93rem;line-height:1.55;max-width:70ch}
+.pb p:last-child{margin-bottom:0}
+.pb-who{color:var(--rouge);font-weight:700;font-size:.85rem !important}
+.pb-list{margin:0;padding-left:22px;display:grid;gap:8px;font-size:.95rem}
+.badge{font-size:.72rem;font-weight:700;background:var(--blush);color:var(--rouge);border-radius:999px;padding:2px 9px;margin-left:6px;vertical-align:middle}
+/* Planning */
+.plan-top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.plan-top select{max-width:420px}
+.plan-actions{display:flex;gap:8px;margin-left:auto}
+.plan-form{margin-bottom:26px}
+.plan-form label,.lbl2{display:block;font-weight:700;font-size:.85rem;margin-bottom:5px}
+.pf-grid{display:grid;grid-template-columns:180px 160px 1fr;gap:10px}
+.pf-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:800px){.pf-grid,.pf-grid2{grid-template-columns:1fr}}
+.pf-days{margin:14px 0}
+.pf-days .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.pf-days .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.week{margin-bottom:26px}
+.week h3{font-weight:900;font-size:1.15rem;margin:0 0 12px}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.slot{background:var(--panel);border:1.5px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px;border-top:5px solid var(--line)}
+.slot[data-st="valide"]{border-top-color:var(--ok)}
+.slot[data-st="revoir"]{border-top-color:var(--warn)}
+.slot .day{font-weight:900;font-size:.95rem;text-transform:capitalize}
+.slot .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.slot select{padding:5px 8px;font-size:.8rem;border-radius:9px;width:auto}
+.slot textarea{font-weight:700;font-size:.95rem;min-height:64px;padding:8px 10px}
+.slot .hk{margin:0;font-size:.86rem;color:var(--muted);font-style:italic}
+.slot .q{margin:0;font-size:.82rem;border-left:3px solid var(--rouge);padding-left:9px}
+.slot .ib{display:flex;gap:6px;margin-top:auto}
+.slot .ib .go{flex:1;background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.slot .done{font-size:.78rem;font-weight:700;color:var(--ok)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.82rem;color:var(--muted);margin:-8px 0 18px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle}
+
+.tbl-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.tbl-head strong{font-size:1.1rem;font-weight:900}
+.tbl-wrap{overflow-x:auto;border:1.5px solid var(--line);border-radius:16px;background:var(--panel)}
+.ptable{border-collapse:collapse;width:100%;min-width:1150px;font-size:.88rem}
+.ptable th{background:var(--rouge);color:#fff;text-align:left;font-weight:800;padding:10px;position:sticky;top:0}
+.ptable td{border-top:1px solid var(--line);padding:8px;vertical-align:top}
+.ptable tr.wk td{background:var(--bg);font-weight:900;padding:9px 12px}
+.ptable tr[data-st="valide"] td:first-child{box-shadow:inset 5px 0 0 var(--ok)}
+.ptable tr[data-st="revoir"] td:first-child{box-shadow:inset 5px 0 0 var(--warn)}
+.ptable tr[data-st="valide"]{background:color-mix(in srgb,var(--ok) 6%,transparent)}
+.ptable .c-date{font-weight:800;text-transform:capitalize;width:110px;padding-left:14px}
+.ptable select{padding:6px 8px;font-size:.82rem;border-radius:9px;width:auto;max-width:130px}
+.ptable textarea{border:1.5px solid transparent;background:transparent;padding:6px;border-radius:8px;font-size:.88rem;min-height:0;resize:vertical}
+.ptable textarea:hover{border-color:var(--line)}
+.ptable textarea:focus{border-color:var(--ink);background:var(--field)}
+.ptable .c-sujet{width:26%}
+.ptable .c-sujet textarea{font-weight:700}
+.ptable .c-sujet small{display:block;color:var(--muted);font-size:.78rem;padding:0 6px;border-left:3px solid var(--rouge);margin-top:4px}
+.ptable .c-hook{width:22%}
+.ptable .c-hook textarea{font-style:italic;color:var(--muted)}
+.ptable .c-ret{width:16%}
+.val{display:flex;flex-direction:column;gap:5px}
+.val button{border:1.5px solid var(--line);background:var(--panel);border-radius:9px;padding:6px 9px;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap}
+.val .v-ok[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:#fff}
+.val .v-rv[aria-pressed="true"]{background:var(--warn);border-color:var(--warn);color:#fff}
+.ptable .c-act{display:flex;flex-direction:column;gap:5px;min-width:110px}
+.ptable .c-act .go{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+/* Historique */
+.hist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.hitem{background:var(--panel);border:1.5px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.hitem .meta{font-size:.78rem;color:var(--muted)}
+.hitem strong{line-height:1.3}
+.hitem p{margin:0;color:var(--muted);font-size:.88rem;overflow:hidden;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;white-space:pre-wrap}
+.hitem .ib{display:flex;gap:6px;margin-top:auto}
+.empty{border:2px dashed var(--line);border-radius:18px;padding:40px 24px;text-align:center;color:var(--muted);grid-column:1/-1}
+.empty strong{display:block;color:var(--ink);font-size:1.15rem;margin-bottom:6px}
+
+footer{padding:22px clamp(16px,3vw,40px) 26px;color:var(--muted);opacity:.65;font-size:.72rem;line-height:1.5;border-top:1px solid var(--line)}
+footer a{color:inherit}
+footer .links{margin-bottom:6px;display:flex;gap:16px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+#login{position:fixed;inset:0;z-index:50;background:var(--rail);display:grid;place-items:center;padding:20px}
+#login[hidden]{display:none}
+.login-card{background:var(--panel);border-radius:22px;padding:30px;width:100%;max-width:380px;display:flex;flex-direction:column;gap:12px}
+.login-card .logo{color:var(--ink);font-size:1.8rem;padding:0;margin-bottom:8px}
+.login-card label{font-weight:700;font-size:.9rem}
+</style>
+</head>
+<body>
+<div id="login" hidden>
+  <form id="login-form" class="login-card">
+    <div class="logo x">Studio<b>LinkedIn</b></div>
+    <label for="login-pwd">Mot de passe</label>
+    <input type="password" id="login-pwd" autocomplete="current-password" required>
+    <button class="btn-go x" type="submit"><span>Entrer</span></button>
+    <p class="msg err" id="login-msg"></p>
+  </form>
+</div>
+<div class="app">
+<aside class="rail">
+  <div class="logo x">Studio<b>LinkedIn</b></div>
+  <nav class="nav" aria-label="Sections">
+    <button data-view="ecrire" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Écrire</button>
+    <button data-view="idees"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2Z"/></svg>Idées</button>
+    <button data-view="planning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Planning</button>
+    <button data-view="modeles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 10 5-10 5L2 7Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>Modèles</button>
+    <button data-view="voix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10a7 7 0 0 1-14 0"/><path d="M12 17v5"/></svg>Voix</button>
+    <button data-view="hist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Historique</button>
+  </nav>
+  <div class="vsw">
+    <div class="who"><div class="avatar" id="rail-av">?</div><div><strong id="rail-nom">Aucune voix</strong><small id="rail-titre"></small></div></div>
+    <label for="f-voix">Voix active</label>
+    <select id="f-voix" aria-label="Voix active"></select>
+  </div>
+</aside>
+
+<main>
+<!-- ÉCRIRE -->
+<section class="view" id="v-ecrire">
+  <div class="ecrire">
+    <div>
+      <h1 class="h x">Écrire</h1>
+      <p class="lead">Une idée, ce qui s'est vraiment passé, et la structure qui va avec.</p>
+      <div class="step"><div class="num">1</div><div>
+        <h3>Sujet</h3>
+        <textarea id="f-sujet" rows="2" placeholder="Ex. : pourquoi j'ai arrêté de répondre aux DM le week-end"></textarea>
+      </div></div>
+      <div class="step"><div class="num">2</div><div>
+        <h3>Matière brute<span>la seule source de vécu</span></h3>
+        <textarea id="f-matiere" rows="5" placeholder="Anecdote, chiffres, note vocale retranscrite. Rien ne sera inventé en dehors de ça."></textarea>
+      </div></div>
+      <div class="step"><div class="num">3</div><div>
+        <h3>Structure</h3>
+        <div class="tiles" id="tiles"></div>
+        <div class="modele-pick"><label class="sr" for="f-modele">Partir d'un modèle</label><select id="f-modele"></select></div>
+      </div></div>
+      <div class="step"><div class="num">4</div><div>
+        <h3>Réglages</h3>
+        <div class="seg" id="seg-obj" role="group" aria-label="Objectif"></div>
+        <div class="row2">
+          <select id="f-cta" aria-label="Fin du post">
+            <option value="auto">Fin : au choix</option>
+            <option value="question">Fin : question courte</option>
+            <option value="ps">Fin : PS</option>
+            <option value="lien">Fin : lien en commentaire</option>
+              <option value="lienpost">Fin : lien dans le post</option>
+            <option value="aucun">Fin : sèche, sans CTA</option>
+          </select>
+          <select id="f-long" aria-label="Longueur">
+            <option value="court">Court · 600-900</option>
+            <option value="standard" selected>Standard · 1000-1500</option>
+            <option value="long">Long · 1500-2500</option>
+          </select>
+        </div>
+        <select id="f-ton" aria-label="Ton" style="margin-top:9px">
+          <option value="voix">Ton : celui de la voix</option>
+          <option value="cash">Ton : cash</option>
+          <option value="exuberant">Ton : exubérant</option>
+          <option value="pose">Ton : posé</option>
+          <option value="engage">Ton : engagé</option>
+          <option value="tendre">Ton : tendre</option>
+        </select>
+        <select id="f-tier" aria-label="Qualité" style="margin-top:9px">
+          <option value="complex" selected>Qualité : maximale (plus lent)</option>
+          <option value="default">Qualité : standard (plus rapide)</option>
+        </select>
+      </div></div>
+      <button class="btn-go x" id="b-gen"><span>Générer le post</span><kbd>Ctrl + Entrée</kbd></button>
+      <div class="msg" id="gen-msg" role="status"></div>
+    </div>
+
+    <div class="stage-col">
+      <div class="stage">
+        <div class="stage-top">
+          <span class="t">Aperçu du fil</span>
+          <span class="meter" id="meter" hidden><span id="m-len">0</span><span class="bar"><i id="m-bar"></i></span></span>
+        </div>
+        <div class="void" id="void">
+          <p class="big x">Ton prochain post commence ici.</p>
+          <p>La ligne pointillée te montrera où LinkedIn coupe avec « voir plus ». Tout ce qui compte doit tenir au-dessus.</p>
+        </div>
+        <article class="li-card" id="card" hidden aria-label="Aperçu du post">
+          <div class="li-head">
+            <div class="avatar" id="av">?</div>
+            <div><div class="li-name" id="li-name"></div><div class="li-sub" id="li-sub"></div></div>
+          </div>
+          <div class="li-body">
+            <div class="li-text" id="li-text"></div>
+            <div class="fold" aria-hidden="true"><span>…voir plus</span></div>
+          </div>
+          <div class="li-foot" aria-hidden="true"><span>J'aime</span><span>Commenter</span><span>Republier</span><span>Envoyer</span></div>
+        </article>
+        <div class="stage-actions" id="s-actions" hidden>
+          <button class="sbtn w" id="b-copy">Copier le post</button>
+          <button class="sbtn" id="b-save" hidden>Enregistrer les modifs</button>
+          <button class="sbtn" id="b-regen">Autre version</button>
+          <button class="sbtn" id="b-stop" hidden>Arrêter</button>
+        </div>
+      </div>
+      <div class="board" id="board" hidden>
+        <div class="panel"><h4>Vérifications</h4><ul class="checks" id="checks"></ul></div>
+        <div class="panel"><h4>Retoucher</h4>
+          <div class="ret"><label class="sr" for="f-ret">Consigne</label><input type="text" id="f-ret" placeholder="Ex. : plus cash, coupe le 3e paragraphe"><button class="btn" id="b-ret">OK</button></div>
+          <div class="quick" id="quick"></div>
+        </div>
+        <div class="panel full" id="hooks-box" hidden><h4>Autres accroches</h4><div id="hooks"></div></div>
+        <div class="panel full" id="notes-box" hidden><h4>Notes</h4><p class="notes" id="notes"></p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IDÉES -->
+<section class="view" id="v-idees" hidden>
+  <h1 class="h x">Idées</h1>
+  <p class="lead">Des angles précis pour ta niche, chacun avec la question à te poser pour trouver ton vrai vécu. Un clic et l'idée part dans l'atelier.</p>
+  <div class="idea-bar">
+    <div><label for="i-niche">Niche</label><input type="text" id="i-niche" placeholder="Ex. : coaching business pour mamans entrepreneures"></div>
+    <div><label for="i-theme">Thème <span class="hint">facultatif</span></label><input type="text" id="i-theme" placeholder="Ex. : prix, rentrée, burn-out"></div>
+    <div><label for="i-obj">Objectif</label><select id="i-obj"><option value="mix">Mélange</option><option value="attraction">Visibilité</option><option value="qualification">Crédibilité</option><option value="conversion">Vente / lead</option></select></div>
+    <button class="btn-go x" id="b-ideas" style="padding:12px 18px;font-size:1rem"><span>Trouver 9 idées</span></button>
+  </div>
+  <div class="msg" id="i-msg" role="status"></div>
+  <div class="ideas" id="ideas"></div>
+  <h2 class="sub x" id="kept-title" hidden>Idées gardées</h2>
+  <div class="ideas" id="kept"></div>
+</section>
+
+<!-- PLANNING -->
+<section class="view" id="v-planning" hidden>
+  <h1 class="h x">Planning</h1>
+  <p class="lead">Choisis tes jours de publication, génère un sujet par créneau, puis fais valider le planning avant d'écrire.</p>
+  <div class="plan-top">
+    <select id="pl-select" aria-label="Plannings enregistrés"></select>
+    <div class="plan-actions">
+      <button class="btn btn-s" id="pl-pdf" hidden>Exporter en PDF</button>
+      <button class="btn btn-s" id="pl-copy" hidden>Copier pour validation</button>
+      <button class="btn btn-s" id="pl-del" hidden>Supprimer</button>
+    </div>
+  </div>
+  <div class="panel plan-form">
+    <div class="pf-grid">
+      <div><label for="pl-debut">À partir du</label><input type="date" id="pl-debut"></div>
+      <div><label for="pl-sem">Durée</label><select id="pl-sem"><option value="1">1 semaine</option><option value="2" selected>2 semaines</option><option value="3">3 semaines</option><option value="4">4 semaines</option></select></div>
+      <div><label for="pl-strat">Stratégie</label><select id="pl-strat">
+        <option value="classique">Classique : visibilité, preuve, vente en fin de semaine</option>
+        <option value="lancement">Lancement : on chauffe, puis on vend</option>
+        <option value="visibilite">Visibilité : on fait grandir l'audience</option>
+        <option value="libre">Libre : l'IA répartit</option>
+      </select></div>
+    </div>
+    <div class="pf-days"><span class="lbl2">Jours de publication</span><div class="chips" id="pl-days"></div><span class="hint" id="pl-count"></span></div>
+    <div class="pf-grid2">
+      <div><label for="pl-theme">Fil rouge <span class="hint">facultatif</span></label><input type="text" id="pl-theme" placeholder="Ex. : la rentrée, reprendre après bébé, les prix"></div>
+      <div><label for="pl-offre">Offre à pousser <span class="hint">pour les posts de vente</span></label><input type="text" id="pl-offre" placeholder="Ex. : live du 6/09, pourquoi tu plafonnes sous 2K€/mois"></div>
+    </div>
+    <div style="margin-top:10px"><label for="pl-idees">Idées du client <span class="hint">facultatif, une par ligne : sujets, anecdotes, événements à venir</span></label><textarea id="pl-idees" rows="4" placeholder="Ex. : raconter la signature de notre plus gros client en octobre&#10;parler du salon de Lyon le 15&#10;l'erreur de recrutement de l'an dernier"></textarea></div>
+    <button class="btn-go x" id="pl-gen" style="margin-top:14px"><span>Générer le planning</span></button>
+    <div class="msg" id="pl-msg" role="status"></div>
+  </div>
+  <div id="pl-board"></div>
+</section>
+
+<!-- MODÈLES -->
+<section class="view" id="v-modeles" hidden>
+  <h1 class="h x">Modèles</h1>
+  <p class="lead">Colle un post qui a cartonné, d'où qu'il vienne. On en garde la mécanique (accroche, enchaînement, procédés), jamais les mots ni l'histoire. Tu écris ensuite n'importe quel sujet sur cette structure.</p>
+  <div class="two">
+    <div>
+      <div class="callout">
+        <h4 class="x">Extraire un modèle</h4>
+        <p>Le texte collé sert uniquement à l'analyse. Il n'est jamais envoyé à l'écriture.</p>
+        <label class="sr" for="m-src">Post à analyser</label>
+        <textarea id="m-src" rows="10" placeholder="Colle le post ici"></textarea>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap">
+          <button class="sbtn w" id="b-extract">Extraire la structure</button>
+          <span id="m-msg" style="font-size:.88rem"></span>
+        </div>
+      </div>
+    </div>
+    <div id="mlist"></div>
+  </div>
+</section>
+
+
+<!-- VOIX -->
+<section class="view" id="v-voix" hidden>
+  <h1 class="h x">Voix</h1>
+  <p class="lead">Une voix par personne. Pour toi aujourd'hui, pour chaque client de l'agence demain.</p>
+  <div class="vtabs" id="vtabs"></div>
+  <div class="two">
+    <div>
+      <div class="callout">
+        <h4 class="x">Le plus rapide</h4>
+        <p>Colle 3 à 5 posts écrits par la personne, séparés par une ligne ---. L'analyse remplit le style, les règles et les interdits.</p>
+        <label class="sr" for="p-exemples">Exemples de posts</label>
+        <textarea id="p-exemples" rows="10" placeholder="Post 1&#10;---&#10;Post 2&#10;---&#10;Post 3"></textarea>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap">
+          <button class="sbtn w" id="b-analyse">Analyser les exemples</button>
+          <span id="an-msg" style="font-size:.88rem"></span>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="row2" style="margin-top:0">
+        <div class="field"><label for="p-nom">Nom affiché</label><input type="text" id="p-nom" placeholder="Prénom Nom"></div>
+        <div class="field"><label for="p-titre">Titre LinkedIn</label><input type="text" id="p-titre"></div>
+      </div>
+      <div class="field"><label for="p-niche">Niche</label><input type="text" id="p-niche" placeholder="Sert aussi de base aux idées"></div>
+      <div class="field"><label for="p-activite">Qui c'est, ce qu'elle vend <span class="hint">faits utilisables dans les posts</span></label><textarea id="p-activite" rows="3"></textarea></div>
+      <div class="field"><label for="p-cible">Sa cible</label><textarea id="p-cible" rows="2"></textarea></div>
+      <div class="field"><label for="p-style">Son style</label><textarea id="p-style" rows="4"></textarea></div>
+      <div class="row2" style="margin-top:0">
+        <div class="field"><label for="p-afaire">À faire</label><textarea id="p-afaire" rows="4" placeholder="Une règle par ligne"></textarea></div>
+        <div class="field"><label for="p-interdits">Interdits</label><textarea id="p-interdits" rows="4" placeholder="Un mot ou une tournure par ligne"></textarea></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" id="b-savev" style="background:var(--ink);color:var(--bg);border-color:var(--ink)">Enregistrer la voix</button>
+        <button class="btn" id="b-delv">Supprimer</button>
+      </div>
+      <div class="msg" id="v-msg" role="status"></div>
+    </div>
+  </div>
+</section>
+
+<!-- HISTORIQUE -->
+<section class="view" id="v-hist" hidden>
+  <h1 class="h x">Historique</h1>
+  <p class="lead">Chaque post généré atterrit ici. Ouvre-le pour le retoucher.</p>
+  <div class="hist" id="hist"></div>
+</section>
+
+</main>
+</div>
+
+<script>
+/* Couche Vercel : remplace les capacités Claude (écriture, base, téléchargement) par l'API du projet */
+(() => {
+  const err = (code, text) => Object.assign(new Error(code), { code, text });
+  async function sample(input, opts = {}) {
+    let r;
+    try {
+      r = await fetch("/api/claude", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input, tier: opts.modelTier || "default" }), signal: opts.signal });
+    } catch (e) { throw err(e.name === "AbortError" ? "cancelled" : "network_error"); }
+    if (r.status === 401) { showLogin(); throw err("not_granted"); }
+    if (r.status === 429) throw err("rate_limited");
+    if (!r.ok) throw err("upstream_error");
+    const reader = r.body.getReader(), dec = new TextDecoder();
+    let text = "";
+    try {
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        const delta = dec.decode(value, { stream: true });
+        text += delta;
+        opts.onText?.({ text: text.replace("\u0000TRUNCATED", ""), delta });
+      }
+    } catch (e) { throw err(e.name === "AbortError" ? "cancelled" : "network_error", text); }
+    const truncated = text.includes("\u0000TRUNCATED");
+    text = text.replace("\u0000TRUNCATED", "");
+    if (!text.trim()) throw err("empty_completion");
+    return { text, truncated };
+  }
+  sample.json = async (input, opts = {}) => {
+    const add = "\n\nRéponds uniquement avec le JSON demandé, sans texte autour et sans balises de code.";
+    const inp = typeof input === "string" ? input + add : input.map((t, i) => i === input.length - 1 ? { ...t, content: t.content + add } : t);
+    const { text } = await sample(inp, opts);
+    const clean = text.replace(/```json|```/g, "").trim();
+    const start = clean.search(/[\[{]/), end = Math.max(clean.lastIndexOf("]"), clean.lastIndexOf("}"));
+    try { return JSON.parse(clean.slice(start, end + 1)); } catch { throw err("invalid_json", text); }
+  };
+  async function api(method, url, body) {
+    const r = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
+    if (r.status === 401) { showLogin(); throw err("not_granted"); }
+    if (!r.ok) throw err("db_error");
+    return r.json();
+  }
+  const db = {
+    collection(col) {
+      const q = { orderBy: () => q, limit: () => q, where: () => q,
+        async get() { const rows = await api("GET", "/api/db?collection=" + encodeURIComponent(col));
+          return { docs: rows.map(({ id, ...data }) => ({ id, exists: true, data: () => data })) }; } };
+      return q;
+    },
+    doc(path) {
+      const [col, id] = path.split("/");
+      return {
+        set: data => api("POST", "/api/db", { collection: col, id, data }),
+        delete: () => api("DELETE", `/api/db?collection=${encodeURIComponent(col)}&id=${encodeURIComponent(id)}`)
+      };
+    }
+  };
+  const downloads = {
+    async save({ filename, data }) {
+      const blob = data instanceof Blob ? data : new Blob([data]);
+      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    }
+  };
+  const caps = { sample, db, downloads };
+  window.claude = { use: async name => caps[name] || null };
+
+  function showLogin(){ document.getElementById("login").hidden = false; }
+  window.__showLogin = showLogin;
+})();
+</script>
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+let sample = null, db = null;
+let voix = [], posts = [], modeles = [], idees = [];
+let activeId = null, editId = null;
+let lastRun = null, ctl = null, busy = false;
+let fmt = "auto", obj = "attraction", lastIdeas = [];
+
+/* ---------- Stockage ---------- */
+const ls = {
+  get(k){ try { return JSON.parse(localStorage.getItem("gpl:" + k) || "[]"); } catch { return []; } },
+  set(k, v){ try { localStorage.setItem("gpl:" + k, JSON.stringify(v)); } catch {} }
+};
+const store = {
+  async list(col){
+    if (db) { try { const s = await db.collection(col).orderBy("updatedAt", "desc").limit(300).get(); return s.docs.map(d => ({ id: d.id, ...d.data() })); } catch (e) { console.warn(e); } }
+    return ls.get(col).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+  },
+  async save(col, id, data){
+    const body = { ...data, updatedAt: Date.now() }; delete body.id;
+    if (db) { await db.doc(col + "/" + id).set(body); return; }
+    const arr = ls.get(col).filter(x => x.id !== id); arr.push({ id, ...body }); ls.set(col, arr);
+  },
+  async del(col, id){
+    if (db) { await db.doc(col + "/" + id).delete(); return; }
+    ls.set(col, ls.get(col).filter(x => x.id !== id));
+  }
+};
+
+/* ---------- Référentiels ---------- */
+const FORMATS = [
+  ["auto","Au choix","l'IA tranche"],["story","Storytelling","un moment vécu"],["opinion","Opinion","qui divise"],
+  ["vuln","Vulnérabilité","l'aveu"],["jalon","Jalon","preuve sociale"],["cash","Cash talk","vrais chiffres"],
+  ["actu","Actu détournée","événement + vécu"],["liste","Liste","avec vécu"],["coup","Coup de gueule","l'agacement"]
+];
+const FMT_LABEL = Object.fromEntries(FORMATS.map(f => [f[0], f[1]]));
+const FORMAT_GUIDE = {
+  auto:"Choisis le format le plus fort pour ce sujet et cette matière.",
+  story:"Storytelling : accroche tension ou chiffre, décor rapide ancré dans un moment précis, escalade en phrases vivantes, moment pivot, message implicite (2 phrases max, jamais moralisateur).",
+  opinion:"Opinion tranchée : une position nette qui divise dès la ligne 1, deux arguments appuyés sur des exemples vécus, un contre-argument reconnu puis réfuté, conclusion claire.",
+  vuln:"Vulnérabilité : l'aveu dès la ligne 1, récit honnête sans minimiser, ce que ça a coûté (émotionnel et concret), où elle en est. Pas de happy ending obligatoire.",
+  jalon:"Jalon / lifestyle : annonce concrète (chiffre, lieu, objet), ce que ce jalon représente vraiment, d'où elle vient, ce que ça a coûté. Jamais de frime pure.",
+  cash:"Cash talk : les vrais chiffres, les maths réelles (combien, comment, ce que ça coûte), ce que les autres n'osent pas dire.",
+  actu:"Actu détournée : l'événement externe en accroche sans intro, 3-4 phrases de contexte, puis connexion au vécu, puis ce que ça dit sur la société ou le business.",
+  liste:"Liste : promesse chiffrée en accroche, 1-2 phrases d'ancrage personnel, 3 à 5 points maximum, chacun avec une micro-anecdote vécue.",
+  coup:"Coup de gueule : l'agacement nommé dès la ligne 1, le déclencheur concret, pourquoi c'est un problème, ce qu'elle fait à la place."
+};
+const OBJECTIFS = [["attraction","Visibilité"],["qualification","Crédibilité"],["conversion","Vente"]];
+const OBJ_LABEL = { attraction:"Visibilité", qualification:"Crédibilité", conversion:"Vente" };
+const OBJ_GUIDE = {
+  attraction:"Visibilité : maximiser portée et commentaires, pas de vente.",
+  qualification:"Crédibilité : montrer la preuve, l'expertise, les résultats, sans pitch.",
+  conversion:"Vente / lead : amener vers une offre ou un lead magnet avec un CTA direct et assumé (lien en commentaire)."
+};
+const CTA_GUIDE = {
+  auto:"Choisis la fin qui coule le plus naturellement du post (un seul CTA).",
+  question:"Termine par une question courte et directe.",
+  ps:"Termine par un PS (question bonus, pique d'humour ou info).",
+  lien:"Termine en renvoyant vers le lien en commentaire 👇 (aucun lien dans le texte).",
+  lienpost:"Post de vente avec lien dans le corps : termine par « Inscription ici : [lien] » (ou l'équivalent pour l'offre), puis un PS. Écris [lien] tel quel, l'utilisatrice le remplacera.",
+  aucun:"Fin sèche sur le récit, sans question ni appel à l'action."
+};
+const LONG_GUIDE = { court:"600 à 900 caractères", standard:"1000 à 1500 caractères", long:"1500 à 2500 caractères" };
+const LONG_RANGE = { court:[600,900], standard:[1000,1500], long:[1500,2500] };
+const TON_GUIDE = {
+  voix:"Garde exactement le ton décrit dans la voix.",
+  cash:"Cash : ironie froide, phrases directes et orales, jugement assumé, zéro excuse, un gros mot censuré possible (bullsh*t), très peu ou pas d'emoji, fin sur un fait concret.",
+  exuberant:"Exubérant : oral extrême (j'suis, pcq, genre), un ou deux mots en MAJUSCULES pour crier, points d'exclamation, emojis d'émotion (😃 🤯 😎 🥹), enthousiasme et gratitude, lien ou offre en PS.",
+  pose:"Posé : zéro emoji, phrases complètes et calmes, raisonnement qui avance par contraste, comparaisons point par point, fin sur un fait ou une décision concrète.",
+  engage:"Engagé : un chiffre ou une étude, le principe expliqué simplement, un exemple concret (idéalement un dialogue), une phrase-bilan qui commence par « Bref : », une fin collective.",
+  tendre:"Tendre : un moment précis raconté avec des détails concrets du quotidien, la vulnérabilité dite simplement sans en rajouter, un remerciement nominatif si la matière le permet, une fin douce en une phrase."
+};
+const BUILTIN = [
+  { id:"b-tiers", nom:"Le tiers célèbre", accroche:"Une personne ou une marque connue a pris une décision surprenante, et la raison est annoncée mais pas encore donnée.", squelette:["Accroche : qui (connu) + décision surprenante + « pour une raison précise : »","La raison, nommée en quelques mots, comme un concept","Comment ça se passe concrètement chez eux (1-2 faits vérifiables)","Le pont vers le quotidien du lecteur : « C'est la même chose avec… »","Ce que font les meilleurs, avec une phrase exacte entre guillemets","Fin : un fait concret ou ce que ça change dans la vraie vie"], mecaniques:["Aucun avis donné avant la ligne 5","Des faits précis sur le tiers, jamais inventés : si la matière n'en donne pas, [à compléter]","Répétition du concept nommé comme un refrain"], builtin:true },
+  { id:"b-amie", nom:"L'histoire d'une amie", accroche:"Un proche a fait un choix contre-intuitif, et l'auteur trouve ça brillant ou révélateur.", squelette:["Accroche : « Une amie à moi » + choix contre-intuitif + ton jugement en une demi-phrase","Ce que tout le monde lui disait de faire","Ce qu'elle a fait à la place, avec sa phrase exacte","Ce que ce choix lui évite, en liste courte","Le lien avec ton vécu : « Je sais de quoi elle parle car… »","Où elle en est aujourd'hui, en chiffres","Fin qui retourne un reproche en compliment"], mecaniques:["La leçon passe par quelqu'un d'autre, donc zéro posture de donneuse de leçons","Chiffres concrets sur sa situation","Le lecteur se reconnaît dans le proche, pas dans l'auteur"], builtin:true },
+  { id:"b-diner", nom:"Le face-à-face chiffré", accroche:"Une scène d'hier avec deux personnes que tout oppose.", squelette:["Accroche : « Hier, [scène] avec deux [personnes] » puis qui est qui","Situation de la personne A en 3 tirets chiffrés","Situation de la personne B en 3 tirets chiffrés, symétriques","Le paradoxe : « Pourtant, c'est A qu'on présente comme… »","Ta position nuancée, avec ce que tu ne diras jamais et ce que tu diras toujours","La vraie question reformulée","Fin : une phrase qui ouvre plutôt qu'elle ne conclut"], mecaniques:["Symétrie parfaite des deux listes","Le chiffre casse l'idée reçue tout seul","Nuance assumée pour éviter le procès d'intention"], builtin:true },
+  { id:"b-principe", nom:"Le principe caché", accroche:"Un groupe a inventé une technique méconnue, et on la nomme.", squelette:["Accroche : qui + ce qu'elles ont inventé + pour quel problème","« Ça s'appelle [nom]. » sur sa propre ligne","« Le principe est simple : » en une phrase","« Voici un exemple : » avec un dialogue entre guillemets","Les résultats, une phrase par paragraphe","« Bref : » la phrase-bilan","Portée collective : ce que ça dit de nous et ce qu'on peut faire"], mecaniques:["Le nom du concept donne envie de le partager","Le dialogue rend la technique applicable immédiatement","Une idée par paragraphe, très aéré"], builtin:true },
+  { id:"b-erreur", nom:"L'erreur qui m'a coûté cher", accroche:"Une erreur précise et son coût exact dès la première ligne.", squelette:["Accroche : l'erreur + le montant exact","Date et moment où tout s'est joué","Le mécanisme expliqué simplement, chiffres à l'appui","Le moment où tu t'en rends compte et ce que tu tentes","La réponse qui ferme la porte (idéalement citée)","Le résultat chiffré, comparé à ce qui aurait dû être","La leçon utile pour le lecteur, sans morale"], mecaniques:["Chronologie datée","Explication pédagogique au milieu du récit","Le lecteur repart avec une info qui lui évite la même erreur"], builtin:true },
+  { id:"b-feuilleton", nom:"Le feuilleton de lancement", accroche:"Un résultat chiffré qui fait taire les sceptiques, ou une annonce avec un appel à l'aide.", squelette:["Accroche : ceux que ça dérange + « Pourtant » + résultat chiffré et durée","Le contexte : les critiques ou les obstacles","Ce que tu as lancé, en une phrase simple","« Bilan ? » et les chiffres, un par ligne","Les coulisses qui rendent le chiffre crédible (payé comment, fait avec quoi)","Où ça en est : liste de preuves avec →","La vision, en une phrase","PS : l'appel à l'action ou le lien en commentaire"], mecaniques:["Le produit est une histoire avec des enjeux, pas une fiche","Chaque post appelle le suivant","Le CTA est rejeté en PS pour ne pas casser le récit"], builtin:true },
+  { id:"b-arrete", nom:"J'arrête, trois raisons", accroche:"Une pratique que tout le monde recommande, et tu arrêtes définitivement.", squelette:["Accroche : « J'ai longtemps [fait X]. » puis « Et j'arrête tout. »","Ce que tout le monde en dit","Raison n°1 : titre sur sa ligne, puis 2-3 phrases vécues","Raison n°2 : idem","Raison n°3 : idem","Ce que tu fais à la place","Fin : une phrase qui assume le choix"], mecaniques:["Aller contre le consensus du secteur","« Raison n°X » seul sur sa ligne pour rythmer","Chaque raison contient un fait vécu"], builtin:true },
+  { id:"b-jecroyais", nom:"Je croyais que…", accroche:"Si on m'avait dit X, je n'aurais pas mis tant de temps à comprendre Y.", squelette:["Accroche : la prise de conscience tardive, avec une durée","Situation 1 en une phrase, puis « → Je pensais être… »","Situation 2, même construction","Situation 3, même construction","Situation 4, même construction","La révélation : ce que tout ça voulait dire","Ce que ça change, et pour qui ce post est écrit"], mecaniques:["Structure répétitive qui crée l'identification ligne après ligne","Le lecteur coche mentalement chaque situation","La révélation arrive tard"], builtin:true },
+  { id:"b-cout", nom:"Le vrai coût", accroche:"Une injustice invisible, nommée franchement.", squelette:["Accroche : l'injustice en une phrase affirmée","Une scène du quotidien où tu t'en rends compte","Premier coût chiffré, par mois puis par an","Deuxième coût, amené par une autre scène","Troisième coût","Le total annuel, seul sur sa ligne","Ce que ça dit, et ce que tu demandes"], mecaniques:["Addition progressive qui fait monter la colère","Chiffres personnels et concrets","Chaque coût arrive par une anecdote, pas par une liste"], builtin:true },
+  { id:"b-escalier", nom:"Les listes en escalier", accroche:"Un aveu ou un chiffre choc sur 2 lignes, souvent avec un retournement (la fausse confession, le cadeau inattendu, le sacrifice d'un proche), puis un double saut de ligne.", squelette:["Accroche sur 2 lignes : chiffre ou aveu choc, puis la ligne qui intrigue","1 à 2 phrases de contexte","Un label qui finit par « : » (« Elle a passé des années à : », « Ces 2 dernières années, je suis passé de : »)","Liste → de 5 à 8 éléments, un par ligne, en minuscule avec un point final, même construction grammaticale, concrets et souvent chiffrés","Un trio de phrases qui commencent pareil et résument des FAITS (« Je n'ai pas abandonné. / Je n'ai pas levé de fonds. / … »), jamais des slogans","Transition temporelle avec « : » (« Quelques années plus tard : »)","2e liste → qui répond à la 1re (galère puis résultats), chiffres qui montent, le plus gros en dernier","Fin en 1 ligne : une émotion, la prochaine étape chiffrée ou un teaser, avec au plus un ❤️"], mecaniques:["Parallélisme strict dans chaque liste : même longueur, même début de phrase","Contraste avant/après porté par 2 listes qui se répondent","Retournement possible dès l'accroche (on croit A, c'est B)","Le trio d'anaphores sert à résumer des faits vécus, pas à motiver","1 emoji maximum, en toute fin"], builtin:true },
+  { id:"b-live", nom:"L'histoire qui vend le live", accroche:"Un fait vécu sur 2 lignes : un chiffre, puis le contraste qui prouve la promesse du live.", squelette:["Accroche : fait chiffré + contraste (« Pourtant », « Et »)","Le récit vécu, concret (quotidien en liste → si besoin)","Ce que ça a obligé à changer","La leçon, qui est exactement la promesse du live","Le miroir de la lectrice (« Alors quand une entrepreneuse me dit… »)","Phrase pont : « C'est exactement ce que je montre [jour]. »","Date, heure, format + promesse précise + risque levé (« sans X, même avec Y »)","Appel à l'action (lien selon le réglage)","PS : bonus réservé aux présentes ou autodérision"], mecaniques:["La vente est la suite logique du récit","Promesse reprise mot pour mot d'un post à l'autre","PS qui dédramatise la vente"], builtin:true },
+  { id:"b-oneliner", nom:"La punchline", accroche:"Une seule phrase ironique qui dit tout haut ce que la cible pense tout bas.", squelette:["Une phrase unique, du type « Bonjour à tous sauf à [cible de l'agacement] »","Rien d'autre, ou une ligne de contexte maximum"], mecaniques:["Le commentaire fait le reste du post","Ironie, pas méchanceté","Cible que tout le monde a déjà croisée"], longueur:"court", builtin:true }
+];
+const allModeles = () => [...modeles, ...BUILTIN];
+const QUICK = ["Plus court","Plus cash","Plus tendre","Plus aéré","Accroche plus forte","Moins d'emojis","Fin plus factuelle","Plus de concret"];
+
+/* ---------- UI de base ---------- */
+function renderTiles(){
+  $("#tiles").innerHTML = FORMATS.map(([v, l, s]) => `<button type="button" class="tile" data-v="${v}" aria-pressed="${fmt === v}"><b>${l}</b><small>${s}</small></button>`).join("");
+  $("#tiles").querySelectorAll(".tile").forEach(b => b.onclick = () => { fmt = b.dataset.v; $("#f-modele").value = ""; renderTiles(); });
+  $("#tiles").classList.toggle("dim", !!$("#f-modele").value);
+}
+function renderSeg(){
+  $("#seg-obj").innerHTML = OBJECTIFS.map(([v, l]) => `<button type="button" data-v="${v}" aria-pressed="${obj === v}">${l}</button>`).join("");
+  $("#seg-obj").querySelectorAll("button").forEach(b => b.onclick = () => { obj = b.dataset.v; renderSeg(); });
+}
+QUICK.forEach(q => { const b = document.createElement("button"); b.className = "chip"; b.textContent = q; b.onclick = () => retoucher(q); $("#quick").appendChild(b); });
+$("#f-modele").onchange = () => renderTiles();
+
+document.querySelectorAll(".nav button").forEach(b => b.onclick = () => goTab(b.dataset.view));
+function goTab(name){
+  document.querySelectorAll(".nav button").forEach(x => { if (x.dataset.view === name) x.setAttribute("aria-current", "page"); else x.removeAttribute("aria-current"); });
+  document.querySelectorAll(".view").forEach(v => v.hidden = v.id !== "v-" + name);
+  if (name === "hist") renderHist();
+  if (name === "planning") renderPlanning();
+  if (name === "idees" && !$("#i-niche").value) $("#i-niche").value = getVoix(activeId)?.niche || "";
+  window.scrollTo(0, 0);
+}
+const getVoix = id => voix.find(v => v.id === id);
+const initials = n => (n || "?").split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
+
+/* ---------- Voix ---------- */
+const PF = ["nom","titre","niche","activite","cible","style","afaire","interdits","exemples"];
+function renderVoixSelect(){
+  const sel = $("#f-voix");
+  sel.innerHTML = voix.length ? voix.map(v => `<option value="${esc(v.id)}">${esc(v.nom || "Sans nom")}</option>`).join("") : `<option value="">Aucune voix</option>`;
+  if (!getVoix(activeId)) activeId = voix[0]?.id || null;
+  if (activeId) sel.value = activeId;
+  const v = getVoix(activeId);
+  $("#rail-av").textContent = initials(v?.nom); $("#rail-nom").textContent = v?.nom || "Aucune voix"; $("#rail-titre").textContent = v?.titre || "";
+}
+$("#f-voix").onchange = () => { activeId = $("#f-voix").value; renderVoixSelect(); $("#i-niche").value = getVoix(activeId)?.niche || ""; };
+function renderVTabs(){
+  $("#vtabs").innerHTML = voix.map(v => `<button class="vtab" data-id="${esc(v.id)}" aria-current="${v.id === editId}">${esc(v.nom || "Sans nom")}</button>`).join("")
+    + `<button class="vtab" data-id="" aria-current="${!editId}">+ Nouvelle voix</button>`;
+  $("#vtabs").querySelectorAll(".vtab").forEach(b => b.onclick = () => loadVoixForm(b.dataset.id || null));
+}
+function loadVoixForm(id){
+  editId = id; const v = getVoix(id) || {};
+  PF.forEach(k => $("#p-" + k).value = v[k] || "");
+  $("#b-delv").hidden = !id; $("#v-msg").textContent = ""; $("#an-msg").textContent = ""; renderVTabs();
+}
+$("#b-savev").onclick = async () => {
+  const data = {}; PF.forEach(k => data[k] = $("#p-" + k).value.trim());
+  if (!data.nom) { vmsg("Donne au moins un nom à cette voix.", true); return; }
+  const id = editId || uid();
+  try {
+    await store.save("voix", id, data);
+    const full = { id, ...data, updatedAt: Date.now() }; const i = voix.findIndex(v => v.id === id);
+    if (i >= 0) voix[i] = full; else voix.unshift(full);
+    editId = id; activeId = id; renderVTabs(); renderVoixSelect(); $("#b-delv").hidden = false;
+    vmsg("Voix enregistrée. Elle est maintenant active.");
+  } catch (e) { vmsg("Enregistrement impossible (" + (e.code || "erreur") + ").", true); }
+};
+function vmsg(t, err){ $("#v-msg").textContent = t; $("#v-msg").className = "msg" + (err ? " err" : ""); }
+$("#b-delv").onclick = async () => {
+  if (!editId) return;
+  if (!confirm(`Supprimer la voix « ${getVoix(editId)?.nom || ""} » ?`)) return;
+  try { await store.del("voix", editId); } catch {}
+  voix = voix.filter(x => x.id !== editId); loadVoixForm(voix[0]?.id || null); renderVoixSelect();
+};
+$("#b-analyse").onclick = async () => {
+  const ex = $("#p-exemples").value.trim();
+  if (ex.length < 300) { $("#an-msg").textContent = "Colle au moins 2 ou 3 posts complets."; return; }
+  if (!sample) { $("#an-msg").textContent = "L'analyse marche quand la page est ouverte dans Claude."; return; }
+  $("#b-analyse").disabled = true; $("#an-msg").textContent = "Analyse en cours…";
+  try {
+    const r = await sample.json(
+`Analyse ces posts LinkedIn écrits par une même personne et décris sa voix d'écriture de façon utilisable par une ghostwriter.
+Réponds UNIQUEMENT avec un objet JSON :
+{"style":"5 à 8 phrases : ton, rythme des phrases, registre, vocabulaire récurrent, ponctuation, usage des emojis, façon d'ouvrir et de finir un post","afaire":["règle concrète observée"],"interdits":["mot ou tournure courte qu'elle n'utilise jamais ou tic à éviter"],"cible":"à qui elle s'adresse, 1-2 phrases","niche":"sa niche en 5 à 10 mots"}
+5 à 8 règles dans afaire, 4 à 8 éléments courts dans interdits. En français.
+
+POSTS :
+<<<
+${ex.slice(0, 40000)}
+>>>`, { modelTier: "default" });
+    if (r.style) $("#p-style").value = r.style;
+    if (Array.isArray(r.afaire)) $("#p-afaire").value = r.afaire.join("\n");
+    if (Array.isArray(r.interdits)) $("#p-interdits").value = r.interdits.join("\n");
+    if (r.cible && !$("#p-cible").value.trim()) $("#p-cible").value = r.cible;
+    if (r.niche && !$("#p-niche").value.trim()) $("#p-niche").value = r.niche;
+    $("#an-msg").textContent = "C'est rempli. Relis, corrige, enregistre.";
+  } catch (e) { $("#an-msg").textContent = errCopy(e); }
+  finally { $("#b-analyse").disabled = false; }
+};
+
+/* ---------- Modèles ---------- */
+function renderModeles(){
+  const sel = $("#f-modele"); const prev = sel.value;
+  sel.innerHTML = `<option value="">Ou partir d'un modèle…</option>` + allModeles().map(m => `<option value="${esc(m.id)}">Modèle : ${esc(m.nom)}${m.builtin ? "" : " (à toi)"}</option>`).join("");
+  if (allModeles().some(m => m.id === prev)) sel.value = prev;
+  renderTiles();
+  $("#mlist").innerHTML = allModeles().map(m => `<div class="mcard">
+    <h5>${esc(m.nom)}${m.builtin ? '<span class="badge">Intégré</span>' : ""}</h5><p>${esc(m.accroche)}</p>
+    <ol>${(m.squelette || []).map(s => `<li>${esc(s)}</li>`).join("")}</ol>
+    <div class="ib"><button class="btn btn-s" data-use="${esc(m.id)}" style="background:var(--ink);color:var(--bg);border-color:var(--ink)">Écrire avec ce modèle</button>${m.builtin ? "" : `<button class="btn btn-s" data-delm="${esc(m.id)}">Supprimer</button>`}</div>
+  </div>`).join("");
+  $("#mlist").querySelectorAll("[data-use]").forEach(b => b.onclick = () => { $("#f-modele").value = b.dataset.use; renderTiles(); goTab("ecrire"); $("#f-sujet").focus(); });
+  $("#mlist").querySelectorAll("[data-delm]").forEach(b => b.onclick = async () => {
+    if (!confirm("Supprimer ce modèle ?")) return;
+    try { await store.del("modeles", b.dataset.delm); } catch {}
+    modeles = modeles.filter(m => m.id !== b.dataset.delm); renderModeles();
+  });
+}
+$("#b-extract").onclick = async () => {
+  const src = $("#m-src").value.trim();
+  if (src.length < 200) { $("#m-msg").textContent = "Colle un post complet."; return; }
+  if (!sample) { $("#m-msg").textContent = "L'extraction marche quand la page est ouverte dans Claude."; return; }
+  $("#b-extract").disabled = true; $("#m-msg").textContent = "Extraction en cours…";
+  try {
+    const r = await sample.json(
+`Analyse la mécanique de ce post LinkedIn pour en faire un modèle réutilisable sur N'IMPORTE quel sujet, par n'importe qui.
+Décris uniquement la structure et les procédés. Ne cite aucune phrase du post, ne reprends aucun élément de son histoire, de son sujet, de ses chiffres ou de ses noms.
+Réponds UNIQUEMENT avec un objet JSON :
+{"nom":"nom court et parlant du modèle, 3 à 5 mots","accroche":"le type d'accroche et pourquoi elle accroche, en 1-2 phrases, sans citer","squelette":["rôle du bloc 1 et comment il est construit","..."],"mecaniques":["procédé d'écriture qui fait marcher le post","..."],"longueur":"court|standard|long"}
+4 à 7 étapes dans squelette, 3 à 5 mécaniques. En français.
+
+POST :
+<<<
+${src.slice(0, 20000)}
+>>>`, { modelTier: "default" });
+    if (!r?.nom || !Array.isArray(r.squelette)) throw { code: "bad_output" };
+    const id = uid(); const data = { nom: r.nom, accroche: r.accroche || "", squelette: r.squelette, mecaniques: r.mecaniques || [], longueur: r.longueur || "standard" };
+    await store.save("modeles", id, data);
+    modeles.unshift({ id, ...data }); renderModeles(); $("#m-src").value = "";
+    $("#m-msg").textContent = "Modèle enregistré.";
+  } catch (e) { $("#m-msg").textContent = errCopy(e); }
+  finally { $("#b-extract").disabled = false; }
+};
+
+/* ---------- Idées ---------- */
+function ideaCard(it, kept){
+  const isKept = kept || idees.some(k => k.accroche === it.accroche);
+  return `<article class="idea">
+    <div class="tags"><span class="tag">${esc(FMT_LABEL[it.format] || "Au choix")}</span><span class="tag g">${esc(OBJ_LABEL[it.objectif] || "")}</span></div>
+    <p class="hk">${esc(it.accroche)}</p>
+    <p class="an">${esc(it.angle)}</p>
+    ${it.question ? `<p class="q">${esc(it.question)}</p>` : ""}
+    <div class="ib"><button class="btn btn-s go" data-go>Écrire ce post</button><button class="btn btn-s star" data-star aria-pressed="${isKept}">${kept ? "Retirer" : isKept ? "Gardée" : "Garder"}</button></div>
+  </article>`;
+}
+function bindIdeas(el, list, kept){
+  el.querySelectorAll(".idea").forEach((card, i) => {
+    const it = list[i];
+    card.querySelector("[data-go]").onclick = () => useIdea(it);
+    card.querySelector("[data-star]").onclick = async () => {
+      if (kept) { try { await store.del("idees", it.id); } catch {} idees = idees.filter(x => x.id !== it.id); }
+      else if (!idees.some(k => k.accroche === it.accroche)) {
+        const id = uid(); const data = { ...it, voixId: activeId };
+        try { await store.save("idees", id, data); idees.unshift({ id, ...data }); } catch (e) { $("#i-msg").textContent = "Impossible de garder l'idée."; }
+      }
+      renderIdeas();
+    };
+  });
+}
+function renderIdeas(){
+  $("#ideas").innerHTML = lastIdeas.map(it => ideaCard(it, false)).join("");
+  bindIdeas($("#ideas"), lastIdeas, false);
+  const k = idees.filter(x => !x.voixId || x.voixId === activeId);
+  $("#kept-title").hidden = !k.length;
+  $("#kept").innerHTML = k.map(it => ideaCard(it, true)).join("");
+  bindIdeas($("#kept"), k, true);
+}
+function useIdea(it){
+  planLink = null;
+  $("#f-sujet").value = it.angle + (it.accroche ? "\nAccroche envisagée : " + it.accroche : "");
+  $("#f-matiere").value = "";
+  $("#f-matiere").placeholder = it.question ? "À te demander : " + it.question : "Ce qui s'est vraiment passé.";
+  if (FORMAT_GUIDE[it.format]) fmt = it.format; if (OBJ_GUIDE[it.objectif]) obj = it.objectif;
+  $("#f-modele").value = ""; renderTiles(); renderSeg();
+  goTab("ecrire"); $("#f-matiere").focus();
+}
+$("#b-ideas").onclick = async () => {
+  const v = getVoix(activeId); const niche = $("#i-niche").value.trim() || v?.niche || "";
+  if (!niche) { $("#i-msg").textContent = "Indique ta niche."; $("#i-msg").className = "msg err"; return; }
+  if (!sample) { $("#i-msg").textContent = "Les idées se génèrent quand la page est ouverte dans Claude."; $("#i-msg").className = "msg err"; return; }
+  $("#i-msg").className = "msg"; $("#i-msg").textContent = "Recherche d'angles…"; $("#b-ideas").disabled = true;
+  $("#ideas").className = "ideas skel"; $("#ideas").innerHTML = '<div class="idea"></div>'.repeat(6);
+  const o = $("#i-obj").value; const theme = $("#i-theme").value.trim();
+  const deja = [...idees, ...lastIdeas].map(x => x.accroche).slice(0, 40);
+  try {
+    const r = await sample.json(
+`Tu es stratège de contenu LinkedIn francophone. Propose 9 idées de posts LinkedIn pour cette personne.
+
+PERSONNE : ${v?.nom || "-"}, ${v?.titre || ""}
+Activité : ${v?.activite || "-"}
+Cible : ${v?.cible || "-"}
+Style : ${v?.style || "-"}
+NICHE : ${niche}
+THÈME : ${theme || "libre"}
+OBJECTIF : ${o === "mix" ? "mélange : 4 visibilité, 3 crédibilité, 2 vente" : OBJ_GUIDE[o]}
+${deja.length ? "Déjà proposées, à ne pas refaire :\n" + deja.join("\n") : ""}
+
+Règles :
+- Des angles précis, qui prennent position ou nomment ce que la cible vit sans oser le dire. Aucun sujet bateau (« 5 conseils pour… », « l'importance de… »).
+- Ne suppose aucun vécu de la personne. Pour chaque idée, formule la question qu'elle doit se poser pour trouver son propre moment vécu.
+- L'accroche : 1 à 2 phrases, rupture ou curiosité immédiate, jamais de mise en contexte, pas de tiret cadratin. Écrite dans le style décrit. Si elle a besoin d'un fait personnel, mets [x] à la place du détail.
+- Varie les formats. Privilégie les accroches qui surperforment : un tiers connu et sa décision surprenante (sans inventer de faits : mets [x] si besoin), l'histoire d'un proche (« Une amie à moi… »), une scène avec deux personnes que tout oppose, une erreur et son coût exact, une citation choc, une idée reçue qualifiée d'arnaque. Évite l'opinion générale sans ancrage.
+
+Réponds UNIQUEMENT avec un tableau JSON de 9 objets :
+[{"accroche":"...","angle":"de quoi parle le post, 1 phrase","format":"story|opinion|vuln|jalon|cash|actu|liste|coup","objectif":"attraction|qualification|conversion","question":"la question à te poser pour trouver ta matière"}]`, { modelTier: "default" });
+    lastIdeas = (Array.isArray(r) ? r : r?.idees || []).filter(x => x && x.accroche);
+    $("#ideas").className = "ideas"; renderIdeas();
+    $("#i-msg").textContent = lastIdeas.length ? "" : "Aucune idée exploitable, relance.";
+  } catch (e) { $("#ideas").className = "ideas"; $("#ideas").innerHTML = ""; $("#i-msg").textContent = errCopy(e); $("#i-msg").className = "msg err"; }
+  finally { $("#b-ideas").disabled = false; }
+};
+
+/* ---------- Prompt d'écriture ---------- */
+function structureGuide(){
+  const m = allModeles().find(x => x.id === $("#f-modele").value);
+  if (!m) return FORMAT_GUIDE[fmt];
+  return `Suis ce modèle de structure « ${m.nom} » (la mécanique seulement ; tu n'as pas le texte d'origine et tu n'inventes rien pour l'imiter) :
+Accroche : ${m.accroche}
+Squelette :
+${(m.squelette || []).map((s, i) => (i + 1) + ". " + s).join("\n")}
+Procédés : ${(m.mecaniques || []).join(" ; ")}`;
+}
+function buildPrompt(v){
+  return `Tu es une ghostwriter LinkedIn francophone de très haut niveau. Tu écris UN post LinkedIn dans la voix décrite ci-dessous, pour la personne décrite.
+
+# LA VOIX
+Nom : ${v.nom}
+Titre : ${v.titre || "-"}
+Niche : ${v.niche || "-"}
+Qui elle est, ce qu'elle vend : ${v.activite || "-"}
+Sa cible : ${v.cible || "-"}
+Son style : ${v.style || "-"}
+À faire :
+${v.afaire || "-"}
+Interdits (ne jamais utiliser) :
+${v.interdits || "-"}
+${(v.exemples || "").trim() ? `Exemples de ses posts (référence de rythme, de vocabulaire et de ponctuation ; ne jamais recopier leurs phrases ni leurs histoires) :
+<<<
+${v.exemples.trim().slice(0, 30000)}
+>>>` : ""}
+
+# LA DEMANDE
+Sujet ou idée : ${$("#f-sujet").value.trim() || "-"}
+Matière brute (faits réels, seule source de vécu autorisée) :
+${$("#f-matiere").value.trim() || "(aucune)"}
+Structure : ${structureGuide()}
+Objectif : ${OBJ_GUIDE[obj]}
+Fin du post : ${CTA_GUIDE[$("#f-cta").value]}
+Longueur : ${LONG_GUIDE[$("#f-long").value]}
+Ton : ${TON_GUIDE[$("#f-ton").value]}
+
+# ÉCRITURE HUMAINE (mesuré sur plus de 1 000 posts qui performent)
+- Une idée par paragraphe, une ligne vide entre chaque. Un paragraphe fait 1 à 2 phrases (environ 110 à 145 caractères). Jamais de pavé, jamais de phrase à rallonge.
+- Des phrases de 8 à 14 mots en moyenne, avec quelques phrases très courtes (6 mots ou moins) pour relancer. Mais une phrase courte doit dire quelque chose, pas faire un effet de théâtre.
+- Le post avance par contraste : « Mais », « Pourtant », « Sauf que », « Résultat ? », « Pourquoi ? ». Chaque bloc doit créer une petite tension que le suivant résout.
+- Des chiffres précis et vérifiables quand la matière en donne (57 € par mois, 684 € par an), jamais de chiffres ronds inventés.
+- Les apartés passent par des parenthèses, comme à l'oral.
+- Les listes servent à comparer ou à cocher, jamais à empiler des conseils génériques.
+- Emojis : garde le budget de la voix (0 si elle n'en met pas, 3-4 maximum sinon). Chaque emoji porte une émotion ou pointe quelque chose (👉, 👇), jamais décoratif. Pas d'emoji en début de chaque ligne.
+- La fin : une fin sèche et factuelle fait mieux qu'une question. On termine sur un fait, un chiffre, une décision ou ce qui s'est passé ensuite. Si c'est un post de vente, le récit d'abord, l'appel à l'action en PS.
+- Registre : garde le tutoiement ou le vouvoiement que la voix utilise dans ses exemples.
+
+# INTERDITS D'ÉCRITURE (retours de l'utilisatrice, priorité absolue)
+- Les quantités s'écrivent en chiffres : « 3 messages », « 2 fois », « 40K abonnés », « 0€ », jamais « trois messages ». Mais « un / une » employés comme article restent en lettres : « une offre à un prix », « un dimanche », jamais « une offre à 1 prix ».
+- Ne coupe jamais une phrase en fragments pour faire un effet. Interdit : « Un dimanche. À 22h47. », « J'ai répondu poliment. Comme toujours. Comme une conne, en fait. », « Alors j'ai arrêté. Nette. Sans explication. ». On garde la phrase entière, reliée comme à l'oral avec des virgules ou des points de suspension : « Un dimanche à 22h47. », « J'ai répondu poliment, comme toujours... bah comme une c*nne en fait. », « Alors j'ai arrêté, sans explication en story et sans post d'excuse. ».
+- Écris comme on parle : « bah », « genre », « en fait », points de suspension, tournures orales, quand la voix s'y prête.
+- Tout mot grossier, insultant ou susceptible d'être filtré prend un astérisque : c*nne, c*n, p*tain, m*rde, bullsh*t, f*ck, chi*nt.
+- Pas de petites phrases de commentaire ou de questions rhétoriques plaquées (« Étrange, non. », « Surprenant ? », « Et devinez quoi ? »).
+- Phrases très simples, compréhensibles par quelqu'un qui ne connaît rien au secteur. Vulgarise toujours le jargon de la niche. Pas de concept abstrait ni de phrase à double niveau (interdit : « Ta disponibilité permanente n'est pas un service. C'est un manque de respect envers toi-même que tu déguises en gentillesse. »). Pas de « La vérité, c'est que… ».
+- Zéro mindset de pacotille : pas de phrase motivationnelle, pas de maxime, pas d'aphorisme, pas de construction « Ce n'est pas X, c'est Y » ni « Les gens qui réussissent ne sont pas ceux qui… Ce sont ceux qui… » (interdit : « Ton business ne s'effondrera pas parce que t'as pris ton week-end. Il s'effondrera si tu continues à n'en avoir aucun. »). À la place : du factuel, ce qui s'est passé, ce que tu fais, ce que ça a changé, en chiffres si possible.
+- Raconte en scène, dans l'ordre où ça s'est passé, avec un contexte concret (« J'ai eu un call avec une nana la semaine dernière »), pas en résumé de consultante (« J'ai vu ce cas exact »).
+- La narratrice réagit à chaque étape, comme quand on raconte à une copine : « Du coup, ça m'intrigue », « Et là... je me rends compte que j'aurais peut-être pas dû poser la question 🥲 », « Ce qui me saoule c'est que ». Pas de mise en scène dramatique (« Silence. », « C'est là que ça m'énerve. » isolé sur sa ligne).
+- Autodérision et gêne plutôt que posture de juge.
+- Nuance entre parenthèses pour rester crédible : « (faut l'avouer) », « (ça peut être une cause) ». Ne caricature jamais l'avis inverse.
+- Connecteurs oraux qui montrent le fil de la pensée : « du coup », « et là... », « donc forcément », « vous l'avez compris ». Expressions populaires : « de ouf », « pète les stats », « pas un rond », « me saoule ». La négation orale sans « ne » : « elle gagne pas », « j'aurais pas dû ».
+- Pas de rafale de 3 groupes nominaux dans une même phrase (« Reach de dingue, commentaires par centaines, DM qui pleuvent. ») : une vraie phrase avec un verbe. Une liste → avec un élément par ligne, c'est autre chose, et c'est autorisé.
+- Pas de métaphore imagée ni de jeu de mots pour conclure (« une audience qui regarde passer les trains », « ou juste un joli feed »). Le PS finit sur un tic oral simple (« C'est la base quoi. »), pas sur une punchline.
+- Accepte une petite imperfection naturelle (une phrase un peu longue, un « littéralement », une répétition) : un texte trop propre sonne IA.
+
+EXEMPLE DE RÉFÉRENCE (même contenu, deux écritures)
+Version IA refusée :
+<<<
+40K abonnés sur son compte, et 0€ sur son compte pro. J'ai vu ce cas exact la semaine dernière.
+Elle me montre ses stats, fière. Reach de dingue, commentaires par centaines, DM qui pleuvent.
+Je lui demande combien elle a vendu ce mois-ci. Silence.
+C'est là que ça m'énerve.
+>>>
+Version humaine validée :
+<<<
+Elle a 40K abonnés sur son compte Insta mais elle génère littéralement 0€ de CA...
+
+J'ai eu un call avec une nana la semaine dernière, et elle me montre ses stats hyper fière.
+Elle a un reach de ouf (faut l'avouer) et surtout beaucoup de DM.
+
+Du coup, ça m'intrigue et je lui demande pour combien elle a vendu ce mois-ci.
+
+Et là... je me rends compte que j'aurais peut-être pas dû poser la question 🥲
+
+Vous l'avez compris, elle pète les stats mais elle gagne pas un rond.
+
+Ce qui me saoule c'est qu'on continue de raconter aux entrepreneuses débutantes que la visibilité c'est la solution. Que si tu galères, c'est que tu postes pas assez (ça peut être une cause).
+>>>
+Imite la manière d'écrire de la version validée (jamais son histoire ni ses phrases), pas celle de la version refusée.
+
+# CE QUI MARCHE CHEZ L'UTILISATRICE (tiré de ses posts publiés)
+- Accroche en 2 lignes : un fait chiffré, puis le contraste (« Pourtant », « Mais », « Aujourd'hui »). Ex. de construction : ligne 1 le point de départ modeste, ligne 2 le résultat d'aujourd'hui.
+- La question-réponse en série est autorisée et fait partie du rythme : « Pas maquillée ? Elle filme quand même. », « Je lis un livre ? Ok mais un livre business. ». Ce n'est pas un fragment : chaque ligne a une question, une réponse et un verbe.
+- Majuscules sur UN seul mot pour appuyer (HORRIBLES, CHAQUE, DÉJÀ), jamais une phrase entière.
+- 👉 annonce l'idée clé (« 👉 Mon objectif est simple : », « 👉 J'ai eu ce déclic : »). → sert aux listes de concret (le quotidien, les étapes, les preuves).
+- Parenthèses de sincérité : « (je vais pas mentir) », « (oui oui, 200) », « (pas fou, mais correct) », « (du coup 0 détente mdr) ».
+- Chiffres honnêtes : distinguer facturé et encaissé, montrer aussi les mauvais jours, avouer la fatigue ou les ratés. Jamais de flex sans nuance.
+- « vous » quand on parle à tout le monde (« Je sais pas vous »), « tu » quand on parle à une seule lectrice, surtout dans les posts de vente.
+- Un angle sociétal peut se glisser au milieu du vécu en une phrase factuelle, sans sermon.
+- Le PS dédramatise avec de l'autodérision (souvent 🤣 ou 🥹) ou ajoute un bonus.
+- Orthographe et grammaire correctes, même à l'oral : l'oral se joue dans le vocabulaire et les tournures, pas dans les fautes (« je serai », « une demi-journée », « je n'acceptais »).
+
+# POST DE VENTE (live, webinar, offre)
+- L'histoire et l'offre racontent la même chose : la leçon du récit EST la promesse de l'offre. Jamais d'offre plaquée après une histoire sans rapport.
+- Enchaînement de fin : une phrase pont (« C'est exactement ce que je montre dimanche. »), la promesse précise (problème + résultat chiffré + méthode), le risque levé (« sans X, même avec Y »), l'appel à l'action, puis un PS (bonus réservé ou autodérision).
+- Si la matière donne la promesse exacte de l'offre, reprends-la mot pour mot.
+- Leviers d'accroche qui surperforment (à utiliser seulement si la matière le permet, sinon [à compléter]) : un tiers connu et sa décision surprenante avec la raison annoncée mais pas donnée (« pour une raison précise : »), l'histoire d'un proche (« Une amie à moi… »), une scène d'hier avec deux personnes que tout oppose, une erreur et son coût exact, une citation choc entre guillemets, une idée reçue qualifiée d'arnaque, un chiffre précis et inattendu. L'opinion générale sans ancrage est l'accroche la plus faible : à éviter.
+- Les posts les plus faibles sont les annonces sans histoire, les tutos sans « je » et les récaps d'événement. Même un post de vente se raconte.
+
+# RÈGLES NON NÉGOCIABLES
+1. N'invente jamais un vécu, une émotion, un chiffre, une date, un prénom ou un épisode qui ne figure ni dans la matière brute ni dans la description de la voix. Si le post a besoin d'un détail personnel absent, écris à cet endroit précis : [à compléter : ce qu'il faut mettre ici]. Mieux vaut trois trous qu'une fausse histoire.
+2. L'accroche, ce sont les 2 premières lignes visibles avant « voir plus ». Elle crée une rupture ou une curiosité immédiate : fait concret, chiffre, aveu, citation, prise de position. Jamais de mise en contexte, jamais « Aujourd'hui je vais vous parler de », « Je voulais partager ».
+3. Le « je » est présent : le sujet est ancré dans le vécu de la personne, pas un conseil que n'importe qui pourrait écrire.
+4. Aucun lien dans le corps du post, sauf si la fin demandée est « lien dans le post » : dans ce cas, un seul emplacement [lien] juste avant le PS.
+5. 0 à 3 hashtags, uniquement en toute fin et uniquement si la voix en utilise.
+6. Un seul appel à l'action, cohérent avec la fin. Jamais « likez / partagez », « n'hésitez pas », « dites-moi en commentaire ».
+7. Anti-IA : pas de phrases choc isolées façon coup de théâtre (« Et là, tout a changé. », « C'était ça, le problème. »), pas de tiret cadratin (—), pas de formules creuses (« dans un monde où », « et si je vous disais », « game changer », « le secret ? »), pas de listes à tirets « - » (les listes se font avec → uniquement), pas d'emojis décoratifs. Les phrases ont le droit de respirer comme à l'oral.
+8. Mise en forme LinkedIn : texte brut, paragraphes courts séparés par une ligne vide, pas de markdown, pas de gras.
+
+# FORMAT DE RÉPONSE
+Réponds exactement avec ces trois balises, rien avant :
+===POST===
+(le post complet)
+===ACCROCHES===
+(3 accroches alternatives, une par ligne, 1 à 2 phrases chacune, trois angles différents, mêmes règles)
+===NOTES===
+Type : (type de post)
+Pourquoi l'accroche marche : (1 phrase)
+Conseil : (1 phrase concrète pour la publication)`;
+}
+
+/* ---------- Génération ---------- */
+function parse(raw){
+  const out = { post: "", hooks: [], notes: "" };
+  const p = raw.indexOf("===POST===");
+  if (p < 0) return out;
+  let rest = raw.slice(p + 10);
+  const a = rest.indexOf("===ACCROCHES===");
+  if (a < 0) { out.post = rest.replace(/=+[A-Z]*$/, "").trim(); return out; }
+  out.post = rest.slice(0, a).trim(); rest = rest.slice(a + 15);
+  const n = rest.indexOf("===NOTES===");
+  const h = n < 0 ? rest : rest.slice(0, n);
+  out.hooks = h.split("\n").map(s => s.replace(/^\s*(\d+[.)]|[-•*])\s*/, "").replace(/^["«]\s*|\s*["»]$/g, "").trim()).filter(s => s && !s.startsWith("==="));
+  if (n >= 0) out.notes = rest.slice(n + 11).trim();
+  return out;
+}
+function errCopy(e){
+  switch (e?.code) {
+    case "not_granted": return "Autorise l'accès à Claude quand la page te le demande, sinon rien ne peut tourner.";
+    case "rate_limited": return "Trop de demandes d'affilée. Attends une minute.";
+    case "cancelled": return "Arrêté.";
+    case "bad_output": return "La réponse n'était pas exploitable. Relance.";
+    default: return "Ça a échoué (" + (e?.code || "erreur") + "). Relance.";
+  }
+}
+function editableMode(){ const d = document.createElement("div"); try { d.contentEditable = "plaintext-only"; } catch {} return d.contentEditable === "plaintext-only" ? "plaintext-only" : "true"; }
+function setBusy(b){
+  busy = b;
+  ["#b-gen","#b-regen","#b-ret","#b-copy"].forEach(s => $(s).disabled = b);
+  $("#b-stop").hidden = !b;
+  $("#li-text").contentEditable = b ? "false" : editableMode();
+  $("#li-text").classList.toggle("caret", b);
+}
+function showCard(v){
+  $("#void").hidden = true; $("#card").hidden = false; $("#s-actions").hidden = false; $("#board").hidden = false; $("#meter").hidden = false;
+  $("#av").textContent = initials(v?.nom); $("#li-name").textContent = v?.nom || ""; $("#li-sub").textContent = v?.titre || "";
+}
+async function run(input, meta){
+  if (!sample) { msg("La génération marche quand la page est ouverte dans Claude.", true); return; }
+  const v = getVoix(meta.voixId); showCard(v);
+  $("#li-text").textContent = ""; $("#hooks-box").hidden = true; $("#notes-box").hidden = true; $("#checks").innerHTML = ""; $("#b-save").hidden = true;
+  ctl = new AbortController(); setBusy(true); msg("Écriture en cours…");
+  let raw = "";
+  try {
+    const r = await sample(input, {
+      signal: ctl.signal, cache: false, modelTier: $("#f-tier").value || "complex",
+      onText: ({ text }) => { raw = text; const p = parse(text); if (p.post) { $("#li-text").textContent = p.post; meter(p.post.length); msg(""); } }
+    });
+    raw = r.text; const p = parse(raw);
+    if (!p.post) { $("#li-text").textContent = raw.trim(); runChecks(); } else show(p);
+    lastRun = { ...meta, input, raw, postId: uid(), createdAt: Date.now() };
+    await savePost(p.post || raw.trim());
+    await linkToSlot();
+    if (r.truncated) msg("Le texte a été coupé. Demande une version plus courte.", true);
+  } catch (e) {
+    const p = parse(e?.text || raw);
+    if (p.post) show(p);
+    msg(errCopy(e), e?.code !== "cancelled");
+  } finally { setBusy(false); ctl = null; }
+}
+function show(p){
+  renderPost(p.post);
+  $("#hooks").innerHTML = "";
+  p.hooks.slice(0, 3).forEach(h => {
+    const b = document.createElement("button"); b.className = "hook";
+    b.innerHTML = esc(h) + "<small>Utiliser cette accroche</small>";
+    b.onclick = () => swapHook(h, b); $("#hooks").appendChild(b);
+  });
+  $("#hooks-box").hidden = !p.hooks.length;
+  $("#notes").textContent = p.notes; $("#notes-box").hidden = !p.notes;
+}
+function renderPost(t){ $("#li-text").innerHTML = esc(t).replace(/\[à compléter[^\]]*\]/gi, m => `<mark>${m}</mark>`); runChecks(); }
+function swapHook(h, btn){
+  const t = currentText(); const i = t.indexOf("\n\n"); const oldHook = i < 0 ? t : t.slice(0, i);
+  renderPost(h + (i < 0 ? "" : t.slice(i)));
+  btn.innerHTML = esc(oldHook) + "<small>Remettre celle-ci</small>"; btn.onclick = () => swapHook(oldHook, btn);
+  markDirty();
+}
+const currentText = () => $("#li-text").innerText.replace(/\u00a0/g, " ").replace(/\n{3,}/g, "\n\n").trim();
+function msg(t, err){ $("#gen-msg").textContent = t; $("#gen-msg").className = "msg" + (err ? " err" : ""); }
+function meter(len){
+  const [mn, mx] = LONG_RANGE[$("#f-long").value];
+  $("#m-len").textContent = len + " car."; $("#m-bar").style.width = Math.min(100, len / mx * 100) + "%";
+}
+
+function generate(){
+  if (busy) return;
+  const v = getVoix(activeId);
+  if (!v) { msg("Crée d'abord une voix dans l'onglet Voix.", true); return; }
+  if (!$("#f-sujet").value.trim() && !$("#f-matiere").value.trim()) { msg("Donne au moins un sujet ou de la matière brute.", true); return; }
+  run(buildPrompt(v), { voixId: v.id, sujet: $("#f-sujet").value.trim().split("\n")[0] || $("#f-matiere").value.trim().slice(0, 80), format: $("#f-modele").value ? "modele" : fmt });
+}
+$("#b-gen").onclick = generate;
+document.addEventListener("keydown", e => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && !$("#v-ecrire").hidden) generate(); });
+$("#b-regen").onclick = () => {
+  if (!lastRun) return;
+  const input = typeof lastRun.input === "string" ? lastRun.input + "\n\n(Propose une version différente, avec un autre angle d'accroche.)" : lastRun.input;
+  run(input, { voixId: lastRun.voixId, sujet: lastRun.sujet, format: lastRun.format });
+};
+$("#b-stop").onclick = () => ctl?.abort();
+function retoucher(consigne){
+  if (!lastRun || busy) return;
+  consigne = (consigne || "").trim(); if (!consigne) return;
+  const base = typeof lastRun.input === "string" ? lastRun.input : lastRun.input[0].content;
+  const turns = [
+    { role: "user", content: base },
+    { role: "assistant", content: "===POST===\n" + currentText() },
+    { role: "user", content: `Retouche ce post : ${consigne}\nGarde toutes les règles non négociables (rien d'inventé, balises [à compléter] conservées si l'info manque toujours). Réponds avec le même format à trois balises.` }
+  ];
+  $("#f-ret").value = "";
+  run(turns, { voixId: lastRun.voixId, sujet: lastRun.sujet, format: lastRun.format });
+}
+$("#b-ret").onclick = () => retoucher($("#f-ret").value);
+$("#f-ret").onkeydown = e => { if (e.key === "Enter") retoucher($("#f-ret").value); };
+function toLinkedInHtml(t){ return t.split("\n").map(l => l.trim() ? `<p>${esc(l)}</p>` : "<p><br></p>").join(""); }
+async function copyForLinkedIn(t){
+  const html = toLinkedInHtml(t);
+  try {
+    if (window.ClipboardItem && navigator.clipboard?.write) {
+      await navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([t], { type: "text/plain" }) })]);
+      return true;
+    }
+  } catch {}
+  try {
+    const d = document.createElement("div");
+    d.innerHTML = html; d.contentEditable = "true";
+    d.style.cssText = "position:fixed;left:-9999px;top:0;white-space:normal";
+    document.body.appendChild(d);
+    const r = document.createRange(); r.selectNodeContents(d);
+    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    const ok = document.execCommand("copy"); sel.removeAllRanges(); d.remove();
+    if (ok) return true;
+  } catch {}
+  try { await navigator.clipboard.writeText(t); return true; } catch { return false; }
+}
+$("#b-copy").onclick = async () => {
+  const t = currentText();
+  const ok = await copyForLinkedIn(t);
+  $("#b-copy").textContent = ok ? "Copié" : "Copie impossible";
+  setTimeout(() => $("#b-copy").textContent = "Copier le post", 1600);
+  if (/\[à compléter/i.test(t)) msg("Il reste des passages [à compléter] dans le texte copié.", true);
+};
+function markDirty(){ if (lastRun) $("#b-save").hidden = false; }
+$("#li-text").addEventListener("input", () => { if (!busy) { runChecks(); markDirty(); } });
+$("#li-text").addEventListener("blur", () => { if (!busy && $("#li-text").textContent) renderPost(currentText()); });
+$("#b-save").onclick = async () => { await savePost(currentText()); $("#b-save").hidden = true; msg("Modifs enregistrées."); };
+$("#f-long").onchange = () => { if (!$("#card").hidden) runChecks(); };
+
+/* ---------- Vérifications ---------- */
+function runChecks(){
+  const t = currentText(); const v = getVoix(lastRun?.voixId) || getVoix(activeId);
+  const items = []; const len = t.length, [mn, mx] = LONG_RANGE[$("#f-long").value];
+  meter(len);
+  items.push([len >= mn * 0.9 && len <= mx * 1.15, `${len} caractères (visé : ${mn}-${mx})`]);
+  const hook = t.split("\n\n")[0] || "";
+  items.push([hook.length <= 220, hook.length <= 220 ? "L'accroche tient avant « voir plus »" : `Accroche de ${hook.length} caractères : elle sera coupée`]);
+  const holes = (t.match(/\[à compléter/gi) || []).length;
+  items.push([holes === 0, holes ? `${holes} passage${holes > 1 ? "s" : ""} à compléter avec ton vrai vécu` : "Rien à compléter"]);
+  const link = /https?:\/\/|www\.\S/i.test(t);
+  if ($("#f-cta").value !== "lienpost") items.push([!link, link ? "Lien dans le corps : mets-le en commentaire" : "Pas de lien dans le corps"]);
+  const tags = (t.match(/(^|\s)#[\p{L}\d_]+/gu) || []).length;
+  items.push([tags <= 3, `${tags} hashtag${tags > 1 ? "s" : ""}${tags > 3 ? " (3 maximum)" : ""}`]);
+  if (t.includes("—")) items.push([false, "Tiret cadratin (—) repéré : tic d'écriture IA"]);
+  const numWords = t.match(/\b(deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|quinze|vingt|trente|quarante|cinquante|soixante|cent|mille)\b/gi) || [];
+  items.push([!numWords.length, numWords.length ? "Nombres en lettres à passer en chiffres : " + [...new Set(numWords.map(w => w.toLowerCase()))].join(", ") : "Nombres écrits en chiffres"]);
+  const gros = t.match(/\b(conne|con|connes|cons|connard|connasse|putain|merde|bordel|chiant|chiante|salope|enculé|fuck|bullshit|foutre)\b/gi) || [];
+  items.push([!gros.length, gros.length ? "Mots à censurer avec * : " + [...new Set(gros.map(w => w.toLowerCase()))].join(", ") : "Pas de mot grossier non censuré"]);
+  const frag = (t.split("\n").filter(l => !/^\s*(→|👉)/.test(l)).join("\n").match(/(^|[.!…]\s+)([^.!?…\n]{1,14})\.(?=\s|$)/g) || []).filter(s => s.replace(/^[.!?…\s]+/, "").trim().split(/\s+/).length <= 3).length;
+  items.push([frag < 2, frag >= 2 ? `${frag} bouts de phrase coupés (« Un dimanche. À 22h47. ») : recolle-les` : "Pas de phrases coupées en fragments"]);
+  const mindset = /(la vérité,? c'est que|ce n'est pas .{3,60}, c'est|ne sont pas celles? qui|ne sont pas ceux qui|étrange,? non|surprenant \?)/i.test(t);
+  items.push([!mindset, mindset ? "Tournure mindset ou tic d'IA repérée (« La vérité, c'est que », « ce n'est pas X, c'est Y »…)" : "Pas de tournure mindset"]);
+  const forbid = (v?.interdits || "").split("\n").map(s => s.trim().replace(/^["«]|["»]$/g, "")).filter(s => s && s.length <= 40);
+  const hits = forbid.filter(w => t.toLowerCase().includes(w.toLowerCase()));
+  items.push([hits.length === 0, hits.length ? "Interdits trouvés : " + hits.join(", ") : "Aucun interdit de la voix"]);
+  $("#checks").innerHTML = items.map(([ok, l]) => `<li class="${ok ? "ok" : "warn"}"><span class="ic">${ok ? "✓" : "!"}</span><span>${esc(l)}</span></li>`).join("");
+}
+
+/* ---------- Historique ---------- */
+async function savePost(text){
+  if (!lastRun || !text) return;
+  const v = getVoix(lastRun.voixId);
+  const data = { voixId: lastRun.voixId, voixNom: v?.nom || "", sujet: lastRun.sujet || "", texte: text, format: lastRun.format || "", createdAt: lastRun.createdAt || Date.now() };
+  try {
+    await store.save("posts", lastRun.postId, data);
+    const full = { id: lastRun.postId, ...data, updatedAt: Date.now() }; const i = posts.findIndex(p => p.id === lastRun.postId);
+    if (i >= 0) posts[i] = full; else posts.unshift(full);
+    if (posts.length > 300) { const old = posts.pop(); store.del("posts", old.id).catch(() => {}); }
+  } catch (e) { msg("Post généré, mais pas enregistré dans l'historique (" + (e.code || "erreur") + ").", true); }
+}
+function renderHist(){
+  const el = $("#hist");
+  if (!posts.length) { el.innerHTML = `<div class="empty"><strong>Aucun post pour l'instant</strong>Génère ton premier post dans Écrire.</div>`; return; }
+  el.innerHTML = posts.map(p => `<article class="hitem">
+    <div class="meta">${esc(p.voixNom)} · ${new Date(p.updatedAt || p.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</div>
+    <strong>${esc(p.sujet || "Sans sujet")}</strong><p>${esc(p.texte)}</p>
+    <div class="ib"><button class="btn btn-s" data-open="${esc(p.id)}">Ouvrir</button><button class="btn btn-s" data-del="${esc(p.id)}">Supprimer</button></div>
+  </article>`).join("");
+  el.querySelectorAll("[data-open]").forEach(b => b.onclick = () => openPost(b.dataset.open));
+  el.querySelectorAll("[data-del]").forEach(b => b.onclick = async () => {
+    if (!confirm("Supprimer ce post de l'historique ?")) return;
+    try { await store.del("posts", b.dataset.del); } catch {}
+    posts = posts.filter(p => p.id !== b.dataset.del); renderHist();
+  });
+}
+function openPost(id){
+  planLink = null;
+  const p = posts.find(x => x.id === id); if (!p) return;
+  const v = getVoix(p.voixId);
+  if (v) { activeId = v.id; renderVoixSelect(); $("#f-sujet").value = p.sujet || ""; lastRun = { voixId: v.id, sujet: p.sujet, postId: p.id, createdAt: p.createdAt, format: p.format, input: buildPrompt(v) }; }
+  else lastRun = null;
+  showCard(v || { nom: p.voixNom });
+  $("#hooks-box").hidden = true; $("#notes-box").hidden = true; $("#b-save").hidden = true;
+  $("#li-text").contentEditable = editableMode(); renderPost(p.texte); msg("");
+  goTab("ecrire");
+}
+
+
+/* ---------- Planning ---------- */
+let plannings = [], curPlan = null, planLink = null;
+const JOURS = [["1","Lun"],["2","Mar"],["3","Mer"],["4","Jeu"],["5","Ven"],["6","Sam"],["0","Dim"]];
+let planDays = new Set(["1","2","4"]);
+const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const parseISO = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); };
+const fmtDay = s => parseISO(s).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+const fmtShort = s => parseISO(s).toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
+function nextMonday(){ const d = new Date(); d.setDate(d.getDate() + (((8 - d.getDay()) % 7) || 7)); return iso(d); }
+
+function renderDayChips(){
+  $("#pl-days").innerHTML = JOURS.map(([v, l]) => `<button type="button" class="chip" data-v="${v}" aria-pressed="${planDays.has(v)}">${l}</button>`).join("");
+  $("#pl-days").querySelectorAll(".chip").forEach(b => b.onclick = () => { planDays.has(b.dataset.v) ? planDays.delete(b.dataset.v) : planDays.add(b.dataset.v); renderDayChips(); });
+  const n = planDays.size, w = +$("#pl-sem").value;
+  $("#pl-count").textContent = n ? `${n} post${n > 1 ? "s" : ""} par semaine, ${n * w} au total` : "Choisis au moins un jour";
+}
+$("#pl-sem").onchange = renderDayChips;
+
+function assignObjectifs(slots, strat){
+  if (strat === "libre") return slots.forEach(s => s.objectif = "");
+  if (strat === "lancement") {
+    const n = slots.length;
+    return slots.forEach((s, i) => { const r = (i + 1) / n; s.objectif = r > 0.6 ? "conversion" : r > 0.3 ? "qualification" : "attraction"; });
+  }
+  const byWeek = {};
+  slots.forEach(s => (byWeek[s.semaine] ||= []).push(s));
+  Object.values(byWeek).forEach(wk => {
+    const k = wk.length;
+    wk.forEach((s, i) => {
+      if (strat === "visibilite") s.objectif = (k >= 3 && i === k - 1) ? "qualification" : "attraction";
+      else s.objectif = (k >= 3 && i === k - 1) ? "conversion" : (k >= 2 && i === k - (k >= 3 ? 2 : 1)) ? "qualification" : "attraction";
+    });
+  });
+}
+function buildSlots(start, weeks, days, strat){
+  const s = parseISO(start); const monday = new Date(s); monday.setDate(s.getDate() - ((s.getDay() + 6) % 7));
+  const slots = [];
+  for (let w = 0; w < weeks; w++) for (let i = 0; i < 7; i++) {
+    const d = new Date(monday); d.setDate(monday.getDate() + w * 7 + i);
+    if (days.has(String(d.getDay())) && d >= s) slots.push({ date: iso(d), semaine: w, statut: "attente", sujet: "" });
+  }
+  assignObjectifs(slots, strat);
+  return slots;
+}
+
+function initPlanning(){
+  $("#pl-debut").value = nextMonday(); renderDayChips(); renderPlanSelect();
+}
+function renderPlanSelect(){
+  $("#pl-select").innerHTML = `<option value="">Nouveau planning</option>` + plannings.map(p => `<option value="${esc(p.id)}">${esc(p.titre)}</option>`).join("");
+  $("#pl-select").value = curPlan?.id || "";
+  $("#pl-copy").hidden = $("#pl-del").hidden = $("#pl-pdf").hidden = !curPlan;
+}
+$("#pl-select").onchange = () => { curPlan = plannings.find(p => p.id === $("#pl-select").value) || null; if (curPlan) fillPlanForm(curPlan); renderPlanning(); };
+function fillPlanForm(p){
+  $("#pl-debut").value = p.debut; $("#pl-sem").value = String(p.semaines); $("#pl-strat").value = p.strat;
+  $("#pl-theme").value = p.theme || ""; $("#pl-offre").value = p.offre || ""; $("#pl-idees").value = p.idees || ""; planDays = new Set(p.jours); renderDayChips();
+}
+function renderPlanning(){
+  renderPlanSelect();
+  const el = $("#pl-board");
+  if (!curPlan) { el.innerHTML = ""; return; }
+  const n = curPlan.slots.length, ok = curPlan.slots.filter(s => s.statut === "valide").length, rv = curPlan.slots.filter(s => s.statut === "revoir").length;
+  let rows = "", lastW = -1;
+  curPlan.slots.forEach((s, i) => {
+    if (s.semaine !== lastW) { lastW = s.semaine; rows += `<tr class="wk"><td colspan="8">Semaine du ${esc(fmtShort(s.date))}</td></tr>`; }
+    const written = s.postId && posts.some(p => p.id === s.postId);
+    rows += `<tr data-i="${i}" data-st="${esc(s.statut)}">
+      <td class="c-date">${esc(fmtDay(s.date))}</td>
+      <td><select class="sl-obj" aria-label="Objectif">${s.objectif ? "" : `<option value="" selected>À choisir</option>`}${["attraction","qualification","conversion"].map(o => `<option value="${o}" ${s.objectif === o ? "selected" : ""}>${OBJ_LABEL[o]}</option>`).join("")}</select></td>
+      <td><select class="sl-fmt" aria-label="Format">${s.format && FMT_LABEL[s.format] ? "" : `<option value="" selected>À choisir</option>`}${FORMATS.filter(f => f[0] !== "auto").map(([v, l]) => `<option value="${v}" ${s.format === v ? "selected" : ""}>${l}</option>`).join("")}</select></td>
+      <td class="c-sujet"><textarea class="sl-sujet" rows="3" aria-label="Sujet" placeholder="Sujet à définir">${esc(s.sujet)}</textarea>${s.question ? `<small>${esc(s.question)}</small>` : ""}</td>
+      <td class="c-hook"><textarea class="sl-hook" rows="3" aria-label="Accroche envisagée">${esc(s.accroche || "")}</textarea></td>
+      <td class="c-val"><div class="val">
+        <button type="button" class="v-ok" aria-pressed="${s.statut === "valide"}">Validé</button>
+        <button type="button" class="v-rv" aria-pressed="${s.statut === "revoir"}">À revoir</button>
+      </div></td>
+      <td class="c-ret"><textarea class="sl-ret" rows="3" aria-label="Retour client" placeholder="Retour du client">${esc(s.retour || "")}</textarea></td>
+      <td class="c-act"><button class="btn btn-s go" data-go>${written ? "Voir le post" : "Écrire"}</button><button class="btn btn-s" data-re>Autre sujet</button></td>
+    </tr>`;
+  });
+  el.innerHTML = `<div class="tbl-head"><strong class="x">${esc(curPlan.titre)}</strong><span class="hint">${ok}/${n} validés${rv ? `, ${rv} à revoir` : ""}</span></div>
+    <div class="tbl-wrap"><table class="ptable">
+      <thead><tr><th>Date</th><th>Objectif</th><th>Format</th><th>Sujet</th><th>Accroche envisagée</th><th>Validation</th><th>Retour client</th><th></th></tr></thead>
+      <tbody>${rows}</tbody></table></div>`;
+  el.querySelectorAll("tr[data-i]").forEach(tr => {
+    const i = +tr.dataset.i, s = curPlan.slots[i];
+    const bind = (sel, key) => tr.querySelector(sel).onchange = e => { s[key] = e.target.value.trim(); savePlan(); };
+    bind(".sl-sujet", "sujet"); bind(".sl-hook", "accroche"); bind(".sl-ret", "retour"); bind(".sl-obj", "objectif"); bind(".sl-fmt", "format");
+    const setSt = st => { s.statut = s.statut === st ? "attente" : st; savePlan(); renderPlanning(); };
+    tr.querySelector(".v-ok").onclick = () => setSt("valide");
+    tr.querySelector(".v-rv").onclick = () => setSt("revoir");
+    tr.querySelector("[data-go]").onclick = () => s.postId && posts.some(p => p.id === s.postId) ? openPost(s.postId) : useSlot(i);
+    tr.querySelector("[data-re]").onclick = () => regenSlot(i, tr);
+  });
+}
+async function savePlan(){
+  if (!curPlan) return;
+  try {
+    await store.save("plannings", curPlan.id, curPlan);
+    const i = plannings.findIndex(p => p.id === curPlan.id);
+    if (i >= 0) plannings[i] = curPlan; else plannings.unshift(curPlan);
+  } catch (e) { $("#pl-msg").className = "msg err"; $("#pl-msg").textContent = "Enregistrement impossible (" + (e.code || "erreur") + ")."; }
+}
+function planContext(v, p){
+  return `PERSONNE : ${v?.nom || "-"}, ${v?.titre || ""}
+Niche : ${v?.niche || "-"}
+Qui elle est, ce qu'elle vend (faits réels) : ${v?.activite || "-"}
+Cible : ${v?.cible || "-"}
+Style : ${v?.style || "-"}
+FIL ROUGE : ${p.theme || "libre"}
+OFFRE À POUSSER dans les posts de vente : ${p.offre || "l'offre principale de la personne"}
+IDÉES DU CLIENT (prioritaires) :
+${p.idees || "(aucune)"}`;
+}
+const PLAN_RULES = `Règles :
+- Respecte l'objectif de chaque créneau. attraction = visibilité, histoires et prises de position qui touchent la cible. qualification = preuve : résultats, coulisses chiffrées, méthode vécue. conversion = vente de l'offre à pousser, par une histoire dont la leçon est exactement la promesse de l'offre. Si l'objectif est vide, choisis-le toi-même (environ 50 % visibilité, 30 % preuve, 20 % vente, la vente en fin de semaine).
+- Le planning doit avoir une progression : les posts de visibilité et de preuve de la semaine préparent le post de vente.
+- Si des idées du client sont fournies, elles passent en premier : place chacune sur le créneau dont l'objectif lui correspond le mieux, garde son intention et ses faits (tu peux reformuler pour la clarté, jamais changer le fond), puis complète les créneaux restants avec tes propres sujets. Les faits donnés dans ces idées sont du vécu réel utilisable.
+- Varie les formats, jamais deux fois le même format d'affilée.
+- Le sujet est écrit pour être validé par un client en une lecture : clair, concret, 8 à 14 mots, sans jargon.
+- Ne suppose aucun vécu de la personne. Pour chaque créneau, formule la question qu'elle doit se poser pour trouver sa matière. Tu peux t'appuyer sur les faits réels donnés ci-dessus.
+- L'accroche : 1 à 2 phrases orales, nombres en chiffres, un fait ou un contraste, jamais d'opinion générale, jamais de mindset, pas de tiret cadratin. Si elle a besoin d'un détail personnel, mets [x].
+- Leviers qui marchent : tiers connu et sa décision surprenante, histoire d'un proche, scène avec 2 personnes que tout oppose, erreur et son coût exact, citation choc, idée reçue qualifiée d'arnaque, chiffre précis.
+- format parmi : story, opinion, vuln, jalon, cash, actu, liste, coup.`;
+$("#pl-gen").onclick = async () => {
+  const v = getVoix(activeId), m = $("#pl-msg"); m.className = "msg";
+  if (!v) { m.className = "msg err"; m.textContent = "Crée d'abord une voix."; return; }
+  if (!planDays.size) { m.className = "msg err"; m.textContent = "Choisis au moins un jour."; return; }
+  if (!sample) { m.className = "msg err"; m.textContent = "La génération marche quand la page est ouverte dans Claude."; return; }
+  if (curPlan && !confirm("Remplacer ce planning par un nouveau ? (Choisis « Nouveau planning » pour en garder une copie.)")) return;
+  const p = { id: curPlan?.id || uid(), voixId: v.id, voixNom: v.nom, debut: $("#pl-debut").value || nextMonday(), semaines: +$("#pl-sem").value,
+    jours: [...planDays], strat: $("#pl-strat").value, theme: $("#pl-theme").value.trim(), offre: $("#pl-offre").value.trim(), idees: $("#pl-idees").value.trim() };
+  p.slots = buildSlots(p.debut, p.semaines, planDays, p.strat);
+  if (!p.slots.length) { m.className = "msg err"; m.textContent = "Aucun créneau sur cette période."; return; }
+  p.titre = `${v.nom} · du ${fmtShort(p.slots[0].date)} au ${fmtShort(p.slots[p.slots.length - 1].date)}`;
+  $("#pl-gen").disabled = true; m.textContent = `Construction de ${p.slots.length} sujets…`;
+  try {
+    const r = await sample.json(`Tu es stratège de contenu LinkedIn francophone. Construis un planning éditorial : un sujet de post pour chaque créneau.
+
+${planContext(v, p)}
+
+CRÉNEAUX (garde l'index i) :
+${JSON.stringify(p.slots.map((s, i) => ({ i, date: fmtDay(s.date), objectif: s.objectif || "à choisir" })))}
+
+${PLAN_RULES}
+
+Réponds UNIQUEMENT avec un tableau JSON, un objet par créneau :
+[{"i":0,"objectif":"attraction|qualification|conversion","sujet":"...","accroche":"...","format":"story","question":"..."}]`, { modelTier: "default" });
+    (Array.isArray(r) ? r : r?.creneaux || []).forEach(x => {
+      const s = p.slots[x?.i]; if (!s) return;
+      Object.assign(s, { sujet: x.sujet || "", accroche: x.accroche || "", format: x.format || "", question: x.question || "" });
+      if (!s.objectif && OBJ_LABEL[x.objectif]) s.objectif = x.objectif;
+    });
+    curPlan = p; await savePlan(); renderPlanning();
+    m.textContent = "Planning enregistré. Modifie les sujets si besoin, puis passe-les en « Validé ».";
+  } catch (e) { m.className = "msg err"; m.textContent = errCopy(e); }
+  finally { $("#pl-gen").disabled = false; }
+};
+async function regenSlot(i, card){
+  const v = getVoix(curPlan.voixId) || getVoix(activeId), s = curPlan.slots[i];
+  if (!sample) return;
+  const btn = card.querySelector("[data-re]"); btn.disabled = true; btn.textContent = "…";
+  try {
+    const autres = curPlan.slots.filter((_, j) => j !== i).map(x => x.sujet).filter(Boolean);
+    const x = await sample.json(`Tu es stratège de contenu LinkedIn francophone. Propose UN nouveau sujet pour ce créneau d'un planning éditorial.
+
+${planContext(v, curPlan)}
+
+CRÉNEAU : ${fmtDay(s.date)}, objectif ${s.objectif || "à choisir"}.
+Sujet actuel, à remplacer par un angle différent : ${s.sujet || "-"}
+Autres sujets du planning, à ne pas répéter :
+${autres.join("\n")}
+
+${PLAN_RULES}
+
+Réponds UNIQUEMENT avec un objet JSON : {"objectif":"...","sujet":"...","accroche":"...","format":"...","question":"..."}`, { modelTier: "default", cache: false });
+    Object.assign(s, { sujet: x.sujet || s.sujet, accroche: x.accroche || "", format: x.format || "", question: x.question || "", statut: "attente" });
+    if (!s.objectif && OBJ_LABEL[x.objectif]) s.objectif = x.objectif;
+    delete s.postId; await savePlan(); renderPlanning();
+  } catch (e) { $("#pl-msg").className = "msg err"; $("#pl-msg").textContent = errCopy(e); btn.disabled = false; btn.textContent = "Autre sujet"; }
+}
+function useSlot(i){
+  const s = curPlan.slots[i];
+  if (curPlan.voixId && getVoix(curPlan.voixId)) { activeId = curPlan.voixId; renderVoixSelect(); }
+  useIdea({ angle: s.sujet, accroche: s.accroche, format: s.format, objectif: s.objectif, question: s.question });
+  if (s.objectif === "conversion" && curPlan.offre) $("#f-matiere").placeholder = `Offre : ${curPlan.offre}. ${s.question ? "À te demander : " + s.question : ""}`;
+  planLink = { planId: curPlan.id, i };
+}
+async function linkToSlot(){
+  if (!planLink || !lastRun) return;
+  const p = plannings.find(x => x.id === planLink.planId); const s = p?.slots[planLink.i]; if (!s) return;
+  s.postId = lastRun.postId;
+  try { await store.save("plannings", p.id, p); } catch {}
+}
+$("#pl-copy").onclick = async () => {
+  if (!curPlan) return;
+  const lines = [`Planning éditorial LinkedIn · ${curPlan.voixNom || ""}`, `Du ${fmtShort(curPlan.slots[0].date)} au ${fmtShort(curPlan.slots[curPlan.slots.length - 1].date)}`, ""];
+  curPlan.slots.forEach(s => {
+    const d = fmtDay(s.date);
+    lines.push(`${d.charAt(0).toUpperCase() + d.slice(1)} · ${OBJ_LABEL[s.objectif] || ""}${s.format && FMT_LABEL[s.format] ? " · " + FMT_LABEL[s.format] : ""}`);
+    lines.push(`Sujet : ${s.sujet || "à définir"}`);
+    if (s.accroche) lines.push(`Accroche envisagée : ${s.accroche}`);
+    lines.push("");
+  });
+  const ok = await copyForLinkedIn(lines.join("\n").trim());
+  $("#pl-copy").textContent = ok ? "Copié" : "Copie impossible"; setTimeout(() => $("#pl-copy").textContent = "Copier pour validation", 1600);
+};
+$("#pl-del").onclick = async () => {
+  if (!curPlan || !confirm("Supprimer ce planning ?")) return;
+  try { await store.del("plannings", curPlan.id); } catch {}
+  plannings = plannings.filter(p => p.id !== curPlan.id); curPlan = null; renderPlanning();
+};
+
+
+/* Export PDF */
+let downloads = null;
+function loadScript(src){ return new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
+async function ensurePdf(){
+  if (!window.jspdf) await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
+  if (!window.jspdf.jsPDF.API.autoTable) {
+    try { await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"); }
+    catch { await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"); }
+  }
+}
+const pdfTxt = s => String(s || "").replace(/→/g, "->").replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}\u{2B50}]/gu, "").replace(/[^\u0000-\u00FF€’‘“”…–—œŒ]/g, "").trim();
+$("#pl-pdf").onclick = async () => {
+  if (!curPlan) return;
+  const b = $("#pl-pdf"); b.disabled = true; b.textContent = "Préparation…";
+  try {
+    await ensurePdf();
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
+    const first = curPlan.slots[0].date, last = curPlan.slots[curPlan.slots.length - 1].date;
+    doc.setFont("helvetica", "bold"); doc.setFontSize(18); doc.setTextColor(200, 16, 46);
+    doc.text("Planning éditorial LinkedIn", 40, 46);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(90, 90, 90);
+    doc.text(pdfTxt(`${curPlan.voixNom || ""} · du ${fmtShort(first)} au ${fmtShort(last)} · ${curPlan.slots.length} posts`), 40, 64);
+    const body = []; let lastW = -1;
+    curPlan.slots.forEach(s => {
+      if (s.semaine !== lastW) { lastW = s.semaine; body.push([{ content: `Semaine du ${fmtShort(s.date)}`, colSpan: 7, styles: { fillColor: [246, 242, 241], fontStyle: "bold", textColor: [32, 21, 23] } }]); }
+      const d = fmtDay(s.date);
+      body.push([
+        d.charAt(0).toUpperCase() + d.slice(1),
+        OBJ_LABEL[s.objectif] || "",
+        FMT_LABEL[s.format] || "",
+        pdfTxt(s.sujet) + (s.question ? `\n\nÀ préparer : ${pdfTxt(s.question)}` : ""),
+        pdfTxt(s.accroche),
+        s.statut === "valide" ? "Validé" : s.statut === "revoir" ? "À revoir" : "[  ] Validé\n[  ] À revoir",
+        pdfTxt(s.retour)
+      ]);
+    });
+    doc.autoTable({
+      startY: 80, head: [["Date", "Objectif", "Format", "Sujet", "Accroche envisagée", "Validation", "Retour client"]], body,
+      styles: { font: "helvetica", fontSize: 8.5, cellPadding: 6, valign: "top", lineColor: [230, 221, 220], lineWidth: 0.5, textColor: [32, 21, 23] },
+      headStyles: { fillColor: [200, 16, 46], textColor: 255, fontStyle: "bold" },
+      columnStyles: { 0: { cellWidth: 78 }, 1: { cellWidth: 62 }, 2: { cellWidth: 70 }, 3: { cellWidth: 190 }, 4: { cellWidth: 170 }, 5: { cellWidth: 62 }, 6: { cellWidth: "auto", minCellHeight: 40 } },
+      margin: { left: 40, right: 40 }
+    });
+    let y = doc.lastAutoTable.finalY + 30;
+    if (y > doc.internal.pageSize.getHeight() - 50) { doc.addPage(); y = 50; }
+    doc.setFontSize(10); doc.setTextColor(32, 21, 23);
+    doc.text("Validé par : ______________________________        Date : ____________        Signature : ______________________", 40, y);
+    const blob = doc.output("blob");
+    const slug = (curPlan.voixNom || "planning").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    if (!downloads) throw { code: "unavailable" };
+    await downloads.save({ filename: `planning-${slug}-${first}.pdf`, data: blob });
+    b.textContent = "PDF prêt";
+  } catch (e) {
+    $("#pl-msg").className = "msg err";
+    $("#pl-msg").textContent = e?.code === "declined" ? "Téléchargement annulé." : e?.code === "unavailable" ? "L'export PDF marche quand la page est ouverte dans Claude." : "Export impossible, réessaie.";
+    b.textContent = "Exporter en PDF";
+  } finally { b.disabled = false; setTimeout(() => b.textContent = "Exporter en PDF", 1800); }
+};
+
+
+/* Connexion */
+$("#login-form").onsubmit = async e => {
+  e.preventDefault();
+  const r = await fetch("/api/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: $("#login-pwd").value }) });
+  if (r.ok) location.reload(); else $("#login-msg").textContent = "Mot de passe incorrect.";
+};
+
+/* ---------- Démarrage ---------- */
+async function boot(){
+  const me = await fetch("/api/login").catch(() => null);
+  if (!me || me.status !== 200) { window.__showLogin(); return; }
+  renderTiles(); renderSeg();
+  $("#li-text").contentEditable = editableMode();
+  msg("Chargement…");
+  if (window.claude?.use) {
+    const [s, d, dl] = await Promise.all([window.claude.use("sample").catch(() => null), window.claude.use("db").catch(() => null), window.claude.use("downloads").catch(() => null)]);
+    sample = s; db = d; downloads = dl;
+  }
+  [voix, posts, modeles, idees, plannings] = await Promise.all(["voix", "posts", "modeles", "idees", "plannings"].map(c => store.list(c)));
+  renderVoixSelect(); loadVoixForm(voix[0]?.id || null); renderModeles(); renderIdeas(); initPlanning();
+  msg(sample ? "" : "Génération indisponible.", !sample);
+  if (!voix.length) goTab("voix");
+}
+boot();
+})();
+</script>
+</body>
+</html>
