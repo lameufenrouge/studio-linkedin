@@ -341,6 +341,44 @@ textarea{resize:vertical;line-height:1.45}
 .nav button.nav-more{display:none}
 .kpi b span{font-size:inherit;color:inherit}
 .more-sheet[hidden]{display:none}
+
+/* Clients */
+.client-head{background:var(--panel);border:1.5px solid var(--line);border-radius:22px;padding:18px 20px;margin:4px 0 14px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:18px;align-items:center}
+.client-head .who{display:flex;gap:12px;align-items:center}
+.client-head .av{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#D9D5FF,#3B4BFF);display:grid;place-items:center;color:#fff;font-weight:800;font-size:1.1rem;flex:none}
+.client-head strong{font-size:1.25rem;display:block;line-height:1.2}
+.client-head small{color:var(--muted)}
+.client-head .ib{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.client-head .ib .go{background:#3B4BFF;color:#fff;border-color:#3B4BFF}
+.ready .barl{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-bottom:6px}
+.ready .barl b{color:var(--ink)}
+.checklist{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;font-size:.84rem}
+.checklist li{display:flex;gap:7px;align-items:baseline;color:var(--muted)}
+.checklist li.ok{color:var(--ink)}
+.checklist li i{font-style:normal;font-weight:800;width:14px;flex:none;color:var(--line)}
+.checklist li.ok i{color:var(--ok)}
+.subtabs{display:flex;gap:4px;border-bottom:1.5px solid var(--line);margin-bottom:18px;overflow-x:auto}
+.subtabs button{background:none;border:0;padding:10px 14px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1.5px;white-space:nowrap}
+.subtabs button[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--rouge)}
+.feed{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
+.feed-t{margin:0 0 10px;font-size:1rem;font-weight:800}
+.src-types{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.src-types button{border:1.5px solid var(--line);background:var(--field);border-radius:999px;padding:7px 13px;font-weight:700;font-size:.86rem;cursor:pointer}
+.src-types button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#src-dictate[aria-pressed="true"]{background:var(--rouge);border-color:var(--rouge);color:#fff}
+.src{background:var(--panel);border:1.5px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:10px}
+.src header{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.src header strong{font-size:.95rem}
+.src .meta{font-size:.76rem;color:var(--muted)}
+.src .facts{margin:8px 0 0;font-size:.86rem;color:var(--muted);white-space:pre-wrap;overflow:hidden;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical}
+.src.open .facts{display:block;-webkit-line-clamp:unset}
+.src textarea{margin-top:8px;font-size:.86rem}
+.src .ib{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.onboard{background:var(--panel);border:1.5px solid var(--line);border-radius:22px;padding:22px}
+.onboard ol{margin:10px 0 16px;padding-left:22px;display:grid;gap:8px}
+.dash-cta{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;position:relative;z-index:1}
+.dash-cta .btn{background:#3B4BFF;color:#fff;border-color:#3B4BFF}
+.dash-cta .btn.l{background:transparent;color:#F1EFFF;border-color:rgba(241,239,255,.35)}
 /* Historique */
 .hist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
 .hitem{background:var(--panel);border:1.5px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px}
@@ -422,9 +460,10 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
   .ptable .c-act .btn{flex:1}
 }
 @media (max-width:900px){
-  .dash-grid,.batch-grid{grid-template-columns:1fr}
+  .dash-grid,.batch-grid,.feed,.client-head{grid-template-columns:1fr}
+  .checklist{grid-template-columns:1fr}
   .dash-hero{border-radius:20px;padding:24px 20px 30px}
-  .nav button[data-view="idees"],.nav button[data-view="modeles"],.nav button[data-view="voix"],.nav button[data-view="hist"]{display:none}
+  .nav button[data-view="idees"],.nav button[data-view="modeles"],.nav button[data-view="hist"]{display:none}
   .nav button.nav-more{display:flex}
   .kpis{grid-template-columns:1fr 1fr}
   .kpi:last-child{grid-column:1/-1}
@@ -451,20 +490,20 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
   <div class="logo"><span class="wm">signé<i>.</i></span><svg class="sig" viewBox="0 0 640 110" aria-hidden="true"><path d="M8 70 C 40 20, 70 12, 64 52 C 58 92, 26 84, 48 50 C 70 18, 104 26, 98 62 C 95 82, 118 80, 138 48 C 154 24, 172 34, 166 62 C 162 80, 196 74, 224 42 C 246 18, 262 44, 292 54 C 340 70, 420 40, 500 46 C 560 50, 600 58, 632 52"/></svg><small>studio</small></div>
   <nav class="nav" aria-label="Sections">
     <button data-view="dash" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Accueil</button>
+    <button data-view="voix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10a7 7 0 0 1-14 0"/><path d="M12 17v5"/></svg>Clients</button>
     <button data-view="ecrire"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Écrire</button>
     <button data-view="batch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a2 2 0 0 1 2-2h11"/></svg>Batch</button>
     <button data-view="idees"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2Z"/></svg>Idées</button>
     <button data-view="planning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Planning</button>
     <button data-view="modeles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 10 5-10 5L2 7Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>Modèles</button>
-    <button data-view="voix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10a7 7 0 0 1-14 0"/><path d="M12 17v5"/></svg>Voix</button>
     <button data-view="hist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Historique</button>
     <button class="nav-more" id="nav-more" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>Plus</button>
   </nav>
-  <div class="more-sheet" id="more-sheet" hidden><button data-go="idees">Idées</button><button data-go="modeles">Modèles</button><button data-go="voix">Voix</button><button data-go="hist">Historique</button></div>
+  <div class="more-sheet" id="more-sheet" hidden><button data-go="idees">Idées</button><button data-go="modeles">Modèles</button><button data-go="hist">Historique</button></div>
   <div class="vsw">
     <div class="who"><div class="avatar" id="rail-av">?</div><div><strong id="rail-nom">Aucune voix</strong><small id="rail-titre"></small></div></div>
-    <label for="f-voix">Voix active</label>
-    <select id="f-voix" aria-label="Voix active"></select>
+    <label for="f-voix">Client actif</label>
+    <select id="f-voix" aria-label="Client actif"></select>
   </div>
 </aside>
 
@@ -476,6 +515,7 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
     <p class="dash-kicker">signé. · studio de ghostwriting</p>
     <h1 class="dash-title" id="dash-hello">Bonjour</h1>
     <p class="dash-sub">Vos idées. Nos mots. <em>Votre nom en bas.</em></p>
+    <div class="dash-cta"><button class="btn" id="dash-new">+ Nouveau client</button><button class="btn l" id="dash-feed">Nourrir l'IA</button><button class="btn l" id="dash-batch">Lancer un batch</button></div>
     <svg class="sig dash-sig" viewBox="0 0 640 110" aria-hidden="true"><path d="M8 70 C 40 20, 70 12, 64 52 C 58 92, 26 84, 48 50 C 70 18, 104 26, 98 62 C 95 82, 118 80, 138 48 C 154 24, 172 34, 166 62 C 162 80, 196 74, 224 42 C 246 18, 262 44, 292 54 C 340 70, 420 40, 500 46 C 560 50, 600 58, 632 52"/></svg>
   </div>
   <div class="kpis" id="kpis"></div>
@@ -727,9 +767,37 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
 
 <!-- VOIX -->
 <section class="view" id="v-voix" hidden>
-  <h1 class="h x">Voix</h1>
-  <p class="lead">Une voix par personne. Pour toi aujourd'hui, pour chaque client de l'agence demain.</p>
+  <h1 class="h x">Clients</h1>
+  <p class="lead">Tout ce que l'IA sait de chaque client : sa fiche, sa voix, et tout ce que vous lui apprenez au fil des points.</p>
   <div class="vtabs" id="vtabs"></div>
+  <div class="client-head" id="client-head"></div>
+  <div class="subtabs" role="group" aria-label="Sections du client">
+    <button data-sub="nourrir">Nourrir l'IA</button><button data-sub="fiche">Fiche &amp; voix</button><button data-sub="contenus">Contenus</button>
+  </div>
+  <div id="sub-nourrir">
+    <div class="feed">
+      <div class="panel">
+        <h4 class="feed-t">Ajouter une info</h4>
+        <p class="hint" style="margin:0 0 12px">Un point client, ses réponses à tes questions, un document, un vocal… L'IA en tire les faits, les chiffres et les phrases exactes du client pour les prochains posts.</p>
+        <div class="src-types" id="src-types">
+          <button data-t="texte" aria-pressed="true">Écrire</button><button data-t="transcript" aria-pressed="false">Transcription</button><button data-t="doc" aria-pressed="false">PDF / doc</button><button data-t="lien" aria-pressed="false">Lien</button><button data-t="vocal" aria-pressed="false">Vocal</button><button data-t="capture" aria-pressed="false">Capture</button>
+        </div>
+        <div class="field"><label for="src-titre">Titre <span class="hint">facultatif</span></label><input type="text" id="src-titre" placeholder="Ex. : Point du 28/09, réponses aux questions d'octobre"></div>
+        <div class="field" id="src-text-wrap"><label for="src-text" id="src-text-l">Ce que tu sais</label><textarea id="src-text" rows="8"></textarea></div>
+        <div class="fb-row" id="src-dict-wrap"><button class="btn btn-s" id="src-dictate">Dicter</button><span class="hint" id="dict-hint"></span></div>
+        <div class="field" id="src-file-wrap" hidden><label for="src-file" id="src-file-l">Fichier</label><input type="file" id="src-file"><p class="hint" id="src-file-hint" style="margin:6px 0 0"></p></div>
+        <div class="field" id="src-url-wrap" hidden><label for="src-url">Lien</label><input type="url" id="src-url" placeholder="https://…"><p class="hint" style="margin:6px 0 0">Site du client, article, interview, page de vente. Les pages privées (LinkedIn, Fathom connecté) ne sont pas lisibles : copie-colle leur texte.</p></div>
+        <button class="btn-go x" id="src-add" style="margin-top:6px"><span>Analyser et ajouter</span></button>
+        <div class="msg" id="src-msg" role="status"></div>
+      </div>
+      <div>
+        <h4 class="feed-t">Ce que l'IA sait déjà <span class="hint" id="src-count"></span></h4>
+        <div id="src-list"></div>
+      </div>
+    </div>
+  </div>
+  <div id="sub-contenus" hidden><div class="two"><div><h4 class="feed-t">Derniers posts</h4><div id="cl-posts"></div></div><div><h4 class="feed-t">Plannings</h4><div id="cl-plans"></div></div></div></div>
+  <div id="sub-fiche" hidden>
   <div class="two">
     <div>
       <div class="callout">
@@ -760,11 +828,12 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
       <div class="field"><label for="p-references">Avant / après de référence <span class="hint">une version refusée puis la version validée, pour caler l'oreille</span></label><textarea id="p-references" rows="6" placeholder="VERSION REFUSÉE :&#10;…&#10;&#10;VERSION VALIDÉE :&#10;…"></textarea></div>
       <div class="field"><span class="lbl2">Posts validés <span class="hint">servent de modèle de niveau attendu</span></span><div id="valides-list" class="valides"></div></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn" id="b-savev" style="background:var(--ink);color:var(--bg);border-color:var(--ink)">Enregistrer la voix</button>
+        <button class="btn" id="b-savev" style="background:var(--ink);color:var(--bg);border-color:var(--ink)">Enregistrer le client</button>
         <button class="btn" id="b-delv">Supprimer</button>
       </div>
       <div class="msg" id="v-msg" role="status"></div>
     </div>
+  </div>
   </div>
 </section>
 
@@ -927,7 +996,7 @@ const TON_GUIDE = {
   tendre:"Tendre : un moment précis raconté avec des détails concrets du quotidien, la vulnérabilité dite simplement sans en rajouter, un remerciement nominatif si la matière le permet, une fin douce en une phrase."
 };
 const BUILTIN = [
-  { id:"b-tiers", nom:"Le tiers célèbre", accroche:"Une personne ou une marque connue a pris une décision surprenante, et la raison est annoncée mais pas encore donnée.", squelette:["Accroche : qui (connu) + décision surprenante + « pour une raison précise : »","La raison, nommée en quelques mots, comme un concept","Comment ça se passe concrètement chez eux (1-2 faits vérifiables)","Le pont vers le quotidien du lecteur : « C'est la même chose avec… »","Ce que font les meilleurs, avec une phrase exacte entre guillemets","Fin : un fait concret ou ce que ça change dans la vraie vie"], mecaniques:["Aucun avis donné avant la ligne 5","Des faits précis sur le tiers, jamais inventés : si la matière n'en donne pas, [à compléter]","Répétition du concept nommé comme un refrain"], builtin:true },
+  { id:"b-tiers", nom:"Le tiers célèbre", accroche:"Une personne ou une marque connue a pris une décision surprenante, et la raison est annoncée mais pas encore donnée.", squelette:["Accroche : qui (connu) + décision surprenante + « pour une raison précise : »","La raison, nommée en quelques mots, comme un concept","Comment ça se passe concrètement chez eux (1-2 faits vérifiables)","Le pont vers le quotidien du lecteur : « C'est la même chose avec… »","Ce que font les meilleurs, avec une phrase exacte entre guillemets","Fin : un fait concret ou ce que ça change dans la vraie vie"], mecaniques:["Aucun avis donné avant la ligne 5","Des faits précis sur le tiers, jamais inventés : si la matière n'en donne pas, choisis un autre levier","Répétition du concept nommé comme un refrain"], builtin:true },
   { id:"b-amie", nom:"L'histoire d'une amie", accroche:"Un proche a fait un choix contre-intuitif, et l'auteur trouve ça brillant ou révélateur.", squelette:["Accroche : « Une amie à moi » + choix contre-intuitif + ton jugement en une demi-phrase","Ce que tout le monde lui disait de faire","Ce qu'elle a fait à la place, avec sa phrase exacte","Ce que ce choix lui évite, en liste courte","Le lien avec ton vécu : « Je sais de quoi elle parle car… »","Où elle en est aujourd'hui, en chiffres","Fin qui retourne un reproche en compliment"], mecaniques:["La leçon passe par quelqu'un d'autre, donc zéro posture de donneuse de leçons","Chiffres concrets sur sa situation","Le lecteur se reconnaît dans le proche, pas dans l'auteur"], builtin:true },
   { id:"b-diner", nom:"Le face-à-face chiffré", accroche:"Une scène d'hier avec deux personnes que tout oppose.", squelette:["Accroche : « Hier, [scène] avec deux [personnes] » puis qui est qui","Situation de la personne A en 3 tirets chiffrés","Situation de la personne B en 3 tirets chiffrés, symétriques","Le paradoxe : « Pourtant, c'est A qu'on présente comme… »","Ta position nuancée, avec ce que tu ne diras jamais et ce que tu diras toujours","La vraie question reformulée","Fin : une phrase qui ouvre plutôt qu'elle ne conclut"], mecaniques:["Symétrie parfaite des deux listes","Le chiffre casse l'idée reçue tout seul","Nuance assumée pour éviter le procès d'intention"], builtin:true },
   { id:"b-principe", nom:"Le principe caché", accroche:"Un groupe a inventé une technique méconnue, et on la nomme.", squelette:["Accroche : qui + ce qu'elles ont inventé + pour quel problème","« Ça s'appelle [nom]. » sur sa propre ligne","« Le principe est simple : » en une phrase","« Voici un exemple : » avec un dialogue entre guillemets","Les résultats, une phrase par paragraphe","« Bref : » la phrase-bilan","Portée collective : ce que ça dit de nous et ce qu'on peut faire"], mecaniques:["Le nom du concept donne envie de le partager","Le dialogue rend la technique applicable immédiatement","Une idée par paragraphe, très aéré"], builtin:true },
@@ -959,7 +1028,7 @@ $("#f-modele").onchange = () => renderTiles();
 document.querySelectorAll(".nav button[data-view]").forEach(b => b.onclick = () => goTab(b.dataset.view));
 $("#nav-more").onclick = () => { const o = $("#more-sheet").hidden; $("#more-sheet").hidden = !o; $("#nav-more").setAttribute("aria-expanded", String(o)); };
 document.querySelectorAll("#more-sheet [data-go]").forEach(b => b.onclick = () => goTab(b.dataset.go));
-const MORE_VIEWS = ["idees", "modeles", "voix", "hist"];
+const MORE_VIEWS = ["idees", "modeles", "hist"];
 function goTab(name){
   document.querySelectorAll(".nav button[data-view]").forEach(x => { if (x.dataset.view === name) x.setAttribute("aria-current", "page"); else x.removeAttribute("aria-current"); });
   if (MORE_VIEWS.includes(name)) $("#nav-more").setAttribute("aria-current", "page"); else $("#nav-more").removeAttribute("aria-current");
@@ -988,26 +1057,28 @@ function renderVoixSelect(){
 $("#f-voix").onchange = () => { activeId = $("#f-voix").value; renderVoixSelect(); $("#i-niche").value = getVoix(activeId)?.niche || ""; if (!$("#v-batch").hidden) renderBatchForm(); if (!$("#v-dash").hidden) renderDash(); };
 function renderVTabs(){
   $("#vtabs").innerHTML = voix.map(v => `<button class="vtab" data-id="${esc(v.id)}" aria-current="${v.id === editId}">${esc(v.nom || "Sans nom")}</button>`).join("")
-    + `<button class="vtab" data-id="" aria-current="${!editId}">+ Nouvelle voix</button>`;
+    + `<button class="vtab" data-id="" aria-current="${!editId}">+ Nouveau client</button>`;
   $("#vtabs").querySelectorAll(".vtab").forEach(b => b.onclick = () => loadVoixForm(b.dataset.id || null));
 }
 function loadVoixForm(id){
   editId = id; const v = getVoix(id) || {};
   PF.forEach(k => $("#p-" + k).value = v[k] || "");
   renderValides(v);
+  renderClientHead(); renderSources(); renderContenus();
+  showSub(id ? curSub : "fiche");
   $("#b-delv").hidden = !id; $("#v-msg").textContent = ""; $("#an-msg").textContent = ""; renderVTabs();
 }
 $("#b-savev").onclick = async () => {
   const data = {}; PF.forEach(k => data[k] = $("#p-" + k).value.trim());
   data.valides = getVoix(editId)?.valides || [];
-  if (!data.nom) { vmsg("Donne au moins un nom à cette voix.", true); return; }
-  const id = editId || uid();
+  if (!data.nom) { vmsg("Donne au moins un nom à ce client.", true); return; }
+  const id = editId || uid(); const wasEdit = !!editId;
   try {
     await store.save("voix", id, data);
     const full = { id, ...data, updatedAt: Date.now() }; const i = voix.findIndex(v => v.id === id);
     if (i >= 0) voix[i] = full; else voix.unshift(full);
     editId = id; activeId = id; renderVTabs(); renderVoixSelect(); $("#b-delv").hidden = false;
-    vmsg("Voix enregistrée. Elle est maintenant active.");
+    vmsg("Client enregistré. Il est maintenant actif."); renderClientHead(); if (curSub === "fiche" && !wasEdit) showSub("nourrir");
   } catch (e) { vmsg("Enregistrement impossible (" + (e.code || "erreur") + ").", true); }
 };
 function vmsg(t, err){ $("#v-msg").textContent = t; $("#v-msg").className = "msg" + (err ? " err" : ""); }
@@ -1143,6 +1214,7 @@ $("#b-ideas").onclick = async () => {
 
 PERSONNE : ${v?.nom || "-"}, ${v?.titre || ""}
 Activité : ${v?.activite || "-"}
+Connaissances récentes (points client, documents) : ${v ? knowledgeDigest(v, 6000) || "-" : "-"}
 Cible : ${v?.cible || "-"}
 Style : ${v?.style || "-"}
 NICHE : ${niche}
@@ -1153,8 +1225,8 @@ ${deja.length ? "Déjà proposées, à ne pas refaire :\n" + deja.join("\n") : "
 Règles :
 - Des angles précis, qui prennent position ou nomment ce que la cible vit sans oser le dire. Aucun sujet bateau (« 5 conseils pour… », « l'importance de… »).
 - Ne suppose aucun vécu de la personne. Pour chaque idée, formule la question qu'elle doit se poser pour trouver son propre moment vécu.
-- L'accroche : 1 à 2 phrases, rupture ou curiosité immédiate, jamais de mise en contexte, pas de tiret cadratin. Écrite dans le style décrit. Si elle a besoin d'un fait personnel, mets [x] à la place du détail.
-- Varie les formats. Privilégie les accroches qui surperforment : un tiers connu et sa décision surprenante (sans inventer de faits : mets [x] si besoin), l'histoire d'un proche (« Une amie à moi… »), une scène avec deux personnes que tout oppose, une erreur et son coût exact, une citation choc, une idée reçue qualifiée d'arnaque. Évite l'opinion générale sans ancrage.
+- L'accroche : 1 à 2 phrases, rupture ou curiosité immédiate, jamais de mise en contexte, pas de tiret cadratin. Écrite dans le style décrit. N'utilise que des faits présents dans la fiche ; s'il en manque un, formule l'accroche sans ce détail, jamais de crochet.
+- Varie les formats. Privilégie les accroches qui surperforment : un tiers connu et sa décision surprenante (sans inventer de faits), l'histoire d'un proche (« Une amie à moi… »), une scène avec deux personnes que tout oppose, une erreur et son coût exact, une citation choc, une idée reçue qualifiée d'arnaque. Évite l'opinion générale sans ancrage.
 
 Réponds UNIQUEMENT avec un tableau JSON de 9 objets :
 [{"accroche":"...","angle":"de quoi parle le post, 1 phrase","format":"story|opinion|vuln|jalon|cash|actu|liste|coup","objectif":"attraction|qualification|conversion","question":"la question à te poser pour trouver ta matière"}]`, { modelTier: "default" });
@@ -1186,7 +1258,9 @@ Procédés : ${(m.mecaniques || []).join(" ; ")}`;
 const UNIVERSAL_RULES = `# RÈGLES GÉNÉRALES D'ÉCRITURE (valables pour tout le monde ; en cas de conflit, la voix l'emporte)
 
 ## Règle zéro
-N'invente jamais un vécu, une émotion, un chiffre, une date, un prénom ou un épisode qui ne figure ni dans la matière brute ni dans la fiche de la voix. Si le post a besoin d'un détail personnel absent, écris à cet endroit précis : [à compléter : ce qu'il faut mettre ici]. Mieux vaut trois trous qu'une fausse histoire.
+N'utilise QUE les informations dont tu disposes : la matière brute et la fiche de la voix. N'invente jamais un vécu, une émotion, un chiffre, une date, un prénom, une citation ou un épisode.
+Le post doit être publiable tel quel : AUCUN trou, AUCUN crochet, AUCUN « [à compléter] », AUCUN « [x] » (seul [lien] est autorisé quand la fin le demande).
+Si un détail manque (un montant, une date, une phrase exacte, ce que la personne est devenue), écris la phrase sans ce détail : « Une cliente était prête à me payer le jour même » plutôt qu'un montant inventé ou un trou. Si c'est l'histoire entière qui manque, ne la raconte pas : choisis un autre angle du même sujet qui s'appuie sur des faits réels de la fiche (un fait du parcours, une conviction, une habitude, une méthode). Un post plus simple mais vrai et complet vaut mieux qu'une histoire à trous.
 
 ## Accroche
 - Ce sont les 2 premières lignes visibles avant « voir plus ». Ligne 1 : un fait concret ou chiffré. Ligne 2 : le contraste ou la tension (« Pourtant », « Mais », « Aujourd'hui »).
@@ -1213,7 +1287,7 @@ N'invente jamais un vécu, une émotion, un chiffre, une date, un prénom ou un 
 
 ## Listes
 - Uniquement avec →, un élément par ligne. Jamais de tirets « - ».
-- 4 à 6 éléments maximum : 5 forts valent mieux que 10 tièdes. Sinon, moins d'éléments ou une ligne [à compléter : …].
+- 4 à 6 éléments maximum : 5 forts valent mieux que 10 tièdes. Si la matière ne suffit pas, mets moins d'éléments, jamais de ligne à compléter.
 - Chaque élément tient la promesse exacte de l'accroche. Si elle annonce des habitudes surprenantes, chaque ligne est un comportement concret du quotidien, avec au plus son pourquoi en quelques mots. Pas de principes génériques, pas de preuves de résultat, pas d'anecdotes recyclées.
 
 ## Fin
@@ -1262,6 +1336,11 @@ Titre : ${v.titre || "-"}
 Niche : ${v.niche || "-"}
 Qui c'est, ce que la personne vend, son vécu (réserve de faits réels) :
 ${v.activite || "-"}
+${knowledgeFor(v, d) ? `
+Connaissances issues des échanges avec la personne (points, documents, vocaux, liens) : ce sont des faits RÉELS, utilisables au même titre que la fiche. Les verbatim montrent sa façon de parler :
+<<<
+${knowledgeFor(v, d)}
+>>>` : ""}
 Cible : ${v.cible || "-"}
 ${pickExemples(v, d) ? `
 Exemples de ses posts, choisis parce qu'ils sont proches de cette demande (référence de rythme, de vocabulaire, de mise en page et de ponctuation ; ne jamais recopier leurs phrases ni leurs histoires) :
@@ -1294,7 +1373,8 @@ Réponds exactement avec ces trois balises, rien avant :
 ===NOTES===
 Type : (type de post)
 Pourquoi l'accroche marche : (1 phrase)
-Conseil : (1 phrase concrète pour la publication)`;
+Conseil : (1 phrase concrète pour la publication)
+Pour aller plus loin : (si un détail vécu manquant aurait rendu le post plus fort, dis lequel en 1 phrase, sinon « rien »)`;
 
 function buildPrompt(v, d = readDemand()){
   return `Tu es un ghostwriter LinkedIn francophone de très haut niveau. Tu écris UN post LinkedIn dans la voix de la personne décrite ci-dessous.
@@ -1386,7 +1466,7 @@ function show(p){
   $("#hooks-box").hidden = !p.hooks.length;
   $("#notes").textContent = p.notes; $("#notes-box").hidden = !p.notes;
 }
-function renderPost(t){ $("#li-text").innerHTML = esc(t).replace(/\[à compléter[^\]]*\]/gi, m => `<mark>${m}</mark>`); runChecks(); }
+function renderPost(t){ $("#li-text").innerHTML = esc(t).replace(/\[(?!lien\])[^\]\n]{1,120}\]/gi, m => `<mark>${m}</mark>`); runChecks(); }
 function swapHook(h, btn){
   const t = currentText(); const i = t.indexOf("\n\n"); const oldHook = i < 0 ? t : t.slice(0, i);
   renderPost(h + (i < 0 ? "" : t.slice(i)));
@@ -1422,7 +1502,7 @@ function retoucher(consigne){
   const turns = [
     { role: "user", content: base },
     { role: "assistant", content: "===POST===\n" + currentText() },
-    { role: "user", content: `Retouche ce post : ${consigne}\nGarde toutes les règles non négociables (rien d'inventé, balises [à compléter] conservées si l'info manque toujours). Réponds avec le même format à trois balises.` }
+    { role: "user", content: `Retouche ce post : ${consigne}\nGarde toutes les règles (rien d'inventé, uniquement les infos disponibles, aucun passage entre crochets à compléter). Réponds avec le même format à trois balises.` }
   ];
   $("#f-ret").value = "";
   run(turns, { voixId: lastRun.voixId, sujet: lastRun.sujet, format: lastRun.format });
@@ -1469,8 +1549,8 @@ function checkItems(t, v, long = $("#f-long").value){
   items.push([len >= mn * 0.9 && len <= mx * 1.15, `${len} caractères (visé : ${mn}-${mx})`]);
   const hook = t.split("\n\n")[0] || "";
   items.push([hook.length <= 220, hook.length <= 220 ? "L'accroche tient avant « voir plus »" : `Accroche de ${hook.length} caractères : elle sera coupée`]);
-  const holes = (t.match(/\[à compléter/gi) || []).length;
-  items.push([holes === 0, holes ? `${holes} passage${holes > 1 ? "s" : ""} à compléter avec ton vrai vécu` : "Rien à compléter"]);
+  const holes = (t.match(/\[(?!lien\])[^\]\n]{1,120}\]/gi) || []).length;
+  items.push([holes === 0, holes ? `${holes} passage${holes > 1 ? "s" : ""} entre crochets : le post doit être publiable tel quel` : "Post complet, rien à compléter"]);
   const link = /https?:\/\/|www\.\S/i.test(t);
   if ($("#f-cta").value !== "lienpost") items.push([!link, link ? "Lien dans le corps : mets-le en commentaire" : "Pas de lien dans le corps"]);
   const tags = (t.match(/(^|\s)#[\p{L}\d_]+/gu) || []).length;
@@ -1499,7 +1579,7 @@ function runChecks(){
   meter(t.length);
   const items = checkItems(t, v);
   $("#checks").innerHTML = items.map(([ok, l]) => `<li class="${ok ? "ok" : "warn"}"><span class="ic">${ok ? "✓" : "!"}</span><span>${esc(l)}</span></li>`).join("");
-  $("#b-fix").hidden = busy || !items.some(([ok, l]) => !ok && !/à compléter/.test(l));
+  $("#b-fix").hidden = busy || !items.some(([ok]) => !ok);
 }
 
 /* ---------- Historique ---------- */
@@ -1649,7 +1729,8 @@ async function savePlan(){
 function planContext(v, p){
   return `PERSONNE : ${v?.nom || "-"}, ${v?.titre || ""}
 Niche : ${v?.niche || "-"}
-Qui elle est, ce qu'elle vend (faits réels) : ${v?.activite || "-"}
+Qui c'est, ce que la personne vend (faits réels) : ${v?.activite || "-"}
+Connaissances récentes (points client, documents) : ${v ? knowledgeDigest(v, 6000) || "-" : "-"}
 Cible : ${v?.cible || "-"}
 Style : ${v?.style || "-"}
 FIL ROUGE : ${p.theme || "libre"}
@@ -1664,7 +1745,7 @@ const PLAN_RULES = `Règles :
 - Varie les formats, jamais deux fois le même format d'affilée.
 - Le sujet est écrit pour être validé par un client en une lecture : clair, concret, 8 à 14 mots, sans jargon.
 - Ne suppose aucun vécu de la personne. Pour chaque créneau, formule la question qu'elle doit se poser pour trouver sa matière. Tu peux t'appuyer sur les faits réels donnés ci-dessus.
-- L'accroche : 1 à 2 phrases orales, nombres en chiffres, un fait ou un contraste, jamais d'opinion générale, jamais de mindset, pas de tiret cadratin. Si elle a besoin d'un détail personnel, mets [x].
+- L'accroche : 1 à 2 phrases orales, nombres en chiffres, un fait ou un contraste, jamais d'opinion générale, jamais de mindset, pas de tiret cadratin. N'utilise que des faits de la fiche ; s'il en manque un, formule l'accroche sans ce détail, jamais de crochet.
 - Leviers qui marchent : tiers connu et sa décision surprenante, histoire d'un proche, scène avec 2 personnes que tout oppose, erreur et son coût exact, citation choc, idée reçue qualifiée d'arnaque, chiffre précis.
 - format parmi : story, opinion, vuln, jalon, cash, actu, liste, coup.`;
 $("#pl-gen").onclick = async () => {
@@ -1855,9 +1936,9 @@ function pickExemples(v, d = readDemand()){
 /* ---------- Relecture ---------- */
 function rulesBlock(v){ return UNIVERSAL_RULES + "\n\n" + voiceRules(v); }
 async function relire(post, v, signal, d){
-  const issues = checkItems(post, v, d?.long).filter(x => !x[0] && !/caractères|à compléter/.test(x[1])).map(x => x[1]);
+  const issues = checkItems(post, v, d?.long).filter(x => !x[0] && !/caractères/.test(x[1])).map(x => x[1]);
   const prompt = `Tu es relectrice exigeante pour ${v.nom}. Voici un post LinkedIn à relire.
-Ta mission : le corriger pour qu'il respecte TOUTES les règles ci-dessous, en touchant le moins possible au texte. Tu ne changes ni l'histoire, ni les faits, ni la structure, ni l'accroche si elle respecte déjà les règles. Tu n'inventes rien. Tu gardes les [à compléter : …] tels quels, ainsi que la mise en page (lignes vides, listes →, emojis existants, [lien]).
+Ta mission : le corriger pour qu'il respecte TOUTES les règles ci-dessous, en touchant le moins possible au texte. Tu ne changes ni l'histoire, ni les faits, ni la structure, ni l'accroche si elle respecte déjà les règles. Tu n'inventes rien. S'il reste un passage entre crochets à compléter (sauf [lien]), tu réécris la phrase sans ce détail pour que le post soit publiable tel quel, sans rien inventer. Tu gardes la mise en page (lignes vides, listes →, emojis existants, [lien]).
 
 Traque en priorité : phrases coupées en fragments pour l'effet, nombres écrits en lettres, gros mots non censurés, tournures mindset et maximes, « ce n'est pas X, c'est Y » et toutes ses variantes, triplets rythmés, phrases choc isolées, questions rhétoriques plaquées, métaphore ou punchline finale, jargon non vulgarisé, tiret cadratin, mots interdits de la voix, tics d'IA, fautes d'orthographe.
 ${issues.length ? "Problèmes déjà repérés automatiquement :\n- " + issues.join("\n- ") : ""}
@@ -1951,7 +2032,7 @@ Réponds UNIQUEMENT avec un tableau JSON de chaînes : ["règle 1", "règle 2"]`
 };
 $("#b-fix").onclick = () => {
   const v = getVoix(lastRun?.voixId || activeId);
-  const pbs = checkItems(currentText(), v).filter(x => !x[0] && !/à compléter/.test(x[1])).map(x => x[1]);
+  const pbs = checkItems(currentText(), v).filter(x => !x[0]).map(x => x[1]);
   if (pbs.length) retoucher("Corrige uniquement ces points, sans rien changer d'autre : " + pbs.join(" ; "));
 };
 
@@ -1989,21 +2070,21 @@ function renderDash(){
       <div class="stats"><div><b>${vp.filter(p => sameMonth(p.createdAt)).length}</b>ce mois</div><div><b>${vp.length}</b>au total</div><div><b>${(v.valides || []).length}</b>validés</div></div>
       ${next ? `<div class="next"><b>Prochain post · ${esc(fmtDay(next.date))}</b>${esc(next.sujet || "Sujet à définir")}</div>` : `<div class="next"><b>Prochain post</b>Aucun planning à venir</div>`}
       ${vs.length ? `<div><div class="barl"><span>Sujets validés</span><span>${vv}/${vs.length}</span></div><div class="bar"><i style="width:${Math.round(vv / vs.length * 100)}%"></i></div></div>` : ""}
-      <div class="ib"><button class="btn btn-s go" data-act="ecrire" data-id="${esc(v.id)}">Écrire</button><button class="btn btn-s" data-act="batch" data-id="${esc(v.id)}">Batch</button><button class="btn btn-s" data-act="planning" data-id="${esc(v.id)}">Planning</button><button class="btn btn-s" data-act="voix" data-id="${esc(v.id)}">Voix</button></div>
+      <div class="ib"><button class="btn btn-s go" data-act="ecrire" data-id="${esc(v.id)}">Écrire</button><button class="btn btn-s" data-act="batch" data-id="${esc(v.id)}">Batch</button><button class="btn btn-s" data-act="planning" data-id="${esc(v.id)}">Planning</button><button class="btn btn-s" data-act="nourrir" data-id="${esc(v.id)}">Nourrir</button><button class="btn btn-s" data-act="voix" data-id="${esc(v.id)}">Fiche</button></div>
     </article>`;
-  }).join("") : `<div class="empty"><strong>Aucun client pour l'instant</strong>Crée une première voix pour commencer.</div>`;
+  }).join("") : `<div class="onboard"><strong class="x" style="font-size:1.2rem">Bienvenue dans le studio</strong><ol><li><b>Crée un client</b> : son nom, son titre, sa niche, et 3 à 5 de ses posts si tu les as.</li><li><b>Nourris l'IA</b> : transcription du point de lancement, documents, vocal, liens.</li><li><b>Lance un planning ou un batch</b> : l'IA écrit, tu valides, le client signe.</li></ol><button class="btn btn-s" style="background:#3B4BFF;color:#fff;border-color:#3B4BFF" onclick="document.getElementById('dash-new').click()">Créer le premier client</button></div>`;
   $("#dash-clients").querySelectorAll("[data-act]").forEach(b => b.onclick = () => {
     activeId = b.dataset.id; renderVoixSelect();
     const a = b.dataset.act;
     if (a === "planning") { const pl = plannings.find(p => p.voixId === activeId); curPlan = pl || null; if (pl) fillPlanForm(pl); }
-    if (a === "voix") loadVoixForm(activeId);
+    if (a === "voix" || a === "nourrir") { loadVoixForm(activeId); showSub(a === "voix" ? "fiche" : "nourrir"); goTab("voix"); return; }
     goTab(a);
   });
 
   const todo = [];
   slots.filter(s => s.statut === "revoir" && s.date >= today).forEach(s => todo.push({ w: 1, cls: "w", t: "À revoir : " + (s.sujet || "sujet"), sub: `${s.plan.voixNom || ""} · ${fmtDay(s.date)}`, go: () => { curPlan = s.plan; fillPlanForm(s.plan); goTab("planning"); } }));
   week.filter(s => !(s.postId && posts.some(p => p.id === s.postId))).forEach(s => todo.push({ w: 2, cls: "", t: "À écrire : " + (s.sujet || "sujet à définir"), sub: `${s.plan.voixNom || ""} · ${fmtDay(s.date)}${s.statut === "valide" ? " · validé" : ""}`, go: () => { curPlan = s.plan; if (getVoix(s.plan.voixId)) { activeId = s.plan.voixId; renderVoixSelect(); } useSlot(s.i); } }));
-  voix.filter(v => !(v.exemples || "").trim() || !(v.activite || "").trim()).forEach(v => todo.push({ w: 3, cls: "", t: `Compléter la voix de ${v.nom}`, sub: "Exemples de posts ou vécu manquants", go: () => { loadVoixForm(v.id); goTab("voix"); } }));
+  voix.filter(v => readiness(v).pct < 70).forEach(v => todo.push({ w: 3, cls: "", t: `Compléter la fiche de ${v.nom}`, sub: `Prête à ${readiness(v).pct}% : ${readiness(v).missing.slice(0, 2).join(", ")}`, go: () => { loadVoixForm(v.id); showSub(readiness(v).missing[0] === "une info ajoutée" ? "nourrir" : "fiche"); goTab("voix"); } }));
   todo.sort((a, b) => a.w - b.w);
   $("#dash-todo").innerHTML = todo.length ? "" : `<div class="row-item" style="cursor:default"><span class="dot o"></span><span>Rien d'urgent. Tout ce qui est prévu cette semaine est écrit.</span></div>`;
   todo.slice(0, 8).forEach(x => { const b = document.createElement("button"); b.className = "row-item"; b.innerHTML = `<span class="dot ${x.cls}"></span><span>${esc(x.t)}<small>${esc(x.sub)}</small></span>`; b.onclick = x.go; $("#dash-todo").appendChild(b); });
@@ -2058,6 +2139,7 @@ async function genMissingIdeas(v, n, exclude){
 PERSONNE : ${v.nom}, ${v.titre || ""}
 Niche : ${v.niche || "-"}
 Qui c'est, ce que la personne vend, son vécu : ${(v.activite || "-").slice(0, 6000)}
+Connaissances récentes (points client, documents) : ${knowledgeDigest(v, 6000) || "-"}
 Cible : ${v.cible || "-"}
 Déjà prévus (ne pas répéter) :
 ${exclude.join("\n") || "(aucun)"}
@@ -2159,6 +2241,223 @@ $("#bt-history").onchange = () => {
 };
 window.addEventListener("beforeunload", e => { if (batchRun?.running) { e.preventDefault(); e.returnValue = ""; } });
 
+
+/* =================== CLIENTS : fiche, état, nourrir l'IA =================== */
+let sources = [], curSub = "nourrir", srcType = "texte";
+function showSub(name){
+  curSub = name;
+  document.querySelectorAll(".subtabs button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.sub === name)));
+  ["nourrir", "fiche", "contenus"].forEach(n => $("#sub-" + n).hidden = n !== name);
+}
+document.querySelectorAll(".subtabs button").forEach(b => b.onclick = () => {
+  if (!editId && b.dataset.sub !== "fiche") { vmsg("Enregistre d'abord le client (au moins son nom).", true); showSub("fiche"); return; }
+  showSub(b.dataset.sub);
+});
+function readiness(v){
+  const nbEx = (v.exemples || "").split(/\n\s*-{3,}\s*\n/).filter(s => s.trim().length > 80).length;
+  const items = [
+    ["profil (titre, niche, cible)", !!(v.titre && v.niche && v.cible), 15],
+    ["vécu dans la fiche", (v.activite || "").length >= 300, 20],
+    ["2 exemples de posts minimum", nbEx >= 2, 20],
+    ["style décrit", (v.style || "").length >= 80, 15],
+    ["une info ajoutée", sources.some(s => s.voixId === v.id), 20],
+    ["un post validé", (v.valides || []).length > 0, 10]
+  ];
+  return { items, pct: items.reduce((n, x) => n + (x[1] ? x[2] : 0), 0), missing: items.filter(x => !x[1]).map(x => x[0]) };
+}
+function renderClientHead(){
+  const v = getVoix(editId);
+  if (!v) { $("#client-head").innerHTML = `<div><strong>Nouveau client</strong><small>Remplis au moins son nom dans « Fiche &amp; voix », puis enregistre.</small></div>`; return; }
+  const r = readiness(v);
+  $("#client-head").innerHTML = `<div><div class="who"><div class="av">${esc(initials(v.nom))}</div><div><strong>${esc(v.nom)}</strong><small>${esc(v.titre || v.niche || "")}</small></div></div>
+    <div class="ib"><button class="btn btn-s go" data-ch="ecrire">Écrire</button><button class="btn btn-s" data-ch="batch">Batch</button><button class="btn btn-s" data-ch="planning">Planning</button></div></div>
+    <div class="ready"><div class="barl"><span>Fiche prête à</span><b>${r.pct}%</b></div><div class="bar"><i style="width:${r.pct}%"></i></div>
+    <ul class="checklist">${r.items.map(x => `<li class="${x[1] ? "ok" : ""}"><i>${x[1] ? "✓" : "○"}</i>${esc(x[0])}</li>`).join("")}</ul></div>`;
+  $("#client-head").querySelectorAll("[data-ch]").forEach(b => b.onclick = () => {
+    activeId = v.id; renderVoixSelect();
+    if (b.dataset.ch === "planning") { const pl = plannings.find(p => p.voixId === v.id); curPlan = pl || null; if (pl) fillPlanForm(pl); }
+    goTab(b.dataset.ch);
+  });
+}
+function renderContenus(){
+  const vp = posts.filter(p => p.voixId === editId).slice(0, 20);
+  $("#cl-posts").innerHTML = vp.length ? "" : `<p class="hint">Aucun post pour l'instant.</p>`;
+  vp.forEach(p => { const b = document.createElement("button"); b.className = "row-item"; b.innerHTML = `<span class="dot o"></span><span>${esc((p.texte || "").split("\n")[0].slice(0, 90))}<small>${new Date(p.updatedAt || p.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}${p.batchId ? " · batch" : ""}</small></span>`; b.onclick = () => openPost(p.id); $("#cl-posts").appendChild(b); });
+  const pls = plannings.filter(p => p.voixId === editId);
+  $("#cl-plans").innerHTML = pls.length ? "" : `<p class="hint">Aucun planning pour l'instant.</p>`;
+  pls.forEach(pl => { const ok = pl.slots.filter(s => s.statut === "valide").length; const b = document.createElement("button"); b.className = "row-item"; b.innerHTML = `<span class="dot ${ok === pl.slots.length ? "o" : ""}"></span><span>${esc(pl.titre)}<small>${ok}/${pl.slots.length} sujets validés</small></span>`; b.onclick = () => { activeId = pl.voixId; renderVoixSelect(); curPlan = pl; fillPlanForm(pl); goTab("planning"); }; $("#cl-plans").appendChild(b); });
+}
+
+/* Connaissances injectées dans les prompts */
+function knowledgeFor(v, d = {}){
+  const list = sources.filter(s => s.voixId === v.id && (s.faits || "").trim());
+  if (!list.length) return "";
+  const words = new Set(((d.sujet || "") + " " + (d.matiere || "")).toLowerCase().match(/[a-zàâçéèêëîïôûùüÿœ0-9]{5,}/g) || []);
+  const scored = list.map((s, i) => { const tl = s.faits.toLowerCase(); let sc = 0; for (const w of words) if (tl.includes(w)) sc += 2; sc += Math.max(0, 6 - i); return { s, sc }; }).sort((a, b) => b.sc - a.sc);
+  const out = []; let len = 0;
+  for (const { s } of scored) { const block = `### ${s.titre} (${new Date(s.createdAt).toLocaleDateString("fr-FR")})\n${s.faits.trim()}`; if (len + block.length > 10000 && out.length) continue; out.push(block); len += block.length; if (len > 10000) break; }
+  return out.join("\n\n");
+}
+function knowledgeDigest(v, max = 6000){
+  let out = "";
+  for (const s of sources.filter(x => x.voixId === v.id)) { const b = `\n[${s.titre}]\n${(s.faits || "").trim()}`; if (out.length + b.length > max) break; out += b; }
+  return out.trim();
+}
+
+/* Sources : saisie */
+const SRC = {
+  texte: { label: "Écrire", text: "Ce que tu sais", ph: "Ce que le client t'a raconté, ses réponses à tes questions, une anecdote, un chiffre, une opinion…", dict: true },
+  transcript: { label: "Transcription", text: "Colle la transcription", ph: "Colle ici la transcription Fathom (ou Zoom, Meet, tl;dv…). Ou importe le fichier ci-dessous.", file: ".txt,.vtt,.srt,.md,.docx", fileL: "Ou importe le fichier (.txt, .vtt, .srt, .docx)" },
+  doc: { label: "PDF / doc", file: ".pdf,.docx,.txt,.md", fileL: "Document (.pdf, .docx, .txt)" },
+  lien: { label: "Lien", url: true },
+  vocal: { label: "Vocal", text: "Dicte ou colle ce qui a été dit", ph: "Appuie sur « Dicter » et parle, ou importe un fichier audio ci-dessous.", dict: true, file: "audio/*", fileL: "Ou importe un vocal (mp3, m4a, wav · 3 Mo max, environ 3 min)" },
+  capture: { label: "Capture", file: "image/*", multiple: true, fileL: "Captures d'écran (conversation, notes, stats…) · 4 max" }
+};
+function setSrcType(t){
+  srcType = t; const c = SRC[t];
+  $("#src-types").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.t === t)));
+  $("#src-text-wrap").hidden = !c.text; if (c.text) { $("#src-text-l").textContent = c.text; $("#src-text").placeholder = c.ph; }
+  $("#src-dict-wrap").hidden = !c.dict;
+  $("#src-file-wrap").hidden = !c.file; if (c.file) { $("#src-file").accept = c.file; $("#src-file").multiple = !!c.multiple; $("#src-file-l").textContent = c.fileL; $("#src-file").value = ""; $("#src-file-hint").textContent = ""; }
+  $("#src-url-wrap").hidden = !c.url;
+}
+$("#src-types").querySelectorAll("button").forEach(b => b.onclick = () => setSrcType(b.dataset.t));
+
+/* Dictée (navigateur) */
+const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+let dictRec = null;
+$("#src-dictate").onclick = () => {
+  if (!SpeechRec) { $("#dict-hint").textContent = "Dictée indisponible sur ce navigateur : utilise le micro du clavier de ton téléphone."; return; }
+  if (dictRec) { dictRec.stop(); return; }
+  dictRec = new SpeechRec(); dictRec.lang = "fr-FR"; dictRec.continuous = true; dictRec.interimResults = true;
+  const base = $("#src-text").value.trim(); let fin = "";
+  dictRec.onresult = e => { let interim = ""; for (let i = e.resultIndex; i < e.results.length; i++) { const r = e.results[i]; if (r.isFinal) fin += r[0].transcript.trim() + ". "; else interim += r[0].transcript; } $("#src-text").value = (base ? base + "\n" : "") + fin + interim; };
+  dictRec.onerror = e => { $("#dict-hint").textContent = e.error === "not-allowed" ? "Autorise le micro pour dicter." : "La dictée s'est coupée."; };
+  dictRec.onend = () => { dictRec = null; $("#src-dictate").textContent = "Dicter"; $("#src-dictate").setAttribute("aria-pressed", "false"); };
+  dictRec.start(); $("#src-dictate").textContent = "Arrêter la dictée"; $("#src-dictate").setAttribute("aria-pressed", "true"); $("#dict-hint").textContent = "Parle, le texte s'écrit tout seul.";
+};
+
+/* Lecture des fichiers */
+async function ensurePdfJs(){
+  if (!window.pdfjsLib) await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+}
+async function fileToText(f){
+  const ext = (f.name.split(".").pop() || "").toLowerCase();
+  if (ext === "pdf") {
+    await ensurePdfJs();
+    const pdf = await window.pdfjsLib.getDocument({ data: await f.arrayBuffer() }).promise; let t = "";
+    for (let i = 1; i <= Math.min(pdf.numPages, 80); i++) { const c = await (await pdf.getPage(i)).getTextContent(); t += c.items.map(x => x.str).join(" ") + "\n\n"; }
+    return t;
+  }
+  if (ext === "docx") {
+    if (!window.mammoth) await loadScript("https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js");
+    return (await window.mammoth.extractRawText({ arrayBuffer: await f.arrayBuffer() })).value;
+  }
+  let t = await f.text();
+  if (ext === "vtt" || ext === "srt") t = t.replace(/^WEBVTT.*$/m, "").replace(/^\d+\s*$/gm, "").replace(/^[\d:.,]+ --> [\d:.,]+.*$/gm, "").replace(/\n{2,}/g, "\n");
+  return t;
+}
+const toB64 = f => new Promise((ok, ko) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(",")[1]); r.onerror = ko; r.readAsDataURL(f); });
+async function imageToB64(f){
+  const img = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = URL.createObjectURL(f); });
+  const k = Math.min(1, 1600 / Math.max(img.width, img.height)); const c = document.createElement("canvas");
+  c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+  URL.revokeObjectURL(img.src); return c.toDataURL("image/jpeg", 0.85).split(",")[1];
+}
+
+/* Extraction des faits */
+function extractPrompt(v, kind, text){
+  return `Tu prépares la matière première d'un ghostwriter LinkedIn pour ${v.nom}${v.titre ? " (" + v.titre + ")" : ""}. Voici une source de type « ${kind} ».
+Extrais UNIQUEMENT ce qui y est réellement dit, sans rien inventer, sans extrapoler, en français. S'il s'agit d'une conversation, ne retiens que ce que dit ${v.nom} (pas les questions de l'interlocuteur), et attribue correctement chaque fait.
+Garde les détails exacts : dates, montants, durées, prénoms, lieux, noms d'entreprises.
+
+Réponds en texte brut avec ces rubriques (omets celles qui sont vides) :
+FAITS ET VÉCU
+- (anecdotes, moments précis, décisions, erreurs, réussites, avec les détails exacts)
+CHIFFRES
+- 
+CONVICTIONS ET PRISES DE POSITION
+- 
+ACTUALITÉ ET PROJETS
+- (ce qui arrive bientôt : lancements, événements, recrutements…)
+VERBATIM
+- « phrases exactes de ${v.nom}, utiles pour sa façon de parler »
+IDÉES DE POSTS
+- (sujets concrets et précis tirés de cette source)
+
+${text ? `SOURCE :\n<<<\n${text.slice(0, 120000)}\n>>>` : ""}`;
+}
+function srcMsg(t, err){ $("#src-msg").textContent = t; $("#src-msg").className = "msg" + (err ? " err" : ""); }
+$("#src-add").onclick = async () => {
+  const v = getVoix(editId); if (!v) { srcMsg("Enregistre d'abord le client.", true); return; }
+  if (!sample) { srcMsg("Génération indisponible.", true); return; }
+  const btn = $("#src-add"); btn.disabled = true;
+  const files = [...($("#src-file").files || [])];
+  let kind = SRC[srcType].label, titre = $("#src-titre").value.trim(), raw = "", faits = "";
+  try {
+    if (srcType === "lien") {
+      const url = $("#src-url").value.trim(); if (!url) throw { msg: "Colle un lien." };
+      srcMsg("Lecture de la page…");
+      const r = await fetch("/api/fetch?url=" + encodeURIComponent(url)); const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw { msg: j.error || "Page illisible." };
+      raw = j.text; titre ||= j.title || url;
+    } else if (srcType === "capture") {
+      if (!files.length) throw { msg: "Ajoute au moins une capture." };
+      srcMsg("Lecture des captures…");
+      const imgs = []; for (const f of files.slice(0, 4)) imgs.push({ type: "image", media_type: "image/jpeg", data: await imageToB64(f) });
+      const r = await sample([{ role: "user", content: [{ type: "text", text: extractPrompt(v, "captures d'écran", "") + "\nLa source, ce sont les images jointes. Lis tout le texte visible." }, ...imgs] }], { modelTier: "default", cache: false });
+      faits = r.text.trim(); raw = "(captures d'écran)";
+    } else if (srcType === "vocal" && files.length) {
+      const f = files[0]; if (f.size > 3.5e6) throw { msg: "Fichier trop lourd (3 Mo max). Utilise la dictée, ou coupe le vocal en plusieurs morceaux." };
+      srcMsg("Transcription du vocal…");
+      const ext = (f.name.split(".").pop() || "mp3").toLowerCase();
+      const r = await sample([{ role: "user", content: [{ type: "text", text: "Transcris fidèlement ce vocal en français, mot pour mot, sans résumer ni commenter. Réponds uniquement avec la transcription." }, { type: "audio", format: ext === "m4a" ? "m4a" : ext === "wav" ? "wav" : ext === "ogg" ? "ogg" : "mp3", data: await toB64(f) }] }], { modelTier: "audio", cache: false });
+      raw = r.text.trim();
+    } else if (files.length) {
+      srcMsg("Lecture du fichier…");
+      raw = (await Promise.all(files.map(fileToText))).join("\n\n"); titre ||= files[0].name.replace(/\.[^.]+$/, "");
+    } else {
+      raw = $("#src-text").value.trim();
+    }
+    if (!faits) {
+      if (!raw || raw.length < 20) throw { msg: srcType === "doc" ? "Choisis un fichier." : "Ajoute du contenu." };
+      srcMsg("L'IA extrait les faits, les chiffres et les phrases du client…");
+      faits = (await sample(extractPrompt(v, kind, raw), { modelTier: "default", cache: false })).text.trim();
+    }
+    const id = uid();
+    const doc = { voixId: v.id, type: srcType, titre: titre || `${kind} du ${new Date().toLocaleDateString("fr-FR")}`, faits, extrait: raw.slice(0, 20000), createdAt: Date.now() };
+    await store.save("sources", id, doc);
+    sources.unshift({ id, ...doc, updatedAt: Date.now() });
+    $("#src-text").value = ""; $("#src-titre").value = ""; $("#src-url").value = ""; $("#src-file").value = "";
+    srcMsg("Ajouté. L'IA s'en servira dans les prochains posts, idées et plannings de ce client.");
+    renderSources(); renderClientHead();
+  } catch (e) { srcMsg(e?.msg || (e?.code === "upstream_error" && srcType === "vocal" ? "La transcription a échoué : essaie la dictée, ou vérifie MODEL_AUDIO dans Vercel." : errCopy(e)), true); }
+  finally { btn.disabled = false; }
+};
+function renderSources(){
+  const list = sources.filter(s => s.voixId === editId);
+  $("#src-count").textContent = list.length ? `· ${list.length} source${list.length > 1 ? "s" : ""}` : "";
+  $("#src-list").innerHTML = list.length ? list.map(s => `<article class="src" data-id="${esc(s.id)}"><header><strong>${esc(s.titre)}</strong><span class="meta">${esc(SRC[s.type]?.label || s.type)} · ${new Date(s.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}</span></header>
+    <p class="facts">${esc(s.faits)}</p><div class="ib"><button class="btn btn-s" data-more>Tout voir</button><button class="btn btn-s" data-edit>Modifier</button><button class="btn btn-s" data-del>Supprimer</button></div></article>`).join("")
+    : `<div class="empty"><strong>Rien pour l'instant</strong>Ajoute le point de lancement du client : c'est ce qui rendra ses posts vraiment à lui.</div>`;
+  $("#src-list").querySelectorAll(".src").forEach(c => {
+    const s = sources.find(x => x.id === c.dataset.id);
+    c.querySelector("[data-more]").onclick = e => { c.classList.toggle("open"); e.target.textContent = c.classList.contains("open") ? "Réduire" : "Tout voir"; };
+    c.querySelector("[data-edit]").onclick = () => {
+      const p = c.querySelector(".facts"); if (!p) return;
+      const ta = document.createElement("textarea"); ta.rows = 10; ta.value = s.faits; p.replaceWith(ta);
+      const b = c.querySelector("[data-edit]"); b.textContent = "Enregistrer";
+      b.onclick = async () => { s.faits = ta.value.trim(); try { const body = { ...s }; delete body.id; await store.save("sources", s.id, body); } catch {} renderSources(); };
+    };
+    c.querySelector("[data-del]").onclick = async () => { if (!confirm("Supprimer cette source ?")) return; try { await store.del("sources", s.id); } catch {} sources = sources.filter(x => x.id !== s.id); renderSources(); renderClientHead(); };
+  });
+}
+$("#dash-new").onclick = () => { loadVoixForm(null); showSub("fiche"); goTab("voix"); $("#p-nom").focus(); };
+$("#dash-feed").onclick = () => { if (!activeId) { $("#dash-new").click(); return; } loadVoixForm(activeId); showSub("nourrir"); goTab("voix"); };
+$("#dash-batch").onclick = () => goTab("batch");
+setSrcType("texte");
+
 /* ---------- Démarrage ---------- */
 async function boot(){
   const me = await fetch("/api/login").catch(() => null);
@@ -2170,7 +2469,7 @@ async function boot(){
     const [s, d, dl] = await Promise.all([window.claude.use("sample").catch(() => null), window.claude.use("db").catch(() => null), window.claude.use("downloads").catch(() => null)]);
     sample = s; db = d; downloads = dl;
   }
-  [voix, posts, modeles, idees, plannings, batches] = await Promise.all(["voix", "posts", "modeles", "idees", "plannings", "batches"].map(c => store.list(c)));
+  [voix, posts, modeles, idees, plannings, batches, sources] = await Promise.all(["voix", "posts", "modeles", "idees", "plannings", "batches", "sources"].map(c => store.list(c)));
   renderVoixSelect(); loadVoixForm(voix[0]?.id || null); renderModeles(); renderIdeas(); initPlanning();
   msg(sample ? "" : "Génération indisponible.", !sample);
   if (!voix.length) goTab("voix"); else goTab("dash");
