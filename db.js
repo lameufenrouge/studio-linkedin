@@ -1,7 +1,9 @@
 import { requireAuth } from "./_auth.js";
 import { supaBase, supaHeaders } from "./_supa.js";
 
-const COLLECTIONS = new Set(["voix", "posts", "modeles", "idees", "plannings", "batches", "sources"]);
+// Toute collection en minuscules est acceptée : plus besoin de modifier ce fichier quand l'app ajoute une catégorie
+const VALID = /^[a-z]{2,24}$/;
+export const DB_VERSION = "2026-09-29";
 
 async function fail(res, r, where) {
   const detail = r ? (await r.text().catch(() => "")).slice(0, 300) : where;
@@ -13,7 +15,7 @@ export default async function handler(req, res) {
   if (!requireAuth(req, res)) return;
   if (!supaBase() || !process.env.SUPABASE_SERVICE_ROLE_KEY) return res.status(500).json({ error: "db_error", detail: "Variables SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY manquantes dans Vercel" });
   const col = String(req.query.collection || req.body?.collection || "");
-  if (!COLLECTIONS.has(col)) return res.status(400).json({ error: "db_error", detail: "collection inconnue" });
+  if (!VALID.test(col)) return res.status(400).json({ error: "db_error", detail: "collection inconnue" });
   const base = `${supaBase()}/rest/v1/studio_docs`;
   try {
     if (req.method === "GET") {
