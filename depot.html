@@ -71,7 +71,6 @@ input:focus,textarea:focus{outline:none;border-color:var(--cobalt)}
 .sent h3{margin:0 0 8px;font-size:.95rem}
 .sent ul{margin:0;padding-left:18px;color:var(--muted);font-size:.9rem}
 .gone{max-width:520px;margin:60px auto;text-align:center;padding:0 20px}
-footer{max-width:720px;margin:0 auto;padding:10px 20px 30px;color:var(--muted);opacity:.6;font-size:.7rem;line-height:1.5}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 </style>
 </head>
@@ -117,9 +116,8 @@ footer{max-width:720px;margin:0 auto;padding:10px 20px 30px;color:var(--muted);o
   </section>
 </main>
 
-<div class="gone" id="gone" hidden><h2>Ce lien n'est plus valide</h2><p class="hint" id="gone-msg">Demandez-en un nouveau à votre contact signé.</p></div>
+<div class="gone" id="gone" hidden><h2 id="gone-t">Ce lien n'est plus valide</h2><p class="hint" id="gone-msg">Demandez-en un nouveau à votre contact signé.</p></div>
 
-<footer>Ce site ne fait pas partie du site YouTube™, Google™, Facebook™, Google Inc. ou Facebook Inc. De plus, ce site n'est PAS approuvé par YouTube™, Google™ ou Facebook™ en aucune façon. FACEBOOK™ est une marque de commerce de FACEBOOK, Inc. GOOGLE™ et YOUTUBE™ sont des marques de commerce de GOOGLE Inc.</footer>
 
 <script>
 (() => {
@@ -129,8 +127,8 @@ const token = (location.pathname.split("/d/")[1] || new URLSearchParams(location
 
 async function api(body){
   const r = await fetch("/api/depot?t=" + encodeURIComponent(token), { method: body ? "POST" : "GET", headers: { "Content-Type": "application/json" }, body: body ? JSON.stringify({ ...body, t: token }) : undefined });
-  const j = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(j.error || "L'envoi n'a pas marché, réessayez.");
+  const j = await r.json().catch(() => null);
+  if (!r.ok || !j) { const e = new Error(j?.error || (r.status === 404 ? "Le service de dépôt n'est pas encore en ligne." : `Le service de dépôt ne répond pas (erreur ${r.status}).`)); e.status = r.status; e.known = !!j?.error; throw e; }
   return j;
 }
 
@@ -257,7 +255,7 @@ drop.addEventListener("drop", e => sendPhotos(e.dataTransfer.files));
 /* Démarrage */
 setType("texte");
 api().then(j => { $("#hello").textContent = j.prenom ? `Bonjour ${j.prenom}` : "Bonjour"; $("#app").hidden = false; })
-  .catch(e => { $("#gone").hidden = false; $("#gone-msg").textContent = e.message; });
+  .catch(e => { $("#gone").hidden = false; $("#gone-t").textContent = e.status === 404 && e.known ? "Ce lien n'est plus valide" : "Le dépôt est momentanément indisponible"; $("#gone-msg").textContent = e.message + (e.known ? "" : " Réessayez dans quelques minutes."); });
 })();
 </script>
 </body>

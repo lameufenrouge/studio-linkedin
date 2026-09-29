@@ -1,7 +1,89 @@
 import crypto from "node:crypto";
 import { supaBase, supaHeaders } from "./_supa.js";
-import { complete, extractPrompt, PHOTO_PROMPT, parsePhotoMeta } from "./_llm.js";
-import { uploadImage, saveDoc as saveImageDoc } from "./images.js";
+
+// ---- IA (intégrée ici pour que ce fichier soit autonome) ----
+const useOR = !!process.env.OPENROUTER_API_KEY;
+const MODELS = useOR
+  ? { complex: process.env.MODEL_COMPLEX || "anthropic/claude-opus-5.5", default: process.env.MODEL_DEFAULT || "anthropic/claude-sonnet-5", audio: process.env.MODEL_AUDIO || "google/gemini-2.5-flash" }
+  : { complex: process.env.MODEL_COMPLEX || "claude-opus-5-5", default: process.env.MODEL_DEFAULT || "claude-sonnet-5" };
+
+function part(p) {
+  if (p.type === "image") return useOR
+    ? { type: "image_url", image_url: { url: `data:${p.media_type};base64,${p.data}` } }
+    : { type: "image", source: { type: "base64", media_type: p.media_type, data: p.data } };
+  if (p.type === "audio") return { type: "input_audio", input_audio: { data: p.data, format: p.format } };
+  return p;
+}
+
+async function complete(input, tier = "default") {
+  if (tier === "audio" && !useOR) throw new Error("audio_unsupported");
+  const content = typeof input === "string" ? input : input.map(part);
+  const model = MODELS[tier] || MODELS.default;
+  const r = useOR
+    ? await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: { "content-type": "application/json", Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`, "X-Title": "signe studio" },
+        body: JSON.stringify({ model, max_tokens: 4000, messages: [{ role: "user", content }] }),
+      })
+    : await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-api-key": process.env.ANTHROPIC_API_KEY || "", "anthropic-version": "2023-06-01" },
+        body: JSON.stringify({ model, max_tokens: 4000, messages: [{ role: "user", content }] }),
+      });
+  if (!r.ok) throw new Error("ia_" + r.status);
+  const j = await r.json();
+  return useOR ? String(j.choices?.[0]?.message?.content || "") : (j.content || []).map(x => x.text || "").join("");
+}
+
+function extractPrompt(nom, kind, text) {
+  return `Tu prépares la matière première d'un ghostwriter LinkedIn pour ${nom}. Voici une source de type « ${kind} », envoyée directement par ${nom}.
+Extrais UNIQUEMENT ce qui y est réellement dit, sans rien inventer, sans extrapoler, en français. Garde les détails exacts : dates, montants, durées, prénoms, lieux, noms d'entreprises.
+
+Réponds en texte brut avec ces rubriques (omets celles qui sont vides) :
+FAITS ET VÉCU
+- 
+CHIFFRES
+- 
+CONVICTIONS ET PRISES DE POSITION
+- 
+ACTUALITÉ ET PROJETS
+- 
+VERBATIM
+- « phrases exactes, utiles pour sa façon de parler »
+IDÉES DE POSTS
+- 
+
+${text ? `SOURCE :\n<<<\n${text.slice(0, 120000)}\n>>>` : ""}`;
+}
+
+const PHOTO_PROMPT = "Décris cette photo pour une banque d'images LinkedIn, en français. Réponds UNIQUEMENT en JSON : {\"description\":\"1 phrase factuelle : qui, quoi, où, ambiance\",\"tags\":[\"3 à 6 mots-clés courts\"]}. N'invente pas l'identité des personnes.";
+function parsePhotoMeta(t) {
+  try { const s = t.replace(/```json|```/g, ""); const j = JSON.parse(s.slice(s.indexOf("{"), s.lastIndexOf("}") + 1)); return { description: String(j.description || ""), tags: Array.isArray(j.tags) ? j.tags.slice(0, 6).map(String) : [] }; }
+  catch { return { description: "", tags: [] }; }
+}
+
+// Envoi d'image (bucket privé Supabase)
+const BUCKET = process.env.SUPABASE_BUCKET || "studio-images";
+const HS = () => { const h = supaHeaders(); return { apikey: h.apikey, Authorization: h.Authorization }; };
+async function uploadImage(voixId, data64, mime) {
+  const id = crypto.randomUUID();
+  const path = `${voixId}/${id}.jpg`;
+  const up = await fetch(`${supaBase()}/storage/v1/object/${BUCKET}/${path}`, {
+    method: "POST", headers: { ...HS(), "Content-Type": mime || "image/jpeg", "x-upsert": "true" },
+    body: Buffer.from(data64, "base64"),
+  });
+  if (!up.ok) {
+    const t = await up.text().catch(() => "");
+    throw new Error(/bucket not found/i.test(t) ? "Le stockage des photos n'est pas encore activé." : "Envoi de la photo impossible.");
+  }
+  return { id, path };
+}
+function saveImageDoc(id, data) {
+  return fetch(`${supaBase()}/rest/v1/studio_docs?on_conflict=collection,id`, {
+    method: "POST", headers: { ...supaHeaders(), Prefer: "resolution=merge-duplicates,return=minimal" },
+    body: JSON.stringify({ collection: "images", id, data, updated_at: Date.now() }),
+  });
+}
 
 // Page de dépôt client : accès par lien secret, sans mot de passe, limité à UN client.
 const docs = () => `${supaBase()}/rest/v1/studio_docs`;
@@ -26,6 +108,7 @@ async function saveSource(data) {
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
   const token = String(req.query.t || req.body?.t || "");
+  if (!supaBase() || !process.env.SUPABASE_SERVICE_ROLE_KEY) return res.status(500).json({ error: "Le dépôt n'est pas configuré (variables Supabase manquantes)." });
   const c = await findClient(token).catch(() => null);
   if (!c) return res.status(404).json({ error: "Ce lien n'est plus valide. Demandez-en un nouveau à votre contact signé." });
   const prenom = String(c.nom || "").split(/\s+/)[0];
@@ -67,6 +150,6 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Demande inconnue" });
   } catch (e) {
     console.error("depot", e);
-    return res.status(502).json({ error: e.message === "audio_unsupported" ? "Les vocaux ne sont pas activés : écrivez ou dictez votre message." : "L'envoi n'a pas marché, réessayez dans un instant." });
+    return res.status(502).json({ error: e.message === "audio_unsupported" ? "Les vocaux ne sont pas activés : écrivez ou dictez votre message." : /photo|stockage/i.test(e.message) ? e.message : "L'envoi n'a pas marché, réessayez dans un instant." });
   }
 }
