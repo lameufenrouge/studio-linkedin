@@ -840,7 +840,7 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
     <div>
       <div class="callout">
         <h4 class="x">Le plus rapide</h4>
-        <p>Colle 3 à 5 posts écrits par la personne, séparés par une ligne ---. L'analyse remplit le style, les règles et les interdits.</p>
+        <p>Colle 3 à 5 posts écrits par la personne, séparés par une ligne qui contient seulement --- (ou //). L'analyse remplit le style, les règles et les interdits.</p>
         <label class="sr" for="p-exemples">Exemples de posts</label>
         <textarea id="p-exemples" rows="10" placeholder="Post 1&#10;---&#10;Post 2&#10;---&#10;Post 3"></textarea>
         <div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap">
@@ -1946,11 +1946,15 @@ $("#login-form").onsubmit = async e => {
 
 
 /* ---------- Exemples choisis ---------- */
+// Séparateurs acceptés entre deux posts : ---, — ou – (le Mac transforme souvent --- en tiret long), //, ***, ===, ___
+function splitPosts(text){
+  return String(text || "").split(/\n[ \t]*(?:-{2,}|[—–]+|\/{2,}|\*{3,}|={3,}|_{3,})[ \t]*(?=\n|$)/).map(s => s.trim()).filter(s => s.length > 80);
+}
 function readDemand(){
   return { sujet: $("#f-sujet").value.trim(), matiere: $("#f-matiere").value.trim(), modele: $("#f-modele").value, fmt, obj, cta: $("#f-cta").value, long: $("#f-long").value, ton: $("#f-ton").value };
 }
 function pickExemples(v, d = readDemand()){
-  const all = (v.exemples || "").split(/\n\s*-{3,}\s*\n/).map(s => s.trim()).filter(s => s.length > 80);
+  const all = splitPosts(v.exemples);
   if (!all.length) return "";
   if (all.length <= 4) return all.join("\n---\n").slice(0, 16000);
   const ctx = (d.sujet + " " + d.matiere).toLowerCase();
@@ -2289,12 +2293,13 @@ function showSub(name){
   ["nourrir", "photos", "fiche", "contenus"].forEach(n => $("#sub-" + n).hidden = n !== name);
   if (name === "photos") loadImages(editId);
 }
+PF.forEach(k => $("#p-" + k).addEventListener("input", () => { clearTimeout(window.__rh); window.__rh = setTimeout(renderClientHead, 400); }));
 document.querySelectorAll(".subtabs button").forEach(b => b.onclick = () => {
   if (!editId && b.dataset.sub !== "fiche") { vmsg("Enregistre d'abord le client (au moins son nom).", true); showSub("fiche"); return; }
   showSub(b.dataset.sub);
 });
 function readiness(v){
-  const nbEx = (v.exemples || "").split(/\n\s*-{3,}\s*\n/).filter(s => s.trim().length > 80).length;
+  const nbEx = splitPosts(v.exemples).length;
   const items = [
     ["profil (titre, niche, cible)", !!(v.titre && v.niche && v.cible), 15],
     ["vécu dans la fiche", (v.activite || "").length >= 300, 20],
@@ -2306,7 +2311,8 @@ function readiness(v){
   return { items, pct: items.reduce((n, x) => n + (x[1] ? x[2] : 0), 0), missing: items.filter(x => !x[1]).map(x => x[0]) };
 }
 function renderClientHead(){
-  const v = getVoix(editId);
+  const saved = getVoix(editId);
+  const v = saved && !$("#sub-fiche").hidden ? { ...saved, ...Object.fromEntries(PF.map(k => [k, $("#p-" + k).value])) } : saved;
   if (!v) { $("#client-head").innerHTML = `<div><strong>Nouveau client</strong><small>Remplis au moins son nom dans « Fiche &amp; voix », puis enregistre.</small></div>`; return; }
   const r = readiness(v);
   $("#client-head").innerHTML = `<div><div class="who"><div class="av">${esc(initials(v.nom))}</div><div><strong>${esc(v.nom)}</strong><small>${esc(v.titre || v.niche || "")}</small></div></div>
