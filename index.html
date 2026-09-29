@@ -456,6 +456,7 @@ textarea{resize:vertical;line-height:1.45}
 .tpl-card blockquote{margin:4px 0 0;font-family:var(--serif);font-style:italic;font-size:1.02rem;line-height:1.25;white-space:pre-wrap;border-left:3px solid var(--rouge);padding-left:10px}
 .tpl-card .ib{display:flex;gap:6px;margin-top:auto;padding-top:6px}
 .tpl-card .go{background:#3B4BFF;color:#fff;border-color:#3B4BFF}
+.linkbtn{background:none;border:0;padding:0;color:var(--rouge);font-weight:800;cursor:pointer;text-decoration:underline;font-size:inherit}
 /* Historique */
 .hist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
 .hitem{background:var(--panel);border:1.5px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px}
@@ -941,7 +942,7 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
         <div class="field"><label for="p-interdits">Interdits</label><textarea id="p-interdits" rows="4" placeholder="Un mot ou une tournure par ligne"></textarea></div>
       </div>
       <div class="field"><label for="p-regles">Règles apprises <span class="hint">tes corrections, une par ligne, priorité maximale</span></label><textarea id="p-regles" rows="5" placeholder="Se remplit quand tu corriges un post. Tu peux aussi écrire tes règles ici."></textarea></div>
-      <div class="field"><label for="p-tonExemples">Extraits de ton <span class="hint">viennent du template : situations inventées qui montrent le ton</span></label><textarea id="p-tonExemples" rows="4"></textarea><input type="hidden" id="p-template"></div>
+      <div class="field"><label for="p-tonExemples">Extraits de ton <span class="hint">viennent du template : situations inventées qui montrent le ton</span></label><textarea id="p-tonExemples" rows="4"></textarea><input type="hidden" id="p-template"><input type="hidden" id="p-templateId"><input type="hidden" id="p-templateAt"></div>
       <div class="field"><label for="p-references">Avant / après de référence <span class="hint">une version refusée puis la version validée, pour caler l'oreille</span></label><textarea id="p-references" rows="6" placeholder="VERSION REFUSÉE :&#10;…&#10;&#10;VERSION VALIDÉE :&#10;…"></textarea></div>
       <div class="field"><span class="lbl2">Posts validés <span class="hint">servent de modèle de niveau attendu</span></span><div id="valides-list" class="valides"></div></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -1169,7 +1170,7 @@ const getVoix = id => voix.find(v => v.id === id);
 const initials = n => (n || "?").split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
 
 /* ---------- Voix ---------- */
-const PF = ["nom","titre","niche","activite","cible","style","afaire","interdits","exemples","regles","references","tonExemples","template","entreprise","email","tel","linkedin","site","formule","debut","statut","notes"];
+const PF = ["nom","titre","niche","activite","cible","style","afaire","interdits","exemples","regles","references","tonExemples","template","templateId","templateAt","entreprise","email","tel","linkedin","site","formule","debut","statut","notes"];
 function renderVoixSelect(){
   const sel = $("#f-voix");
   sel.innerHTML = voix.length ? voix.map(v => `<option value="${esc(v.id)}">${esc(v.nom || "Sans nom")}</option>`).join("") : `<option value="">Aucune voix</option>`;
@@ -1205,7 +1206,7 @@ $("#b-savev").onclick = async () => {
     const full = { id, ...data, updatedAt: Date.now() }; const i = voix.findIndex(v => v.id === id);
     if (i >= 0) voix[i] = full; else voix.unshift(full);
     editId = id; activeId = id; renderVTabs(); renderVoixSelect(); $("#b-delv").hidden = false;
-    vmsg("Client enregistré. Il est maintenant actif."); renderClientHead(); if (curSub === "fiche" && !wasEdit) showSub("nourrir");
+    vmsg("Client enregistré. Il est maintenant actif."); syncTemplatesFrom(getVoix(id)); renderClientHead(); if (curSub === "fiche" && !wasEdit) showSub("nourrir");
   } catch (e) { vmsg("Enregistrement impossible (" + (e.code || "erreur") + ").", true); }
 };
 function vmsg(t, err){ $("#v-msg").textContent = t; $("#v-msg").className = "msg" + (err ? " err" : ""); }
@@ -2143,6 +2144,7 @@ async function updateVoix(id, patch){
   Object.assign(v, patch, { updatedAt: Date.now() });
   const body = { ...v }; delete body.id;
   await store.save("voix", id, body);
+  if (["style", "afaire", "interdits", "regles", "exemples"].some(k => k in patch)) syncTemplatesFrom(v);
   if (editId === id) { $("#p-regles").value = v.regles || ""; renderValides(v); }
 }
 function renderValides(v){
@@ -2873,9 +2875,11 @@ let templates = [];
 const allTemplates = () => [...BASE_TEMPLATES.map(t => ({ ...t, base: true })), ...templates];
 function renderTemplates(){
   const cur = $("#p-template").value;
-  $("#tpl-cur").innerHTML = cur ? `Voix basée sur : <b>${esc(cur)}</b>` : "";
+  const tid = $("#p-templateId").value, at = +$("#p-templateAt").value || 0, t = templates.find(x => x.id === tid);
+  $("#tpl-cur").innerHTML = cur ? `Voix basée sur : <b>${esc(cur)}</b>${t && (t.updatedAt || 0) > at ? ` · <button class="linkbtn" id="tpl-reapply">mis à jour depuis, réappliquer</button>` : ""}` : "";
+  $("#tpl-reapply")?.addEventListener("click", () => applyTemplate(t));
   $("#tpl-grid").innerHTML = allTemplates().map(t => `<article class="tpl-card">
-      <strong>${esc(t.nom)}</strong>${t.base ? "" : '<span class="tag g">perso</span>'}
+      <strong>${esc(t.nom)}</strong>${t.base ? "" : `<span class="tag g">${t.source && getVoix(t.source) ? "suit " + esc(getVoix(t.source).nom.split(/\s+/)[0]) : "perso"}</span>`}
       <p>${esc(t.description || "")}</p>
       ${(t.echantillons || [])[0] ? `<blockquote>${esc(t.echantillons[0])}</blockquote>` : ""}
       <div class="ib"><button class="btn btn-s go" data-apply="${esc(t.id)}">Appliquer</button>${t.base ? "" : `<button class="btn btn-s" data-rmt="${esc(t.id)}">Supprimer</button>`}</div>
@@ -2883,7 +2887,7 @@ function renderTemplates(){
   $("#tpl-grid").querySelectorAll("[data-apply]").forEach(b => b.onclick = () => applyTemplate(allTemplates().find(t => t.id === b.dataset.apply)));
   $("#tpl-grid").querySelectorAll("[data-rmt]").forEach(b => b.onclick = async () => {
     if (!confirm("Supprimer ce template ? Les clients qui l'utilisent gardent leur voix.")) return;
-    try { await store.del("templates", b.dataset.rmt); } catch {}
+    try { await store.del("modeles", b.dataset.rmt); } catch {}
     templates = templates.filter(t => t.id !== b.dataset.rmt); renderTemplates();
   });
 }
@@ -2892,30 +2896,29 @@ function applyTemplate(t){
   const has = ["style", "afaire", "interdits", "regles"].some(k => $("#p-" + k).value.trim());
   if (has && !confirm(`Appliquer « ${t.nom} » ? Le style, À faire, Interdits, Règles apprises et Extraits de ton de ce client seront remplacés. Ses infos, son vécu et ses exemples ne bougent pas.`)) return;
   $("#p-style").value = t.style || ""; $("#p-afaire").value = t.afaire || ""; $("#p-interdits").value = t.interdits || ""; $("#p-regles").value = t.regles || "";
-  $("#p-tonExemples").value = (t.echantillons || []).join("\n---\n"); $("#p-template").value = t.nom;
+  $("#p-tonExemples").value = (t.echantillons || []).join("\n---\n");
+  $("#p-template").value = t.nom; $("#p-templateId").value = t.id; $("#p-templateAt").value = String(Date.now());
   renderTemplates(); renderClientHead();
   $("#tpl-msg").textContent = `« ${t.nom} » appliqué. Ajuste si besoin, puis clique sur « Enregistrer le client ».`;
 }
-$("#tpl-save").onclick = async () => {
-  const v = getVoix(editId);
-  if (!v) { $("#tpl-msg").textContent = "Enregistre d'abord le client."; return; }
-  const style = $("#p-style").value.trim(), ex = splitPosts($("#p-exemples").value).slice(0, 4);
-  if (!style && !ex.length) { $("#tpl-msg").textContent = "Il faut au moins un style décrit ou des exemples de posts."; return; }
-  const nom = prompt("Nom du template :", `Voix ${(v.nom || "").split(/\s+/)[0]}`); if (!nom) return;
-  $("#tpl-save").disabled = true; $("#tpl-msg").textContent = "Je transpose la voix en retirant tout ce qui est personnel…";
-  try {
-    const r = await sample(`Voici la voix d'écriture LinkedIn de ${v.nom}. Crée un TEMPLATE DE VOIX transposable à n'importe quelle autre personne.
+function voiceHash(v){
+  const s = [v.style, v.afaire, v.interdits, v.regles, v.exemples].map(x => (x || "").trim()).join("|");
+  let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return String(h);
+}
+async function transposeVoice(v){
+  const ex = splitPosts(v.exemples).slice(0, 4);
+  const r = await sample(`Voici la voix d'écriture LinkedIn de ${v.nom}. Crée un TEMPLATE DE VOIX transposable à n'importe quelle autre personne.
 Garde UNIQUEMENT la manière d'écrire : ton, registre, rythme, ponctuation, tics d'oral, emojis, façon d'ouvrir et de finir, règles d'écriture.
 Retire TOUT ce qui appartient à sa vie : faits, chiffres, prénoms, entreprise, offres, histoires, niche, cible, sujets de prédilection. Si une règle mélange ton et faits, ne garde que la partie ton. Remplace les exemples de phrases personnels par des exemples neutres.
 
 STYLE :
-${style || "-"}
+${v.style || "-"}
 À FAIRE :
-${$("#p-afaire").value.trim() || "-"}
+${v.afaire || "-"}
 INTERDITS :
-${$("#p-interdits").value.trim() || "-"}
+${v.interdits || "-"}
 RÈGLES APPRISES :
-${$("#p-regles").value.trim() || "-"}
+${v.regles || "-"}
 EXEMPLES DE SES POSTS (pour sentir le ton, ne rien en reprendre) :
 <<<
 ${ex.join("\n---\n").slice(0, 12000)}
@@ -2923,14 +2926,45 @@ ${ex.join("\n---\n").slice(0, 12000)}
 
 Réponds UNIQUEMENT en JSON :
 {"description":"1 phrase pour reconnaître ce ton","style":"paragraphe de 5 à 8 phrases","afaire":"une règle par ligne","interdits":"un mot ou une tournure par ligne","regles":"une règle par ligne","echantillons":["3 extraits inventés de 2 à 3 lignes, sur des situations pro neutres, qui montrent parfaitement ce ton, sans aucun fait réel de cette personne"]}`, { modelTier: "default", cache: false });
-    const t = r.text.replace(/```json|```/g, ""); const j = JSON.parse(t.slice(t.indexOf("{"), t.lastIndexOf("}") + 1));
-    const id = uid(); const doc = { nom: nom.trim(), description: String(j.description || ""), style: String(j.style || ""), afaire: String(j.afaire || ""), interdits: String(j.interdits || ""), regles: String(j.regles || ""), echantillons: Array.isArray(j.echantillons) ? j.echantillons.map(String).slice(0, 4) : [], source: v.id };
-    await store.save("templates", id, doc); templates.unshift({ id, ...doc });
-    $("#tpl-msg").textContent = `Template « ${doc.nom} » créé. Il est disponible pour tous les clients.`; renderTemplates();
+  const t = r.text.replace(/```json|```/g, ""); const j = JSON.parse(t.slice(t.indexOf("{"), t.lastIndexOf("}") + 1));
+  const txt = x => Array.isArray(x) ? x.join("\n") : String(x || "");
+  return { description: txt(j.description), style: txt(j.style), afaire: txt(j.afaire), interdits: txt(j.interdits), regles: txt(j.regles), echantillons: Array.isArray(j.echantillons) ? j.echantillons.map(String).slice(0, 4) : [] };
+}
+async function saveTemplate(id, doc){
+  await store.save("modeles", id, { ...doc, kind: "voix" });
+  const full = { id, ...doc, kind: "voix", updatedAt: Date.now() };
+  const i = templates.findIndex(t => t.id === id); if (i >= 0) templates[i] = full; else templates.unshift(full);
+  return full;
+}
+$("#tpl-save").onclick = async () => {
+  const saved = getVoix(editId);
+  if (!saved) { $("#tpl-msg").textContent = "Enregistre d'abord le client."; return; }
+  const v = { ...saved, ...Object.fromEntries(PF.map(k => [k, $("#p-" + k).value])) };
+  if (!v.style.trim() && !splitPosts(v.exemples).length) { $("#tpl-msg").textContent = "Il faut au moins un style décrit ou des exemples de posts."; return; }
+  const exist = templates.find(t => t.source === saved.id);
+  const nom = prompt(exist ? `Ce client a déjà le template « ${exist.nom} ». Nom du nouveau template :` : "Nom du template :", `Voix ${(v.nom || "").split(/\s+/)[0]}`); if (!nom) return;
+  $("#tpl-save").disabled = true; $("#tpl-msg").textContent = "Je transpose la voix en retirant tout ce qui est personnel…";
+  try {
+    const doc = { nom: nom.trim(), ...(await transposeVoice(v)), source: saved.id, sourceHash: voiceHash(v) };
+    await saveTemplate(uid(), doc);
+    $("#tpl-msg").textContent = `Template « ${doc.nom} » créé. Il se mettra à jour tout seul quand la voix de ${v.nom} évoluera.`; renderTemplates();
   } catch (e) { $("#tpl-msg").textContent = e?.code ? errCopy(e) : "La transposition a échoué, réessaie."; }
   finally { $("#tpl-save").disabled = false; }
 };
-
+/* Mise à jour automatique des templates quand la voix d'origine change */
+let syncing = false;
+async function syncTemplatesFrom(v){
+  if (!v || syncing || !sample) return;
+  const todo = templates.filter(t => t.source === v.id && t.sourceHash !== voiceHash(v));
+  if (!todo.length) return;
+  syncing = true;
+  try {
+    const fresh = await transposeVoice(v);
+    for (const t of todo) await saveTemplate(t.id, { ...t, ...fresh, id: undefined, updatedAt: undefined, sourceHash: voiceHash(v) });
+    const names = todo.map(t => "« " + t.nom + " »").join(", ");
+    if (!$("#v-voix").hidden) { $("#tpl-msg").textContent = `Template ${names} mis à jour avec la nouvelle voix de ${v.nom}.`; renderTemplates(); }
+  } catch {} finally { syncing = false; }
+}
 /* ---------- Démarrage ---------- */
 async function boot(){
   const me = await fetch("/api/login").catch(() => null);
@@ -2942,7 +2976,8 @@ async function boot(){
     const [s, d, dl] = await Promise.all([window.claude.use("sample").catch(() => null), window.claude.use("db").catch(() => null), window.claude.use("downloads").catch(() => null)]);
     sample = s; db = d; downloads = dl;
   }
-  [voix, posts, modeles, idees, plannings, batches, sources, templates] = await Promise.all(["voix", "posts", "modeles", "idees", "plannings", "batches", "sources", "templates"].map(c => store.list(c)));
+  [voix, posts, modeles, idees, plannings, batches, sources] = await Promise.all(["voix", "posts", "modeles", "idees", "plannings", "batches", "sources"].map(c => store.list(c)));
+  templates = modeles.filter(m => m.kind === "voix"); modeles = modeles.filter(m => m.kind !== "voix");
   renderVoixSelect(); loadVoixForm(voix[0]?.id || null); renderModeles(); renderIdeas(); initPlanning();
   msg(sample ? "" : "Génération indisponible.", !sample);
   if (!voix.length) goTab("voix"); else goTab("dash");
