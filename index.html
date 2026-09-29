@@ -427,6 +427,22 @@ textarea{resize:vertical;line-height:1.45}
 .depot a.btn{text-decoration:none;color:inherit;display:inline-flex;align-items:center}
 .from-client{color:var(--ok);font-weight:800}
 .tags .from-client{background:#DDF7E8 !important;color:#0E5A33 !important}
+
+/* Liste des clients */
+.cl-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.cl-head .lead{margin-bottom:16px}
+.cl-new{width:auto;padding:13px 20px;font-size:1rem}
+.cl-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.cl-tools input{max-width:340px}
+.cl-filter{display:flex;gap:6px;flex-wrap:wrap}
+.cl-filter button{border:1.5px solid var(--line);background:var(--panel);border-radius:999px;padding:7px 12px;font-weight:700;font-size:.85rem;cursor:pointer}
+.cl-filter button span{color:var(--muted);font-weight:600;margin-left:2px}
+.cl-filter button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.cl-filter button[aria-pressed="true"] span{color:inherit;opacity:.7}
+.cl-card{text-align:left;cursor:pointer;font:inherit;color:inherit;width:100%}
+.cl-card:hover{border-color:var(--rouge);box-shadow:0 12px 30px -20px rgba(59,75,255,.6)}
+.cl-card .fresh{align-self:flex-start;font-size:.76rem;font-weight:800;background:#DDF7E8;color:#0E5A33;border-radius:999px;padding:3px 10px}
+.back{background:none;border:0;color:var(--rouge);font-weight:800;cursor:pointer;padding:4px 0;margin-bottom:12px;font-size:.95rem}
 /* Historique */
 .hist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
 .hitem{background:var(--panel);border:1.5px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px}
@@ -820,9 +836,14 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
 
 <!-- VOIX -->
 <section class="view" id="v-voix" hidden>
-  <h1 class="h x">Clients</h1>
-  <p class="lead">Tout ce que l'IA sait de chaque client : sa fiche, sa voix, et tout ce que vous lui apprenez au fil des points.</p>
-  <div class="vtabs" id="vtabs"></div>
+  <div id="clients-list">
+    <div class="cl-head"><div><h1 class="h x">Clients</h1><p class="lead">Tous les clients de l'agence. Clique sur un client pour ouvrir sa fiche.</p></div><button class="btn-go x cl-new" id="cl-new"><span>+ Nouveau client</span></button></div>
+    <div class="cl-tools"><input type="text" id="cl-search" placeholder="Chercher un client, une entreprise…" aria-label="Chercher un client"><div class="cl-filter" id="cl-filter"></div></div>
+    <div class="clients" id="cl-grid"></div>
+  </div>
+  <div id="client-detail" hidden>
+  <button class="back" id="cl-back">← Tous les clients</button>
+  <div class="vtabs" id="vtabs" hidden></div>
   <div class="client-head" id="client-head"></div>
   <div class="subtabs" role="group" aria-label="Sections du client">
     <button data-sub="nourrir">Nourrir l'IA</button><button data-sub="photos">Photos</button><button data-sub="fiche">Fiche &amp; voix</button><button data-sub="contenus">Contenus</button>
@@ -912,6 +933,7 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
     </div>
   </div>
   </div>
+</div>
 </section>
 
 <!-- HISTORIQUE -->
@@ -1107,7 +1129,7 @@ function renderSeg(){
 QUICK.forEach(q => { const b = document.createElement("button"); b.className = "chip"; b.textContent = q; b.onclick = () => retoucher(q); $("#quick").appendChild(b); });
 $("#f-modele").onchange = () => renderTiles();
 
-document.querySelectorAll(".nav button[data-view]").forEach(b => b.onclick = () => goTab(b.dataset.view));
+document.querySelectorAll(".nav button[data-view]").forEach(b => b.onclick = () => { if (b.dataset.view === "voix") clientMode = "list"; goTab(b.dataset.view); });
 $("#nav-more").onclick = () => { const o = $("#more-sheet").hidden; $("#more-sheet").hidden = !o; $("#nav-more").setAttribute("aria-expanded", String(o)); };
 document.querySelectorAll("#more-sheet [data-go]").forEach(b => b.onclick = () => goTab(b.dataset.go));
 const MORE_VIEWS = ["idees", "batch", "modeles"];
@@ -1116,6 +1138,7 @@ function goTab(name){
   if (MORE_VIEWS.includes(name)) $("#nav-more").setAttribute("aria-current", "page"); else $("#nav-more").removeAttribute("aria-current");
   $("#more-sheet").hidden = true; $("#nav-more").setAttribute("aria-expanded", "false");
   if (name === "dash") renderDash();
+  if (name === "voix") renderClientsView();
   if (name === "batch") renderBatchForm();
   document.querySelectorAll(".view").forEach(v => v.hidden = v.id !== "v-" + name);
   if (name === "hist") renderHist();
@@ -1143,6 +1166,7 @@ function renderVTabs(){
   $("#vtabs").querySelectorAll(".vtab").forEach(b => b.onclick = () => loadVoixForm(b.dataset.id || null));
 }
 function loadVoixForm(id){
+  clientMode = "detail";
   editId = id; const v = getVoix(id) || {};
   PF.forEach(k => $("#p-" + k).value = v[k] || "");
   if (!v.statut) $("#p-statut").value = id ? "actif" : "onboarding";
@@ -1169,7 +1193,7 @@ $("#b-delv").onclick = async () => {
   if (!editId) return;
   if (!confirm(`Supprimer la voix « ${getVoix(editId)?.nom || ""} » ?`)) return;
   try { await store.del("voix", editId); } catch {}
-  voix = voix.filter(x => x.id !== editId); loadVoixForm(voix[0]?.id || null); renderVoixSelect();
+  voix = voix.filter(x => x.id !== editId); renderVoixSelect(); clientMode = "list"; renderClientsView();
 };
 $("#b-analyse").onclick = async () => {
   const ex = $("#p-exemples").value.trim();
@@ -2735,6 +2759,41 @@ async function toggleDepot(v, regen){
 async function copyText(t){ try { await navigator.clipboard.writeText(t); } catch { const ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); } catch {} ta.remove(); } }
 function newFromClient(v){ return sources.filter(s => s.voixId === v.id && s.origine === "client" && (s.createdAt || 0) > (v.depotSeen || 0)).length; }
 async function markDepotSeen(v){ if (v && newFromClient(v)) { try { await updateVoix(v.id, { depotSeen: Date.now() }); } catch {} } }
+
+
+/* =================== LISTE DES CLIENTS =================== */
+let clientMode = "list", clFilter = "tous";
+function renderClientsView(){
+  $("#clients-list").hidden = clientMode !== "list";
+  $("#client-detail").hidden = clientMode === "list";
+  if (clientMode === "list") renderClientGrid();
+}
+function renderClientGrid(){
+  const F = [["tous", "Tous"], ["actif", "Actifs"], ["onboarding", "Onboarding"], ["pause", "En pause"], ["termine", "Terminés"]];
+  $("#cl-filter").innerHTML = F.map(([k, l]) => { const n = k === "tous" ? voix.length : voix.filter(v => (v.statut || "actif") === k).length; return `<button type="button" data-f="${k}" aria-pressed="${clFilter === k}">${l} <span>${n}</span></button>`; }).join("");
+  $("#cl-filter").querySelectorAll("button").forEach(b => b.onclick = () => { clFilter = b.dataset.f; renderClientGrid(); });
+  const q = $("#cl-search").value.trim().toLowerCase(), today = todayISO(), order = { onboarding: 0, actif: 1, pause: 2, termine: 3 };
+  const list = voix.filter(v => (clFilter === "tous" || (v.statut || "actif") === clFilter) && (!q || [v.nom, v.entreprise, v.titre, v.niche].join(" ").toLowerCase().includes(q)))
+    .sort((a, b) => (order[a.statut || "actif"] - order[b.statut || "actif"]) || String(a.nom).localeCompare(String(b.nom), "fr"));
+  if (!voix.length) { $("#cl-grid").innerHTML = `<div class="onboard" style="grid-column:1/-1"><strong class="x" style="font-size:1.2rem">Aucun client pour l'instant</strong><ol><li><b>Crée un client</b> : son nom, son entreprise, son email.</li><li><b>Nourris l'IA</b> : point de lancement, documents, vocal, ou envoie-lui son lien de dépôt.</li><li><b>Lance un planning ou un batch.</b></li></ol></div>`; return; }
+  if (!list.length) { $("#cl-grid").innerHTML = `<div class="empty" style="grid-column:1/-1"><strong>Aucun client ne correspond</strong>Change le filtre ou la recherche.</div>`; return; }
+  $("#cl-grid").innerHTML = list.map(v => {
+    const r = readiness(v), vp = posts.filter(p => p.voixId === v.id);
+    const drafts = vp.filter(p => p.statut !== "publie").length, month = vp.filter(p => sameMonth(p.createdAt)).length;
+    const next = allSlots().filter(s => s.plan.voixId === v.id && s.date >= today).sort((a, b) => a.date.localeCompare(b.date))[0];
+    const fresh = newFromClient(v);
+    return `<button type="button" class="client cl-card" data-id="${esc(v.id)}">
+      <div class="who"><div class="av">${esc(initials(v.nom))}</div><div><strong>${esc(v.nom)}</strong><small>${esc(v.entreprise || v.titre || v.niche || "")}</small></div>${v.statut ? `<span class="st st-${esc(v.statut)}" style="margin-left:auto">${esc(STATUTS[v.statut] || "")}</span>` : ""}</div>
+      <div class="stats"><div><b>${month}</b>ce mois</div><div><b>${drafts}</b>brouillon${drafts > 1 ? "s" : ""}</div><div><b>${r.pct}%</b>fiche</div></div>
+      <div class="next"><b>Prochain post${next ? " · " + esc(fmtDay(next.date)) : ""}</b>${next ? esc(next.sujet || "Sujet à définir") : "Aucun planning à venir"}</div>
+      ${fresh ? `<span class="fresh">${fresh} nouvelle${fresh > 1 ? "s" : ""} info${fresh > 1 ? "s" : ""} du client</span>` : ""}
+    </button>`;
+  }).join("");
+  $("#cl-grid").querySelectorAll(".cl-card").forEach(c => c.onclick = () => { activeId = c.dataset.id; renderVoixSelect(); loadVoixForm(c.dataset.id); showSub("nourrir"); renderClientsView(); window.scrollTo(0, 0); });
+}
+$("#cl-search").addEventListener("input", renderClientGrid);
+$("#cl-back").onclick = () => { clientMode = "list"; renderClientsView(); window.scrollTo(0, 0); };
+$("#cl-new").onclick = () => { loadVoixForm(null); showSub("fiche"); renderClientsView(); $("#p-nom").focus(); };
 
 /* ---------- Démarrage ---------- */
 async function boot(){
