@@ -419,6 +419,14 @@ textarea{resize:vertical;line-height:1.45}
 .hist-bar select{max-width:260px}
 .hist-bar .seg{width:auto}
 .hitem .pub{background:#3B4BFF;color:#fff;border-color:#3B4BFF}
+
+.depot{margin-top:12px;background:var(--blush);border-radius:14px;padding:12px}
+.depot-url{display:flex;gap:8px;margin-bottom:8px}
+.depot-url input{flex:1;min-width:0;font-size:.85rem}
+.depot .go{background:#3B4BFF;color:#fff;border-color:#3B4BFF}
+.depot a.btn{text-decoration:none;color:inherit;display:inline-flex;align-items:center}
+.from-client{color:var(--ok);font-weight:800}
+.tags .from-client{background:#DDF7E8 !important;color:#0E5A33 !important}
 /* Historique */
 .hist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
 .hitem{background:var(--panel);border:1.5px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px}
@@ -2195,6 +2203,7 @@ function renderDash(){
   slots.filter(s => s.statut === "revoir" && s.date >= today).forEach(s => todo.push({ w: 1, cls: "w", t: "À revoir : " + (s.sujet || "sujet"), sub: `${s.plan.voixNom || ""} · ${fmtDay(s.date)}`, go: () => { curPlan = s.plan; fillPlanForm(s.plan); goTab("planning"); } }));
   week.filter(s => !(s.postId && posts.some(p => p.id === s.postId))).forEach(s => todo.push({ w: 2, cls: "", t: "À écrire : " + (s.sujet || "sujet à définir"), sub: `${s.plan.voixNom || ""} · ${fmtDay(s.date)}${s.statut === "valide" ? " · validé" : ""}`, go: () => { curPlan = s.plan; if (getVoix(s.plan.voixId)) { activeId = s.plan.voixId; renderVoixSelect(); } useSlot(s.i); } }));
   voix.filter(v => readiness(v).pct < 70).forEach(v => todo.push({ w: 3, cls: "", t: `Compléter la fiche de ${v.nom}`, sub: `Prête à ${readiness(v).pct}% : ${readiness(v).missing.slice(0, 2).join(", ")}`, go: () => { loadVoixForm(v.id); showSub(readiness(v).missing[0] === "une info ajoutée" ? "nourrir" : "fiche"); goTab("voix"); } }));
+  voix.forEach(v => { const n = newFromClient(v); if (n) todo.push({ w: 0, cls: "o", t: `${v.nom} a envoyé ${n} nouvelle${n > 1 ? "s" : ""} info${n > 1 ? "s" : ""}`, sub: "Via son lien de dépôt", go: () => { loadVoixForm(v.id); showSub("nourrir"); goTab("voix"); } }); });
   todo.sort((a, b) => a.w - b.w);
   $("#dash-todo").innerHTML = todo.length ? "" : `<div class="row-item" style="cursor:default"><span class="dot o"></span><span>Rien d'urgent. Tout ce qui est prévu cette semaine est écrit.</span></div>`;
   todo.slice(0, 8).forEach(x => { const b = document.createElement("button"); b.className = "row-item"; b.innerHTML = `<span class="dot ${x.cls}"></span><span>${esc(x.t)}<small>${esc(x.sub)}</small></span>`; b.onclick = x.go; $("#dash-todo").appendChild(b); });
@@ -2359,6 +2368,7 @@ function showSub(name){
   document.querySelectorAll(".subtabs button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.sub === name)));
   ["nourrir", "photos", "fiche", "contenus"].forEach(n => $("#sub-" + n).hidden = n !== name);
   if (name === "photos") loadImages(editId);
+  if (name === "nourrir") markDepotSeen(getVoix(editId));
 }
 PF.forEach(k => $("#p-" + k).addEventListener("input", () => { clearTimeout(window.__rh); window.__rh = setTimeout(renderClientHead, 400); }));
 document.querySelectorAll(".subtabs button").forEach(b => b.onclick = () => {
@@ -2385,9 +2395,11 @@ function renderClientHead(){
   const r = readiness(v);
   $("#client-head").innerHTML = `<div><div class="who"><div class="av">${esc(initials(v.nom))}</div><div><strong>${esc(v.nom)}</strong><small>${esc(v.titre || v.niche || "")}</small></div></div>
     <div class="contact">${v.statut ? `<span class="st st-${esc(v.statut)}">${esc(STATUTS[v.statut] || v.statut)}</span>` : ""}${v.entreprise ? `<span>${esc(v.entreprise)}</span>` : ""}${v.formule ? `<span>${esc(v.formule)}</span>` : ""}${v.email ? `<a href="mailto:${esc(v.email)}">${esc(v.email)}</a>` : ""}${v.tel ? `<a href="tel:${esc(v.tel.replace(/\s/g, ""))}">${esc(v.tel)}</a>` : ""}${/^https?:\/\//.test(v.linkedin || "") ? `<a href="${esc(v.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>` : ""}${/^https?:\/\//.test(v.site || "") ? `<a href="${esc(v.site)}" target="_blank" rel="noopener">Site</a>` : ""}${v.debut ? `<span>client depuis le ${esc(new Date(v.debut).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }))}</span>` : ""}</div>
-    <div class="ib"><button class="btn btn-s go" data-ch="ecrire">Écrire</button><button class="btn btn-s" data-ch="batch">Batch</button><button class="btn btn-s" data-ch="planning">Planning</button></div></div>
+    <div class="ib"><button class="btn btn-s go" data-ch="ecrire">Écrire</button><button class="btn btn-s" data-ch="batch">Batch</button><button class="btn btn-s" data-ch="planning">Planning</button><button class="btn btn-s" id="b-depot">Lien de dépôt client</button></div>
+    <div class="depot" id="depot-box" hidden></div></div>
     <div class="ready"><div class="barl"><span>Fiche prête à</span><b>${r.pct}%</b></div><div class="bar"><i style="width:${r.pct}%"></i></div>
     <ul class="checklist">${r.items.map(x => `<li class="${x[1] ? "ok" : ""}"><i>${x[1] ? "✓" : "○"}</i>${esc(x[0])}</li>`).join("")}</ul></div>`;
+  $("#b-depot").onclick = () => toggleDepot(v);
   $("#client-head").querySelectorAll("[data-ch]").forEach(b => b.onclick = () => {
     activeId = v.id; renderVoixSelect();
     if (b.dataset.ch === "planning") { const pl = plannings.find(p => p.voixId === v.id); curPlan = pl || null; if (pl) fillPlanForm(pl); }
@@ -2558,7 +2570,7 @@ $("#src-add").onclick = async () => {
 function renderSources(){
   const list = sources.filter(s => s.voixId === editId);
   $("#src-count").textContent = list.length ? `· ${list.length} source${list.length > 1 ? "s" : ""}` : "";
-  $("#src-list").innerHTML = list.length ? list.map(s => `<article class="src" data-id="${esc(s.id)}"><header><strong>${esc(s.titre)}</strong><span class="meta">${esc(SRC[s.type]?.label || s.type)} · ${new Date(s.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}</span></header>
+  $("#src-list").innerHTML = list.length ? list.map(s => `<article class="src" data-id="${esc(s.id)}"><header><strong>${esc(s.titre)}</strong><span class="meta">${s.origine === "client" ? '<b class="from-client">envoyé par le client</b> · ' : ""}${esc(SRC[s.type]?.label || s.type)} · ${new Date(s.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}</span></header>
     <p class="facts">${esc(s.faits)}</p><div class="ib"><button class="btn btn-s" data-more>Tout voir</button><button class="btn btn-s" data-edit>Modifier</button><button class="btn btn-s" data-del>Supprimer</button></div></article>`).join("")
     : `<div class="empty"><strong>Rien pour l'instant</strong>Ajoute le point de lancement du client : c'est ce qui rendra ses posts vraiment à lui.</div>`;
   $("#src-list").querySelectorAll(".src").forEach(c => {
@@ -2603,7 +2615,7 @@ function renderImages(){
   $("#img-grid").innerHTML = list.length ? list.map(x => `<article class="img-card" data-id="${esc(x.id)}">
       <img src="${esc(x.url || "")}" alt="${esc(x.description || x.nom)}" loading="lazy">
       <div class="bd"><textarea rows="2" aria-label="Description">${esc(x.description || "")}</textarea>
-      <div class="tags">${(x.tags || []).map(t => `<span>${esc(t)}</span>`).join("")}</div>
+      <div class="tags">${x.origine === "client" ? '<span class="from-client">du client</span>' : ""}${(x.tags || []).map(t => `<span>${esc(t)}</span>`).join("")}</div>
       <div class="ib"><button class="btn" data-dl>Télécharger</button><button class="btn" data-rm>Supprimer</button></div></div></article>`).join("")
     : `<div class="empty" style="grid-column:1/-1"><strong>${all.length ? "Aucune photo ne correspond" : "Aucune photo pour l'instant"}</strong>${all.length ? "Essaie un autre mot." : "Ajoute les photos du client : portraits, bureau, équipe, événements, coulisses. L'IA les décrit toute seule pour les proposer sous les bons posts."}</div>`;
   $("#img-grid").querySelectorAll(".img-card").forEach(c => {
@@ -2697,6 +2709,33 @@ ${imgs.slice(0, 150).map((x, i) => `${i}. ${x.description || x.nom} [${(x.tags |
 };
 
 $("#b-pub").onclick = () => { const p = posts.find(x => x.id === lastRun?.postId); if (p) setPostStatut(p.id, isPub(p) ? "brouillon" : "publie"); };
+
+/* =================== LIEN DE DÉPÔT CLIENT =================== */
+function newToken(){ const a = new Uint8Array(24); crypto.getRandomValues(a); return btoa(String.fromCharCode(...a)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
+const depotUrl = v => `${location.origin}/d/${v.depotToken}`;
+async function toggleDepot(v, regen){
+  const box = $("#depot-box");
+  if (!box.hidden && !regen) { box.hidden = true; return; }
+  if (!v.depotToken || regen) {
+    try { await updateVoix(v.id, { depotToken: newToken() }); v = getVoix(v.id); }
+    catch { box.hidden = false; box.innerHTML = `<p class="msg err">Impossible de créer le lien, réessaie.</p>`; return; }
+    renderClientHead(); return toggleDepot(getVoix(v.id));
+  }
+  const url = depotUrl(v), prenom = (v.nom || "").split(/\s+/)[0];
+  const mail = `Bonjour ${prenom},\n\nVoici votre espace de dépôt signé. : ${url}\n\nVous pouvez y envoyer à tout moment ce qui peut nourrir vos posts : une anecdote, un chiffre, un document, un vocal, et vos photos pour les illustrer. Depuis votre téléphone ou votre ordinateur, sans créer de compte.\n\nÀ très vite,`;
+  box.hidden = false;
+  box.innerHTML = `<p class="hint" style="margin:0 0 8px">Ce lien est personnel : ${esc(prenom)} y dépose ses infos et ses photos, sans voir le reste du studio. Tout arrive dans sa fiche, marqué « envoyé par le client ».</p>
+    <div class="depot-url"><input type="text" readonly value="${esc(url)}" aria-label="Lien de dépôt"><button class="btn btn-s go" data-c="url">Copier le lien</button></div>
+    <div class="fb-row"><button class="btn btn-s" data-c="mail">Copier un message prêt à envoyer</button>${v.email ? `<a class="btn btn-s" href="mailto:${esc(v.email)}?subject=${encodeURIComponent("Votre espace de dépôt signé.")}&body=${encodeURIComponent(mail)}">Envoyer par email</a>` : ""}<button class="btn btn-s" data-c="regen">Changer le lien</button></div>
+    <p class="hint" id="depot-msg" style="margin:8px 0 0"></p>`;
+  box.querySelector("[data-c=url]").onclick = async e => { await copyText(url); e.target.textContent = "Copié"; setTimeout(() => e.target.textContent = "Copier le lien", 1500); };
+  box.querySelector("[data-c=mail]").onclick = async e => { await copyText(mail); e.target.textContent = "Message copié"; setTimeout(() => e.target.textContent = "Copier un message prêt à envoyer", 1500); };
+  box.querySelector("[data-c=regen]").onclick = () => { if (confirm("L'ancien lien ne marchera plus. Continuer ?")) toggleDepot(v, true); };
+}
+async function copyText(t){ try { await navigator.clipboard.writeText(t); } catch { const ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); } catch {} ta.remove(); } }
+function newFromClient(v){ return sources.filter(s => s.voixId === v.id && s.origine === "client" && (s.createdAt || 0) > (v.depotSeen || 0)).length; }
+async function markDepotSeen(v){ if (v && newFromClient(v)) { try { await updateVoix(v.id, { depotSeen: Date.now() }); } catch {} } }
+
 /* ---------- Démarrage ---------- */
 async function boot(){
   const me = await fetch("/api/login").catch(() => null);

@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>signé. · Espace de dépôt</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%2316134A%22/%3E%3Ctext x=%2250%22 y=%2266%22 font-size=%2266%22 font-family=%22sans-serif%22 font-weight=%22800%22 text-anchor=%22middle%22 fill=%22white%22%3Es%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --encre:#16134A; --cobalt:#3B4BFF; --lilas:#D9D5FF; --brume:#F1EFFF; --papier:#FBFBFD; --stabilo:#FFE35C;
+  --ink:#16134A; --muted:#5E5B85; --line:#E4E1F5; --panel:#FFFFFF; --bg:#FBFBFD; --ok:#1D7A4B; --warn:#B45309;
+  --serif:"Instrument Serif", Georgia, serif;
+  box-sizing:border-box; color-scheme:light;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){ --ink:#F1EFFF; --muted:#A9A5D6; --line:#2A2668; --panel:#16134A; --bg:#0F0D33; --brume:#231F5E; --ok:#5CC08D; --warn:#F0A64A; color-scheme:dark; }
+}
+:root[data-theme="dark"]{ --ink:#F1EFFF; --muted:#A9A5D6; --line:#2A2668; --panel:#16134A; --bg:#0F0D33; --brume:#231F5E; --ok:#5CC08D; --warn:#F0A64A; color-scheme:dark; }
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px}
+.hero{background:var(--encre);color:#F1EFFF;padding:28px 20px 44px;position:relative;overflow:hidden}
+.wrap{max-width:720px;margin:0 auto;position:relative;z-index:1}
+.wm{font-weight:800;font-size:1.9rem;letter-spacing:-.055em;line-height:1}
+.wm i{font-style:normal;color:var(--cobalt)}
+.hero h1{font-weight:800;font-size:clamp(2rem,7vw,3rem);letter-spacing:-.045em;line-height:1.02;margin:28px 0 10px}
+.hero p{font-family:var(--serif);font-size:clamp(1.25rem,4.5vw,1.6rem);line-height:1.15;margin:0;max-width:30ch;color:#F1EFFF}
+.hero p em{color:var(--lilas)}
+.sig{position:absolute;right:-40px;bottom:-26px;width:min(80%,520px);opacity:.5}
+.sig path{fill:none;stroke:var(--cobalt);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+main{padding:22px 16px 40px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:-44px 0 18px;position:relative;z-index:2}
+.tab{background:var(--panel);border:1.5px solid var(--line);border-radius:18px;padding:16px;text-align:left;cursor:pointer;box-shadow:0 10px 30px -18px rgba(11,10,38,.5)}
+.tab b{display:block;font-size:1.05rem}
+.tab span{color:var(--muted);font-size:.84rem}
+.tab[aria-pressed="true"]{border-color:var(--cobalt);box-shadow:0 0 0 2px var(--cobalt)}
+.card{background:var(--panel);border:1.5px solid var(--line);border-radius:22px;padding:20px}
+.card[hidden]{display:none}
+.types{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.types button{border:1.5px solid var(--line);background:var(--bg);border-radius:999px;padding:8px 14px;font-weight:700;font-size:.9rem;cursor:pointer}
+.types button[aria-pressed="true"]{background:var(--encre);color:#fff;border-color:var(--encre)}
+label{display:block;font-weight:700;font-size:.9rem;margin:0 0 6px}
+.hint{color:var(--muted);font-size:.84rem;font-weight:400}
+input[type=text],input[type=url],textarea{width:100%;background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font-size:16px}
+textarea{resize:vertical;min-height:150px;line-height:1.45}
+input:focus,textarea:focus{outline:none;border-color:var(--cobalt)}
+.field{margin-bottom:14px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{border:1.5px solid var(--line);background:var(--panel);border-radius:12px;padding:10px 16px;font-weight:700;cursor:pointer}
+.btn[aria-pressed="true"]{background:var(--cobalt);border-color:var(--cobalt);color:#fff}
+.go{width:100%;background:var(--cobalt);color:#fff;border:0;border-radius:16px;padding:17px 20px;font-size:1.1rem;font-weight:800;cursor:pointer;box-shadow:0 5px 0 -1px #0B0A26;margin-top:6px}
+.go:disabled{opacity:.6;cursor:wait}
+.drop{display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;text-align:center;border:2px dashed var(--line);border-radius:20px;padding:34px 16px;cursor:pointer;background:var(--bg)}
+.drop strong{font-size:1.1rem}
+.drop.over,.drop:hover{border-color:var(--cobalt);background:var(--brume)}
+.msg{margin:12px 0 0;font-size:.95rem;min-height:1.3em;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700}
+.msg.err{color:var(--warn);font-weight:700}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:14px}
+.thumbs img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;display:block}
+.thumbs figure{margin:0;position:relative}
+.thumbs figure span{position:absolute;right:6px;bottom:6px;background:#fff;color:var(--ok);border-radius:999px;font-size:.7rem;font-weight:800;padding:1px 7px}
+.thumbs figure.wait img{opacity:.45}
+.sent{margin-top:18px;border-top:1.5px solid var(--line);padding-top:14px}
+.sent h3{margin:0 0 8px;font-size:.95rem}
+.sent ul{margin:0;padding-left:18px;color:var(--muted);font-size:.9rem}
+.gone{max-width:520px;margin:60px auto;text-align:center;padding:0 20px}
+footer{max-width:720px;margin:0 auto;padding:10px 20px 30px;color:var(--muted);opacity:.6;font-size:.7rem;line-height:1.5}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="wm">signé<i>.</i></div>
+    <h1 id="hello">Bonjour</h1>
+    <p>Déposez ici ce qui fera vos prochains posts. <em>On s'occupe des mots.</em></p>
+  </div>
+  <svg class="sig" viewBox="0 0 640 110" aria-hidden="true"><path d="M8 70 C 40 20, 70 12, 64 52 C 58 92, 26 84, 48 50 C 70 18, 104 26, 98 62 C 95 82, 118 80, 138 48 C 154 24, 172 34, 166 62 C 162 80, 196 74, 224 42 C 246 18, 262 44, 292 54 C 340 70, 420 40, 500 46 C 560 50, 600 58, 632 52"/></svg>
+</header>
+
+<main class="wrap" id="app" hidden>
+  <div class="tabs" role="group" aria-label="Que voulez-vous envoyer ?">
+    <button class="tab" data-tab="info" aria-pressed="true"><b>Partager une info</b><span>Une anecdote, un chiffre, un document, un vocal</span></button>
+    <button class="tab" data-tab="photo" aria-pressed="false"><b>Envoyer des photos</b><span>Pour illustrer vos posts</span></button>
+  </div>
+
+  <section class="card" id="tab-info">
+    <div class="types" id="types">
+      <button data-t="texte" aria-pressed="true">Écrire</button><button data-t="vocal" aria-pressed="false">Vocal</button><button data-t="doc" aria-pressed="false">Document</button><button data-t="lien" aria-pressed="false">Lien</button><button data-t="capture" aria-pressed="false">Capture d'écran</button>
+    </div>
+    <div class="field"><label for="titre">De quoi s'agit-il ? <span class="hint">facultatif</span></label><input type="text" id="titre" placeholder="Ex. : la signature de notre plus gros client"></div>
+    <div class="field" id="w-text"><label for="texte" id="l-text">Racontez-nous</label><textarea id="texte" placeholder="Ce qui s'est passé, avec les détails : quand, qui, combien, ce que vous avez ressenti. Même en vrac, c'est parfait."></textarea></div>
+    <div class="row field" id="w-dict"><button class="btn" id="dict" aria-pressed="false">Dicter</button><span class="hint" id="dict-hint">Parlez, le texte s'écrit tout seul.</span></div>
+    <div class="field" id="w-file" hidden><label for="file" id="l-file">Fichier</label><input type="file" id="file"><p class="hint" id="h-file" style="margin:6px 0 0"></p></div>
+    <div class="field" id="w-url" hidden><label for="url">Lien</label><input type="url" id="url" placeholder="https://…"><p class="hint" style="margin:6px 0 0">Article, interview, site, page de vente… Pour un post LinkedIn, copiez-collez plutôt son texte dans « Écrire ».</p></div>
+    <button class="go" id="send-info">Envoyer</button>
+    <p class="msg" id="m-info" role="status"></p>
+    <div class="sent" id="sent-info" hidden><h3>Envoyé aujourd'hui</h3><ul id="sent-list"></ul></div>
+  </section>
+
+  <section class="card" id="tab-photo" hidden>
+    <label class="drop" id="drop" for="photos">
+      <input type="file" id="photos" accept="image/*" multiple hidden>
+      <strong>Choisir des photos</strong>
+      <span class="hint">Sur téléphone, ça ouvre votre galerie. Vous pouvez en sélectionner plusieurs.</span>
+    </label>
+    <p class="hint" style="margin:12px 0 0">Portraits, bureau, équipe, événements, coulisses, moments du quotidien : tout ce qui pourrait accompagner un post.</p>
+    <p class="msg" id="m-photo" role="status"></p>
+    <div class="thumbs" id="thumbs"></div>
+  </section>
+</main>
+
+<div class="gone" id="gone" hidden><h2>Ce lien n'est plus valide</h2><p class="hint" id="gone-msg">Demandez-en un nouveau à votre contact signé.</p></div>
+
+<footer>Ce site ne fait pas partie du site YouTube™, Google™, Facebook™, Google Inc. ou Facebook Inc. De plus, ce site n'est PAS approuvé par YouTube™, Google™ ou Facebook™ en aucune façon. FACEBOOK™ est une marque de commerce de FACEBOOK, Inc. GOOGLE™ et YOUTUBE™ sont des marques de commerce de GOOGLE Inc.</footer>
+
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const token = (location.pathname.split("/d/")[1] || new URLSearchParams(location.search).get("t") || "").replace(/\/$/, "");
+
+async function api(body){
+  const r = await fetch("/api/depot?t=" + encodeURIComponent(token), { method: body ? "POST" : "GET", headers: { "Content-Type": "application/json" }, body: body ? JSON.stringify({ ...body, t: token }) : undefined });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || "L'envoi n'a pas marché, réessayez.");
+  return j;
+}
+
+/* Onglets */
+document.querySelectorAll(".tab").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tab").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  $("#tab-info").hidden = b.dataset.tab !== "info"; $("#tab-photo").hidden = b.dataset.tab !== "photo";
+});
+
+/* Types d'info */
+const T = {
+  texte: { text: "Racontez-nous", dict: true },
+  vocal: { text: "Dictez, ou importez un vocal ci-dessous", dict: true, file: "audio/*", fileL: "Ou un fichier vocal (3 minutes maximum)" },
+  doc: { file: ".pdf,.docx,.txt,.md", fileL: "Document (PDF, Word, texte)" },
+  lien: { url: true },
+  capture: { file: "image/*", multi: true, fileL: "Captures d'écran (4 maximum)" }
+};
+let type = "texte";
+function setType(t){
+  type = t; const c = T[t];
+  $("#types").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.t === t)));
+  $("#w-text").hidden = !c.text; if (c.text) $("#l-text").textContent = c.text;
+  $("#w-dict").hidden = !c.dict;
+  $("#w-file").hidden = !c.file; if (c.file) { $("#file").accept = c.file; $("#file").multiple = !!c.multi; $("#l-file").textContent = c.fileL; $("#file").value = ""; }
+  $("#w-url").hidden = !c.url;
+}
+$("#types").querySelectorAll("button").forEach(b => b.onclick = () => setType(b.dataset.t));
+
+/* Dictée */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition; let rec = null;
+$("#dict").onclick = () => {
+  if (!SR) { $("#dict-hint").textContent = "Dictée indisponible ici : utilisez le micro de votre clavier."; return; }
+  if (rec) { rec.stop(); return; }
+  rec = new SR(); rec.lang = "fr-FR"; rec.continuous = true; rec.interimResults = true;
+  const base = $("#texte").value.trim(); let fin = "";
+  rec.onresult = e => { let tmp = ""; for (let i = e.resultIndex; i < e.results.length; i++) { const r = e.results[i]; if (r.isFinal) fin += r[0].transcript.trim() + ". "; else tmp += r[0].transcript; } $("#texte").value = (base ? base + "\n" : "") + fin + tmp; };
+  rec.onerror = e => { $("#dict-hint").textContent = e.error === "not-allowed" ? "Autorisez le micro pour dicter." : "La dictée s'est coupée."; };
+  rec.onend = () => { rec = null; $("#dict").textContent = "Dicter"; $("#dict").setAttribute("aria-pressed", "false"); };
+  rec.start(); $("#dict").textContent = "Arrêter"; $("#dict").setAttribute("aria-pressed", "true"); $("#dict-hint").textContent = "Je vous écoute…";
+};
+
+/* Fichiers */
+function loadScript(src){ return new Promise((ok, ko) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = ko; document.head.appendChild(s); }); }
+async function fileText(f){
+  const ext = (f.name.split(".").pop() || "").toLowerCase();
+  if (ext === "pdf") {
+    if (!window.pdfjsLib) await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    const pdf = await window.pdfjsLib.getDocument({ data: await f.arrayBuffer() }).promise; let t = "";
+    for (let i = 1; i <= Math.min(pdf.numPages, 80); i++) { const c = await (await pdf.getPage(i)).getTextContent(); t += c.items.map(x => x.str).join(" ") + "\n\n"; }
+    return t;
+  }
+  if (ext === "docx") {
+    if (!window.mammoth) await loadScript("https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js");
+    return (await window.mammoth.extractRawText({ arrayBuffer: await f.arrayBuffer() })).value;
+  }
+  return f.text();
+}
+const toB64 = f => new Promise((ok, ko) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(",")[1]); r.onerror = ko; r.readAsDataURL(f); });
+async function resize(f, max, q){
+  const img = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = URL.createObjectURL(f); });
+  const k = Math.min(1, max / Math.max(img.width, img.height)); const c = document.createElement("canvas");
+  c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+  return { b64: c.toDataURL("image/jpeg", q).split(",")[1], w: c.width, h: c.height, url: img.src };
+}
+
+/* Envoi d'une info */
+function say(el, t, cls){ el.textContent = t; el.className = "msg" + (cls ? " " + cls : ""); }
+$("#send-info").onclick = async () => {
+  const m = $("#m-info"), btn = $("#send-info"), files = [...($("#file").files || [])];
+  const body = { action: "info", type, titre: $("#titre").value.trim(), texte: T[type].text ? $("#texte").value.trim() : "" };
+  btn.disabled = true;
+  try {
+    if (type === "lien") {
+      const url = $("#url").value.trim(); if (!url) throw new Error("Collez un lien.");
+      say(m, "Lecture de la page…");
+      const r = await fetch("/api/fetch?url=" + encodeURIComponent(url)); const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(j.error || "Page illisible.");
+      body.texte = j.text; body.titre ||= j.title || url;
+    } else if (type === "doc") {
+      if (!files.length) throw new Error("Choisissez un fichier.");
+      say(m, "Lecture du document…"); body.texte = (await Promise.all(files.map(fileText))).join("\n\n"); body.titre ||= files[0].name.replace(/\.[^.]+$/, "");
+    } else if (type === "capture") {
+      if (!files.length) throw new Error("Choisissez au moins une capture.");
+      body.images = []; for (const f of files.slice(0, 4)) body.images.push((await resize(f, 1600, 0.85)).b64);
+    } else if (type === "vocal" && files.length) {
+      const f = files[0]; if (f.size > 3.5e6) throw new Error("Vocal trop long (3 minutes maximum). Vous pouvez aussi le dicter.");
+      const ext = (f.name.split(".").pop() || "mp3").toLowerCase();
+      body.audio = { data: await toB64(f), format: ["m4a", "wav", "ogg", "mp3"].includes(ext) ? ext : "mp3" };
+    } else if (!body.texte) throw new Error(type === "vocal" ? "Dictez votre message ou importez un vocal." : "Écrivez quelques mots.");
+    say(m, "Envoi en cours…");
+    await api(body);
+    say(m, "Merci, c'est bien reçu. L'équipe signé. s'en sert pour vos prochains posts.", "ok");
+    $("#sent-info").hidden = false;
+    $("#sent-list").insertAdjacentHTML("afterbegin", `<li>${esc(body.titre || (body.texte || "").slice(0, 60) || "Envoi")}</li>`);
+    $("#titre").value = ""; $("#texte").value = ""; $("#url").value = ""; $("#file").value = "";
+  } catch (e) { say(m, e.message, "err"); }
+  finally { btn.disabled = false; }
+};
+
+/* Envoi de photos */
+async function sendPhotos(list){
+  const imgs = [...list].filter(f => /^image\//.test(f.type) || /\.(jpe?g|png|webp|heic)$/i.test(f.name)); if (!imgs.length) return;
+  const m = $("#m-photo"); let ok = 0;
+  for (let k = 0; k < imgs.length; k++) {
+    const f = imgs[k]; say(m, `Envoi ${k + 1} sur ${imgs.length}…`);
+    const fig = document.createElement("figure"); fig.className = "wait";
+    try {
+      const big = await resize(f, 2000, 0.86), small = await resize(f, 800, 0.8);
+      fig.innerHTML = `<img src="${small.url}" alt="">`; $("#thumbs").prepend(fig);
+      await api({ action: "photo", data64: big.b64, small64: small.b64, nom: f.name, width: big.w, height: big.h });
+      fig.className = ""; fig.insertAdjacentHTML("beforeend", "<span>Reçue</span>"); ok++;
+    } catch (e) { fig.remove(); say(m, `${f.name} : ${e.message || "format non lisible (essayez en JPG ou PNG)"}`, "err"); await new Promise(r => setTimeout(r, 1800)); }
+  }
+  say(m, ok ? `Merci ! ${ok} photo${ok > 1 ? "s" : ""} reçue${ok > 1 ? "s" : ""}.` : m.textContent, ok ? "ok" : "err");
+  $("#photos").value = "";
+}
+$("#photos").onchange = e => sendPhotos(e.target.files);
+const drop = $("#drop");
+["dragenter", "dragover"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => sendPhotos(e.dataTransfer.files));
+
+/* Démarrage */
+setType("texte");
+api().then(j => { $("#hello").textContent = j.prenom ? `Bonjour ${j.prenom}` : "Bonjour"; $("#app").hidden = false; })
+  .catch(e => { $("#gone").hidden = false; $("#gone-msg").textContent = e.message; });
+})();
+</script>
+</body>
+</html>

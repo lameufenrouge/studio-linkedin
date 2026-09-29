@@ -7,7 +7,7 @@ const BUCKET = process.env.SUPABASE_BUCKET || "studio-images";
 const docs = () => `${supaBase()}/rest/v1/studio_docs`;
 const H = () => { const h = supaHeaders(); return { apikey: h.apikey, Authorization: h.Authorization }; };
 
-async function sign(paths) {
+export async function sign(paths) {
   if (!paths.length) return {};
   const r = await fetch(`${supaBase()}/storage/v1/object/sign/${BUCKET}`, {
     method: "POST", headers: { ...H(), "Content-Type": "application/json" },
@@ -18,11 +18,25 @@ async function sign(paths) {
   for (const x of await r.json()) if (x.signedURL) out[x.path] = `${supaBase()}/storage/v1${x.signedURL}`;
   return out;
 }
-async function saveDoc(id, data) {
+export async function saveDoc(id, data) {
   return fetch(`${docs()}?on_conflict=collection,id`, {
     method: "POST", headers: { ...supaHeaders(), Prefer: "resolution=merge-duplicates,return=minimal" },
     body: JSON.stringify({ collection: "images", id, data, updated_at: Date.now() }),
   });
+}
+
+export async function uploadImage(voixId, data64, mime) {
+  const id = crypto.randomUUID();
+  const path = `${voixId}/${id}.jpg`;
+  const up = await fetch(`${supaBase()}/storage/v1/object/${BUCKET}/${path}`, {
+    method: "POST", headers: { ...H(), "Content-Type": mime || "image/jpeg", "x-upsert": "true" },
+    body: Buffer.from(data64, "base64"),
+  });
+  if (!up.ok) {
+    const t = await up.text().catch(() => "");
+    throw new Error(/bucket not found/i.test(t) ? "Le bucket « studio-images » n'existe pas dans Supabase (voir le SQL à exécuter)" : "Envoi de l'image impossible : " + t.slice(0, 160));
+  }
+  return { id, path };
 }
 
 export default async function handler(req, res) {
@@ -46,16 +60,8 @@ export default async function handler(req, res) {
         return res.status(r.ok ? 200 : 502).json({ ok: r.ok });
       }
       if (!b.voixId || !b.data64) return res.status(400).json({ error: "Image manquante" });
-      const id = crypto.randomUUID();
-      const path = `${b.voixId}/${id}.jpg`;
-      const up = await fetch(`${supaBase()}/storage/v1/object/${BUCKET}/${path}`, {
-        method: "POST", headers: { ...H(), "Content-Type": b.mime || "image/jpeg", "x-upsert": "true" },
-        body: Buffer.from(b.data64, "base64"),
-      });
-      if (!up.ok) {
-        const t = await up.text().catch(() => "");
-        return res.status(502).json({ error: /bucket not found/i.test(t) ? "Le bucket « studio-images » n'existe pas dans Supabase (voir le SQL à exécuter)" : "Envoi de l'image impossible : " + t.slice(0, 160) });
-      }
+      let id, path;
+      try { ({ id, path } = await uploadImage(b.voixId, b.data64, b.mime)); } catch (e) { return res.status(502).json({ error: e.message }); }
       const data = { voixId: b.voixId, path, nom: b.nom || "", description: b.description || "", tags: b.tags || [], width: b.width || 0, height: b.height || 0, createdAt: Date.now() };
       const r = await saveDoc(id, data);
       if (!r.ok) return res.status(502).json({ error: "Image envoyée mais fiche non enregistrée" });
