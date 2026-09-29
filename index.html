@@ -379,6 +379,29 @@ textarea{resize:vertical;line-height:1.45}
 .dash-cta{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;position:relative;z-index:1}
 .dash-cta .btn{background:#3B4BFF;color:#fff;border-color:#3B4BFF}
 .dash-cta .btn.l{background:transparent;color:#F1EFFF;border-color:rgba(241,239,255,.35)}
+
+/* Banque d'images */
+.drop{display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;text-align:center;border:2px dashed var(--line);border-radius:20px;padding:26px 16px;cursor:pointer;background:var(--panel)}
+.drop strong{font-size:1.05rem}
+.drop span{color:var(--muted);font-size:.86rem}
+.drop.over,.drop:hover{border-color:var(--rouge);background:var(--blush)}
+.img-tools{display:flex;gap:10px;align-items:center;margin:4px 0 14px;flex-wrap:wrap}
+.img-tools input{max-width:380px}
+.img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.img-card{background:var(--panel);border:1.5px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.img-card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:var(--blush)}
+.img-card .bd{padding:10px;display:flex;flex-direction:column;gap:6px;flex:1}
+.img-card textarea{font-size:.8rem;padding:6px 8px;min-height:0;border-radius:8px}
+.img-card .tags{display:flex;flex-wrap:wrap;gap:4px}
+.img-card .tags span{font-size:.7rem;background:var(--blush);color:var(--rouge);border-radius:999px;padding:2px 8px;font-weight:700}
+.img-card .ib{display:flex;gap:6px;margin-top:auto}
+.img-card .ib .btn{flex:1;padding:6px 8px;font-size:.78rem}
+.img-card.loading img{opacity:.4}
+.img-sugg{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:12px}
+.img-sugg figure{margin:0;border:1.5px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel)}
+.img-sugg img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
+.img-sugg figcaption{font-size:.76rem;color:var(--muted);padding:6px 8px}
+.img-sugg .btn{margin:0 8px 8px;width:calc(100% - 16px);font-size:.78rem;padding:6px}
 /* Historique */
 .hist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
 .hitem{background:var(--panel);border:1.5px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px}
@@ -686,6 +709,11 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
           <div class="quick" id="quick"></div>
         </div>
         <div class="panel full" id="hooks-box" hidden><h4>Autres accroches</h4><div id="hooks"></div></div>
+        <div class="panel full" id="photo-box"><h4>Photo pour ce post</h4>
+          <p class="hint" style="margin:0 0 10px">L'IA choisit dans la banque de photos du client celles qui collent le mieux au post.</p>
+          <button class="btn btn-s" id="b-photo">Suggérer une photo</button>
+          <div class="img-sugg" id="photo-sugg"></div>
+        </div>
         <div class="panel full" id="notes-box" hidden><h4>Notes</h4><p class="notes" id="notes"></p></div>
       </div>
     </div>
@@ -772,7 +800,7 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
   <div class="vtabs" id="vtabs"></div>
   <div class="client-head" id="client-head"></div>
   <div class="subtabs" role="group" aria-label="Sections du client">
-    <button data-sub="nourrir">Nourrir l'IA</button><button data-sub="fiche">Fiche &amp; voix</button><button data-sub="contenus">Contenus</button>
+    <button data-sub="nourrir">Nourrir l'IA</button><button data-sub="photos">Photos</button><button data-sub="fiche">Fiche &amp; voix</button><button data-sub="contenus">Contenus</button>
   </div>
   <div id="sub-nourrir">
     <div class="feed">
@@ -795,6 +823,16 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
         <div id="src-list"></div>
       </div>
     </div>
+  </div>
+  <div id="sub-photos" hidden>
+    <label class="drop" id="img-drop" for="img-file">
+      <input type="file" id="img-file" accept="image/*" multiple hidden>
+      <strong>Ajouter des photos</strong>
+      <span>Glisse-les ici ou clique pour choisir. Sur téléphone, ça ouvre directement la galerie.</span>
+    </label>
+    <p class="msg" id="img-msg" role="status"></p>
+    <div class="img-tools"><input type="text" id="img-search" placeholder="Chercher : bureau, scène, famille, équipe…" aria-label="Chercher une photo"><span class="hint" id="img-count"></span></div>
+    <div class="img-grid" id="img-grid"></div>
   </div>
   <div id="sub-contenus" hidden><div class="two"><div><h4 class="feed-t">Derniers posts</h4><div id="cl-posts"></div></div><div><h4 class="feed-t">Plannings</h4><div id="cl-plans"></div></div></div></div>
   <div id="sub-fiche" hidden>
@@ -1975,6 +2013,7 @@ function renderValides(v){
   });
 }
 function resetFeedback(){
+  if ($("#photo-sugg")) $("#photo-sugg").innerHTML = "";
   $("#b-like").setAttribute("aria-pressed", "false"); $("#b-like").textContent = "👍 Je valide, c'est moi";
   $("#fb-form").hidden = true; $("#f-fb").value = ""; $("#fb-rules").innerHTML = ""; $("#fb-msg").textContent = "";
 }
@@ -2247,7 +2286,8 @@ let sources = [], curSub = "nourrir", srcType = "texte";
 function showSub(name){
   curSub = name;
   document.querySelectorAll(".subtabs button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.sub === name)));
-  ["nourrir", "fiche", "contenus"].forEach(n => $("#sub-" + n).hidden = n !== name);
+  ["nourrir", "photos", "fiche", "contenus"].forEach(n => $("#sub-" + n).hidden = n !== name);
+  if (name === "photos") loadImages(editId);
 }
 document.querySelectorAll(".subtabs button").forEach(b => b.onclick = () => {
   if (!editId && b.dataset.sub !== "fiche") { vmsg("Enregistre d'abord le client (au moins son nom).", true); showSub("fiche"); return; }
@@ -2421,13 +2461,18 @@ $("#src-add").onclick = async () => {
       raw = $("#src-text").value.trim();
     }
     if (!faits) {
-      if (!raw || raw.length < 20) throw { msg: srcType === "doc" ? "Choisis un fichier." : "Ajoute du contenu." };
-      srcMsg("L'IA extrait les faits, les chiffres et les phrases du client…");
-      faits = (await sample(extractPrompt(v, kind, raw), { modelTier: "default", cache: false })).text.trim();
+      if (!raw || raw.trim().length < 3) throw { msg: srcType === "doc" ? "Choisis un fichier." : srcType === "transcript" ? "Colle la transcription ou importe le fichier." : "Écris au moins quelques mots." };
+      if (raw.length < 600 && (srcType === "texte" || srcType === "vocal")) {
+        faits = raw.trim();
+      } else {
+        srcMsg("L'IA extrait les faits, les chiffres et les phrases du client…");
+        faits = (await sample(extractPrompt(v, kind, raw), { modelTier: "default", cache: false })).text.trim() || raw.trim().slice(0, 8000);
+      }
     }
     const id = uid();
     const doc = { voixId: v.id, type: srcType, titre: titre || `${kind} du ${new Date().toLocaleDateString("fr-FR")}`, faits, extrait: raw.slice(0, 20000), createdAt: Date.now() };
-    await store.save("sources", id, doc);
+    try { await store.save("sources", id, doc); }
+    catch (e) { throw { msg: "L'analyse a marché mais l'enregistrement a échoué (" + (e?.code || "erreur") + "). Ouvre /api/health : si « version_db » n'apparaît pas, le fichier api/db.js n'est pas à jour sur GitHub." }; }
     sources.unshift({ id, ...doc, updatedAt: Date.now() });
     $("#src-text").value = ""; $("#src-titre").value = ""; $("#src-url").value = ""; $("#src-file").value = "";
     srcMsg("Ajouté. L'IA s'en servira dans les prochains posts, idées et plannings de ce client.");
@@ -2457,6 +2502,124 @@ $("#dash-new").onclick = () => { loadVoixForm(null); showSub("fiche"); goTab("vo
 $("#dash-feed").onclick = () => { if (!activeId) { $("#dash-new").click(); return; } loadVoixForm(activeId); showSub("nourrir"); goTab("voix"); };
 $("#dash-batch").onclick = () => goTab("batch");
 setSrcType("texte");
+
+
+/* =================== BANQUE D'IMAGES =================== */
+const imagesCache = {};
+async function fetchImages(voixId, force){
+  if (!voixId) return [];
+  if (imagesCache[voixId] && !force) return imagesCache[voixId];
+  const r = await fetch("/api/images?voixId=" + encodeURIComponent(voixId));
+  if (!r.ok) throw { msg: (await r.json().catch(() => ({}))).error || "Photos indisponibles" };
+  return imagesCache[voixId] = await r.json();
+}
+async function loadImages(voixId){
+  if (!voixId) return;
+  $("#img-msg").textContent = "Chargement des photos…"; $("#img-msg").className = "msg";
+  try { await fetchImages(voixId, true); $("#img-msg").textContent = ""; }
+  catch (e) { $("#img-msg").className = "msg err"; $("#img-msg").textContent = e.msg || "Photos indisponibles : vérifie que le fichier api/images.js est bien en ligne."; }
+  renderImages();
+}
+function renderImages(){
+  const all = imagesCache[editId] || [];
+  const q = $("#img-search").value.trim().toLowerCase();
+  const list = q ? all.filter(x => (x.description + " " + (x.tags || []).join(" ") + " " + x.nom).toLowerCase().includes(q)) : all;
+  $("#img-count").textContent = all.length ? `${all.length} photo${all.length > 1 ? "s" : ""}` : "";
+  $("#img-grid").innerHTML = list.length ? list.map(x => `<article class="img-card" data-id="${esc(x.id)}">
+      <img src="${esc(x.url || "")}" alt="${esc(x.description || x.nom)}" loading="lazy">
+      <div class="bd"><textarea rows="2" aria-label="Description">${esc(x.description || "")}</textarea>
+      <div class="tags">${(x.tags || []).map(t => `<span>${esc(t)}</span>`).join("")}</div>
+      <div class="ib"><button class="btn" data-dl>Télécharger</button><button class="btn" data-rm>Supprimer</button></div></div></article>`).join("")
+    : `<div class="empty" style="grid-column:1/-1"><strong>${all.length ? "Aucune photo ne correspond" : "Aucune photo pour l'instant"}</strong>${all.length ? "Essaie un autre mot." : "Ajoute les photos du client : portraits, bureau, équipe, événements, coulisses. L'IA les décrit toute seule pour les proposer sous les bons posts."}</div>`;
+  $("#img-grid").querySelectorAll(".img-card").forEach(c => {
+    const x = all.find(i => i.id === c.dataset.id);
+    c.querySelector("textarea").onchange = async e => {
+      x.description = e.target.value.trim();
+      try { await fetch("/api/images", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...x, url: undefined }) }); } catch {}
+    };
+    c.querySelector("[data-dl]").onclick = () => downloadImage(x);
+    c.querySelector("[data-rm]").onclick = async () => {
+      if (!confirm("Supprimer cette photo ?")) return;
+      try { await fetch(`/api/images?id=${encodeURIComponent(x.id)}&path=${encodeURIComponent(x.path)}`, { method: "DELETE" }); } catch {}
+      imagesCache[editId] = all.filter(i => i.id !== x.id); renderImages();
+    };
+  });
+}
+$("#img-search").addEventListener("input", renderImages);
+async function downloadImage(x){
+  try {
+    const blob = await (await fetch(x.url)).blob();
+    await downloads.save({ filename: (x.nom || "photo").replace(/\.[^.]+$/, "") + ".jpg", data: blob });
+  } catch { window.open(x.url, "_blank", "noopener"); }
+}
+async function resizeImage(f, max, q){
+  const img = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = URL.createObjectURL(f); });
+  const k = Math.min(1, max / Math.max(img.width, img.height)); const c = document.createElement("canvas");
+  c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+  URL.revokeObjectURL(img.src); return { b64: c.toDataURL("image/jpeg", q).split(",")[1], w: c.width, h: c.height };
+}
+async function describeImage(b64){
+  if (!sample) return { description: "", tags: [] };
+  try {
+    const r = await sample([{ role: "user", content: [{ type: "text", text: "Décris cette photo pour une banque d'images LinkedIn, en français. Réponds UNIQUEMENT en JSON : {\"description\":\"1 phrase factuelle : qui, quoi, où, ambiance\",\"tags\":[\"3 à 6 mots-clés courts\"]}. N'invente pas l'identité des personnes." }, { type: "image", media_type: "image/jpeg", data: b64 }] }], { modelTier: "default", cache: false });
+    const t = r.text.replace(/```json|```/g, ""); const j = JSON.parse(t.slice(t.indexOf("{"), t.lastIndexOf("}") + 1));
+    return { description: String(j.description || ""), tags: Array.isArray(j.tags) ? j.tags.slice(0, 6).map(String) : [] };
+  } catch { return { description: "", tags: [] }; }
+}
+async function uploadImages(files){
+  const v = getVoix(editId); if (!v) return;
+  const list = [...files].filter(f => /^image\//.test(f.type) || /\.(heic|heif|jpe?g|png|webp)$/i.test(f.name));
+  if (!list.length) return;
+  const m = $("#img-msg"); m.className = "msg"; let ok = 0;
+  for (let k = 0; k < list.length; k++) {
+    const f = list[k]; m.textContent = `Envoi ${k + 1}/${list.length} : ${f.name}…`;
+    try {
+      const big = await resizeImage(f, 2000, 0.86);
+      const small = await resizeImage(f, 800, 0.8);
+      const meta = await describeImage(small.b64);
+      const r = await fetch("/api/images", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ voixId: v.id, data64: big.b64, mime: "image/jpeg", nom: f.name, width: big.w, height: big.h, ...meta }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw { msg: j.error || "Envoi impossible" };
+      (imagesCache[v.id] ||= []).unshift(j); ok++; renderImages();
+    } catch (e) { m.className = "msg err"; m.textContent = `${f.name} : ${e.msg || "format non lisible (essaie en JPG ou PNG)"}`; await new Promise(r => setTimeout(r, 1800)); m.className = "msg"; }
+  }
+  m.textContent = ok ? `${ok} photo${ok > 1 ? "s" : ""} ajoutée${ok > 1 ? "s" : ""}.` : m.textContent;
+  $("#img-file").value = "";
+}
+$("#img-file").onchange = e => uploadImages(e.target.files);
+const drop = $("#img-drop");
+["dragenter", "dragover"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => uploadImages(e.dataTransfer.files));
+
+/* Suggestion de photo sous un post */
+$("#b-photo").onclick = async () => {
+  const v = getVoix(lastRun?.voixId || activeId); const post = currentText(); const box = $("#photo-sugg");
+  if (!v || !post) return;
+  $("#b-photo").disabled = true; box.innerHTML = `<p class="hint">Je cherche dans les photos de ${esc(v.nom)}…</p>`;
+  try {
+    const imgs = await fetchImages(v.id);
+    if (!imgs.length) { box.innerHTML = `<p class="hint">Aucune photo pour ce client. Ajoute-en dans Clients > ${esc(v.nom)} > Photos.</p>`; return; }
+    let picks = imgs.slice(0, 3);
+    if (imgs.length > 3) {
+      const r = await sample(`Voici un post LinkedIn et une banque de photos décrites. Choisis les 3 photos qui l'illustreraient le mieux (cohérence avec le sujet, l'émotion, le lieu). Réponds UNIQUEMENT avec un tableau JSON des numéros, du meilleur au moins bon, ex. [4,1,7].
+
+POST :
+<<<
+${post.slice(0, 3000)}
+>>>
+
+PHOTOS :
+${imgs.slice(0, 150).map((x, i) => `${i}. ${x.description || x.nom} [${(x.tags || []).join(", ")}]`).join("\n")}`, { modelTier: "default", cache: false });
+      const t = r.text; const arr = JSON.parse(t.slice(t.indexOf("["), t.lastIndexOf("]") + 1));
+      picks = arr.map(i => imgs[i]).filter(Boolean).slice(0, 3);
+    }
+    box.innerHTML = picks.map((x, i) => `<figure><img src="${esc(x.url || "")}" alt="${esc(x.description || "")}"><figcaption>${esc(x.description || x.nom)}</figcaption><button class="btn" data-i="${i}">Télécharger</button></figure>`).join("");
+    box.querySelectorAll("[data-i]").forEach(b => b.onclick = () => downloadImage(picks[+b.dataset.i]));
+  } catch (e) { box.innerHTML = `<p class="hint">${esc(e.msg || errCopy(e))}</p>`; }
+  finally { $("#b-photo").disabled = false; }
+};
 
 /* ---------- Démarrage ---------- */
 async function boot(){
