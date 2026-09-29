@@ -1,7 +1,7 @@
 import { requireAuth } from "./_auth.js";
 import { supaBase, supaHeaders } from "./_supa.js";
 
-const COLLECTIONS = new Set(["voix", "posts", "modeles", "idees", "plannings"]);
+   const COLLECTIONS = new Set(["voix", "posts", "modeles", "idees", "plannings", "batches", "sources"]);
 
 async function fail(res, r, where) {
   const detail = r ? (await r.text().catch(() => "")).slice(0, 300) : where;
