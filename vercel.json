@@ -1,16 +1,8 @@
 {
   "functions": {
-    "api/claude.js": {
-      "maxDuration": 300
-    },
-    "api/depot.js": {
-      "maxDuration": 120
-    }
+    "api/*.js": { "maxDuration": 300 }
   },
   "rewrites": [
-    {
-      "source": "/d/:t",
-      "destination": "/depot.html"
-    }
+    { "source": "/d/:t", "destination": "/depot.html" }
   ]
 }
