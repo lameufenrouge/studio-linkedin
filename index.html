@@ -81,7 +81,7 @@ main{min-width:0;display:flex;flex-direction:column}
 .num{width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font-weight:800;font-size:.85rem}
 .step h3{margin:3px 0 8px;font-size:1rem;font-weight:800}
 .step h3 span{font-weight:400;color:var(--muted);font-size:.85rem;margin-left:6px}
-input[type=text],input[type=number],input[type=date],input[type=password],select,textarea{width:100%;background:var(--field);border:1.5px solid var(--line);border-radius:12px;padding:11px 13px}
+input[type=text],input[type=number],input[type=date],input[type=password],input[type=email],input[type=tel],input[type=url],select,textarea{width:100%;background:var(--field);border:1.5px solid var(--line);border-radius:12px;padding:11px 13px}
 input:focus,select:focus,textarea:focus{border-color:var(--ink);outline:none}
 textarea{resize:vertical;line-height:1.45}
 .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
@@ -402,6 +402,23 @@ textarea{resize:vertical;line-height:1.45}
 .img-sugg img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
 .img-sugg figcaption{font-size:.76rem;color:var(--muted);padding:6px 8px}
 .img-sugg .btn{margin:0 8px 8px;width:calc(100% - 16px);font-size:.78rem;padding:6px}
+
+/* Infos client & brouillons */
+.infos{margin-bottom:18px}
+.infos-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 12px}
+@media (max-width:1100px){.infos-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.contact{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:10px;font-size:.84rem;color:var(--muted);align-items:center}
+.contact a{color:var(--rouge);font-weight:700;text-decoration:none}
+.contact a:hover{text-decoration:underline}
+.st{font-size:.72rem;font-weight:800;border-radius:999px;padding:3px 10px;white-space:nowrap}
+.st-actif{background:#DDF7E8;color:#0E5A33}
+.st-onboarding{background:var(--blush);color:var(--rouge)}
+.st-pause{background:#FFF1DC;color:#8A4A00}
+.st-termine{background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.hist-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.hist-bar select{max-width:260px}
+.hist-bar .seg{width:auto}
+.hitem .pub{background:#3B4BFF;color:#fff;border-color:#3B4BFF}
 /* Historique */
 .hist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
 .hitem{background:var(--panel);border:1.5px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px}
@@ -423,8 +440,8 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
 .login-card .logo{color:var(--ink);font-size:1.8rem;padding:0;margin-bottom:8px}
 .login-card label{font-weight:700;font-size:.9rem}
 @media (max-width:900px){
-  .app{grid-template-columns:1fr}
-  .rail{position:sticky;top:0;height:auto;z-index:20;padding:10px 14px;gap:10px;flex-direction:row;align-items:center}
+  .app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  .rail{position:sticky;top:0;height:auto;align-self:start;z-index:20;padding:10px 14px;gap:10px;flex-direction:row;align-items:center}
   .logo{padding:0;white-space:nowrap}
   .logo .wm{font-size:1.5rem}
   .logo .sig,.logo small{display:none}
@@ -483,10 +500,10 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
   .ptable .c-act .btn{flex:1}
 }
 @media (max-width:900px){
-  .dash-grid,.batch-grid,.feed,.client-head{grid-template-columns:1fr}
+  .dash-grid,.batch-grid,.feed,.client-head,.infos-grid{grid-template-columns:1fr}
   .checklist{grid-template-columns:1fr}
   .dash-hero{border-radius:20px;padding:24px 20px 30px}
-  .nav button[data-view="idees"],.nav button[data-view="modeles"],.nav button[data-view="hist"]{display:none}
+  .nav button[data-view="idees"],.nav button[data-view="batch"]{display:none}
   .nav button.nav-more{display:flex}
   .kpis{grid-template-columns:1fr 1fr}
   .kpi:last-child{grid-column:1/-1}
@@ -513,16 +530,15 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
   <div class="logo"><span class="wm">signé<i>.</i></span><svg class="sig" viewBox="0 0 640 110" aria-hidden="true"><path d="M8 70 C 40 20, 70 12, 64 52 C 58 92, 26 84, 48 50 C 70 18, 104 26, 98 62 C 95 82, 118 80, 138 48 C 154 24, 172 34, 166 62 C 162 80, 196 74, 224 42 C 246 18, 262 44, 292 54 C 340 70, 420 40, 500 46 C 560 50, 600 58, 632 52"/></svg><small>studio</small></div>
   <nav class="nav" aria-label="Sections">
     <button data-view="dash" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Accueil</button>
-    <button data-view="voix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10a7 7 0 0 1-14 0"/><path d="M12 17v5"/></svg>Clients</button>
+    <button data-view="voix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>Clients</button>
     <button data-view="ecrire"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Écrire</button>
     <button data-view="batch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a2 2 0 0 1 2-2h11"/></svg>Batch</button>
     <button data-view="idees"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2Z"/></svg>Idées</button>
     <button data-view="planning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Planning</button>
-    <button data-view="modeles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 10 5-10 5L2 7Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>Modèles</button>
-    <button data-view="hist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Historique</button>
+    <button data-view="hist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/></svg>Brouillons</button>
     <button class="nav-more" id="nav-more" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>Plus</button>
   </nav>
-  <div class="more-sheet" id="more-sheet" hidden><button data-go="idees">Idées</button><button data-go="modeles">Modèles</button><button data-go="hist">Historique</button></div>
+  <div class="more-sheet" id="more-sheet" hidden><button data-go="batch">Batch</button><button data-go="idees">Idées</button></div>
   <div class="vsw">
     <div class="who"><div class="avatar" id="rail-av">?</div><div><strong id="rail-nom">Aucune voix</strong><small id="rail-titre"></small></div></div>
     <label for="f-voix">Client actif</label>
@@ -544,7 +560,7 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
   <div class="kpis" id="kpis"></div>
   <div class="dash-grid">
     <div><h2 class="sub x">Clients</h2><div class="clients" id="dash-clients"></div></div>
-    <div><h2 class="sub x">À faire</h2><div id="dash-todo"></div><h2 class="sub x">Derniers posts</h2><div id="dash-recent"></div></div>
+    <div><h2 class="sub x">À faire</h2><div id="dash-todo"></div><h2 class="sub x">Brouillons récents</h2><div id="dash-recent"></div></div>
   </div>
 </section>
 
@@ -690,6 +706,7 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
           <button class="sbtn w" id="b-copy">Copier le post</button>
           <button class="sbtn" id="b-save" hidden>Enregistrer les modifs</button>
           <button class="sbtn" id="b-regen">Autre version</button>
+          <button class="sbtn" id="b-pub" hidden>Marquer comme publié</button>
           <button class="sbtn" id="b-stop" hidden>Arrêter</button>
         </div>
       </div>
@@ -836,6 +853,20 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
   </div>
   <div id="sub-contenus" hidden><div class="two"><div><h4 class="feed-t">Derniers posts</h4><div id="cl-posts"></div></div><div><h4 class="feed-t">Plannings</h4><div id="cl-plans"></div></div></div></div>
   <div id="sub-fiche" hidden>
+  <div class="panel infos">
+    <h4 class="feed-t">Infos client</h4>
+    <div class="infos-grid">
+      <div class="field"><label for="p-entreprise">Entreprise</label><input type="text" id="p-entreprise"></div>
+      <div class="field"><label for="p-email">Email</label><input type="email" id="p-email" autocomplete="off"></div>
+      <div class="field"><label for="p-tel">Téléphone</label><input type="tel" id="p-tel" autocomplete="off"></div>
+      <div class="field"><label for="p-linkedin">Profil LinkedIn</label><input type="url" id="p-linkedin" placeholder="https://www.linkedin.com/in/…"></div>
+      <div class="field"><label for="p-site">Site web</label><input type="url" id="p-site" placeholder="https://…"></div>
+      <div class="field"><label for="p-formule">Formule</label><input type="text" id="p-formule" placeholder="Ex. : 12 posts / mois"></div>
+      <div class="field"><label for="p-debut">Début du contrat</label><input type="date" id="p-debut"></div>
+      <div class="field"><label for="p-statut">Statut</label><select id="p-statut"><option value="onboarding">Onboarding</option><option value="actif">Actif</option><option value="pause">En pause</option><option value="termine">Terminé</option></select></div>
+    </div>
+    <div class="field"><label for="p-notes">Notes internes <span class="hint">jamais utilisées pour écrire les posts</span></label><textarea id="p-notes" rows="3" placeholder="Préférences de validation, jours de dispo, contact assistante, points de vigilance…"></textarea></div>
+  </div>
   <div class="two">
     <div>
       <div class="callout">
@@ -877,8 +908,13 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
 
 <!-- HISTORIQUE -->
 <section class="view" id="v-hist" hidden>
-  <h1 class="h x">Historique</h1>
-  <p class="lead">Chaque post généré atterrit ici. Ouvre-le pour le retoucher.</p>
+  <h1 class="h x">Brouillons</h1>
+  <p class="lead">Les posts écrits mais pas encore publiés. Une fois un post publié, clique sur « Publié » : il sort de la liste.</p>
+  <div class="hist-bar">
+    <select id="h-client" aria-label="Client"></select>
+    <div class="seg" id="h-seg" role="group" aria-label="Statut"><button type="button" data-s="brouillon" aria-pressed="true">Brouillons</button><button type="button" data-s="publie" aria-pressed="false">Publiés</button></div>
+    <span class="hint" id="h-count"></span>
+  </div>
   <div class="hist" id="hist"></div>
 </section>
 
@@ -1066,7 +1102,7 @@ $("#f-modele").onchange = () => renderTiles();
 document.querySelectorAll(".nav button[data-view]").forEach(b => b.onclick = () => goTab(b.dataset.view));
 $("#nav-more").onclick = () => { const o = $("#more-sheet").hidden; $("#more-sheet").hidden = !o; $("#nav-more").setAttribute("aria-expanded", String(o)); };
 document.querySelectorAll("#more-sheet [data-go]").forEach(b => b.onclick = () => goTab(b.dataset.go));
-const MORE_VIEWS = ["idees", "modeles", "hist"];
+const MORE_VIEWS = ["idees", "batch", "modeles"];
 function goTab(name){
   document.querySelectorAll(".nav button[data-view]").forEach(x => { if (x.dataset.view === name) x.setAttribute("aria-current", "page"); else x.removeAttribute("aria-current"); });
   if (MORE_VIEWS.includes(name)) $("#nav-more").setAttribute("aria-current", "page"); else $("#nav-more").removeAttribute("aria-current");
@@ -1083,7 +1119,7 @@ const getVoix = id => voix.find(v => v.id === id);
 const initials = n => (n || "?").split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
 
 /* ---------- Voix ---------- */
-const PF = ["nom","titre","niche","activite","cible","style","afaire","interdits","exemples","regles","references"];
+const PF = ["nom","titre","niche","activite","cible","style","afaire","interdits","exemples","regles","references","entreprise","email","tel","linkedin","site","formule","debut","statut","notes"];
 function renderVoixSelect(){
   const sel = $("#f-voix");
   sel.innerHTML = voix.length ? voix.map(v => `<option value="${esc(v.id)}">${esc(v.nom || "Sans nom")}</option>`).join("") : `<option value="">Aucune voix</option>`;
@@ -1101,6 +1137,7 @@ function renderVTabs(){
 function loadVoixForm(id){
   editId = id; const v = getVoix(id) || {};
   PF.forEach(k => $("#p-" + k).value = v[k] || "");
+  if (!v.statut) $("#p-statut").value = id ? "actif" : "onboarding";
   renderValides(v);
   renderClientHead(); renderSources(); renderContenus();
   showSub(id ? curSub : "fiche");
@@ -1484,7 +1521,7 @@ async function run(input, meta){
     resetFeedback();
     if (!p.post) { $("#li-text").textContent = raw.trim(); runChecks(); } else show(p);
     lastRun = { ...meta, input, raw, postId: uid(), createdAt: Date.now() };
-    await savePost(p.post || raw.trim());
+    await savePost(p.post || raw.trim()); updatePubButton();
     await linkToSlot();
     if (r.truncated) msg("Le texte a été coupé. Demande une version plus courte.", true);
   } catch (e) {
@@ -1625,6 +1662,7 @@ async function savePost(text){
   if (!lastRun || !text) return;
   const v = getVoix(lastRun.voixId);
   const data = { voixId: lastRun.voixId, voixNom: v?.nom || "", sujet: lastRun.sujet || "", texte: text, format: lastRun.format || "", createdAt: lastRun.createdAt || Date.now() };
+  const prev = posts.find(p => p.id === lastRun.postId); data.statut = prev?.statut || "brouillon"; if (prev?.publishedAt) data.publishedAt = prev.publishedAt;
   try {
     await store.save("posts", lastRun.postId, data);
     const full = { id: lastRun.postId, ...data, updatedAt: Date.now() }; const i = posts.findIndex(p => p.id === lastRun.postId);
@@ -1632,23 +1670,52 @@ async function savePost(text){
     if (posts.length > 300) { const old = posts.pop(); store.del("posts", old.id).catch(() => {}); }
   } catch (e) { msg("Post généré, mais pas enregistré dans l'historique (" + (e.code || "erreur") + ").", true); }
 }
+let histStatut = "brouillon";
+const isPub = p => p.statut === "publie";
 function renderHist(){
+  const sel = $("#h-client"), prev = sel.value || activeId || "";
+  sel.innerHTML = `<option value="">Tous les clients</option>` + voix.map(v => `<option value="${esc(v.id)}">${esc(v.nom)}</option>`).join("");
+  sel.value = voix.some(v => v.id === prev) ? prev : "";
+  document.querySelectorAll("#h-seg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.s === histStatut)));
+  const list = posts.filter(p => (!sel.value || p.voixId === sel.value) && (histStatut === "publie" ? isPub(p) : !isPub(p)));
+  $("#h-count").textContent = `${list.length} post${list.length > 1 ? "s" : ""}`;
   const el = $("#hist");
-  if (!posts.length) { el.innerHTML = `<div class="empty"><strong>Aucun post pour l'instant</strong>Génère ton premier post dans Écrire.</div>`; return; }
-  el.innerHTML = posts.map(p => `<article class="hitem">
-    <div class="meta">${esc(p.voixNom)} · ${new Date(p.updatedAt || p.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</div>
+  if (!list.length) { el.innerHTML = `<div class="empty"><strong>${histStatut === "publie" ? "Aucun post publié" : "Aucun brouillon"}</strong>${histStatut === "publie" ? "Les posts marqués « Publié » apparaîtront ici." : "Tout ce qui a été écrit est publié. Génère de nouveaux posts dans Écrire ou Batch."}</div>`; return; }
+  el.innerHTML = list.map(p => `<article class="hitem">
+    <div class="meta">${esc(p.voixNom)} · ${isPub(p) ? "publié le " + new Date(p.publishedAt || p.updatedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" }) : "écrit le " + new Date(p.createdAt || p.updatedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}${p.batchId ? " · batch" : ""}</div>
     <strong>${esc(p.sujet || "Sans sujet")}</strong><p>${esc(p.texte)}</p>
-    <div class="ib"><button class="btn btn-s" data-open="${esc(p.id)}">Ouvrir</button><button class="btn btn-s" data-del="${esc(p.id)}">Supprimer</button></div>
+    <div class="ib"><button class="btn btn-s" data-open="${esc(p.id)}">Ouvrir</button><button class="btn btn-s" data-copy="${esc(p.id)}">Copier</button>
+    ${isPub(p) ? `<button class="btn btn-s" data-unpub="${esc(p.id)}">Remettre en brouillon</button>` : `<button class="btn btn-s pub" data-pub="${esc(p.id)}">Publié</button>`}
+    <button class="btn btn-s" data-del="${esc(p.id)}" aria-label="Supprimer">Supprimer</button></div>
   </article>`).join("");
   el.querySelectorAll("[data-open]").forEach(b => b.onclick = () => openPost(b.dataset.open));
+  el.querySelectorAll("[data-copy]").forEach(b => b.onclick = async () => { await copyForLinkedIn(posts.find(p => p.id === b.dataset.copy)?.texte || ""); b.textContent = "Copié"; setTimeout(() => b.textContent = "Copier", 1500); });
+  el.querySelectorAll("[data-pub]").forEach(b => b.onclick = () => setPostStatut(b.dataset.pub, "publie"));
+  el.querySelectorAll("[data-unpub]").forEach(b => b.onclick = () => setPostStatut(b.dataset.unpub, "brouillon"));
   el.querySelectorAll("[data-del]").forEach(b => b.onclick = async () => {
-    if (!confirm("Supprimer ce post de l'historique ?")) return;
+    if (!confirm("Supprimer ce post ?")) return;
     try { await store.del("posts", b.dataset.del); } catch {}
     posts = posts.filter(p => p.id !== b.dataset.del); renderHist();
   });
 }
+async function setPostStatut(id, statut){
+  const p = posts.find(x => x.id === id); if (!p) return;
+  p.statut = statut; p.publishedAt = statut === "publie" ? Date.now() : null;
+  const body = { ...p }; delete body.id;
+  try { await store.save("posts", id, body); } catch { msg("Impossible de changer le statut.", true); }
+  if (!$("#v-hist").hidden) renderHist();
+  if (lastRun?.postId === id) updatePubButton();
+}
+$("#h-client").onchange = renderHist;
+document.querySelectorAll("#h-seg button").forEach(b => b.onclick = () => { histStatut = b.dataset.s; renderHist(); });
+function updatePubButton(){
+  const p = posts.find(x => x.id === lastRun?.postId);
+  $("#b-pub").hidden = !p; if (!p) return;
+  $("#b-pub").textContent = isPub(p) ? "Publié ✓" : "Marquer comme publié";
+  $("#b-pub").classList.toggle("w", isPub(p));
+}
 function openPost(id){
-  planLink = null; resetFeedback();
+  planLink = null; resetFeedback(); setTimeout(updatePubButton, 0);
   const p = posts.find(x => x.id === id); if (!p) return;
   const v = getVoix(p.voixId);
   if (v) { activeId = v.id; renderVoixSelect(); $("#f-sujet").value = p.sujet || ""; lastRun = { voixId: v.id, sujet: p.sujet, postId: p.id, createdAt: p.createdAt, format: p.format, input: buildPrompt(v) }; }
@@ -2100,7 +2167,7 @@ function renderDash(){
     [`<span class="hlt">${monthPosts}</span>`, "posts écrits ce mois-ci"],
     [week.length ? `${weekDone}/${week.length}` : "0", "posts prévus sur 7 jours déjà écrits"],
     [upcoming.length ? Math.round(valid / upcoming.length * 100) + "%" : "–", "des sujets à venir validés"],
-    [validated, "posts de référence validés"]
+    [posts.filter(p => p.statut !== "publie").length, "brouillons à publier"]
   ].map(([b, s]) => `<div class="kpi"><b>${b}</b><span>${s}</span></div>`).join("");
 
   $("#dash-clients").innerHTML = voix.length ? voix.map(v => {
@@ -2109,7 +2176,7 @@ function renderDash(){
     const next = vs[0];
     const vv = vs.filter(s => s.statut === "valide").length;
     return `<article class="client">
-      <div class="who"><div class="av">${esc(initials(v.nom))}</div><div><strong>${esc(v.nom)}</strong><small>${esc(v.titre || v.niche || "")}</small></div></div>
+      <div class="who"><div class="av">${esc(initials(v.nom))}</div><div><strong>${esc(v.nom)}</strong><small>${esc(v.entreprise || v.titre || v.niche || "")}</small></div>${v.statut ? `<span class="st st-${esc(v.statut)}" style="margin-left:auto">${esc(STATUTS[v.statut] || "")}</span>` : ""}</div>
       <div class="stats"><div><b>${vp.filter(p => sameMonth(p.createdAt)).length}</b>ce mois</div><div><b>${vp.length}</b>au total</div><div><b>${(v.valides || []).length}</b>validés</div></div>
       ${next ? `<div class="next"><b>Prochain post · ${esc(fmtDay(next.date))}</b>${esc(next.sujet || "Sujet à définir")}</div>` : `<div class="next"><b>Prochain post</b>Aucun planning à venir</div>`}
       ${vs.length ? `<div><div class="barl"><span>Sujets validés</span><span>${vv}/${vs.length}</span></div><div class="bar"><i style="width:${Math.round(vv / vs.length * 100)}%"></i></div></div>` : ""}
@@ -2133,7 +2200,7 @@ function renderDash(){
   todo.slice(0, 8).forEach(x => { const b = document.createElement("button"); b.className = "row-item"; b.innerHTML = `<span class="dot ${x.cls}"></span><span>${esc(x.t)}<small>${esc(x.sub)}</small></span>`; b.onclick = x.go; $("#dash-todo").appendChild(b); });
 
   $("#dash-recent").innerHTML = "";
-  posts.slice(0, 5).forEach(p => { const b = document.createElement("button"); b.className = "row-item"; b.innerHTML = `<span class="dot o"></span><span>${esc((p.texte || "").split("\n")[0].slice(0, 90))}<small>${esc(p.voixNom || "")} · ${new Date(p.updatedAt || p.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}</small></span>`; b.onclick = () => openPost(p.id); $("#dash-recent").appendChild(b); });
+  posts.filter(p => p.statut !== "publie").slice(0, 5).forEach(p => { const b = document.createElement("button"); b.className = "row-item"; b.innerHTML = `<span class="dot o"></span><span>${esc((p.texte || "").split("\n")[0].slice(0, 90))}<small>${esc(p.voixNom || "")} · ${new Date(p.updatedAt || p.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}</small></span>`; b.onclick = () => openPost(p.id); $("#dash-recent").appendChild(b); });
   if (!posts.length) $("#dash-recent").innerHTML = `<div class="row-item" style="cursor:default"><span class="dot"></span><span>Aucun post pour l'instant.</span></div>`;
 }
 
@@ -2252,7 +2319,7 @@ $("#bt-run").onclick = async () => {
       try {
         const out = await generateOne(v, d, { signal: ctl2.signal, tier: settings.tier, relect: settings.relect, onStage: s => { j.status = s; renderJobs(); } });
         j.texte = out.post; j.postId = uid(); j.status = "fait";
-        const doc = { voixId: v.id, voixNom: v.nom, sujet: j.sujet, texte: j.texte, format: d.fmt, createdAt: Date.now(), batchId: id };
+        const doc = { voixId: v.id, voixNom: v.nom, sujet: j.sujet, texte: j.texte, format: d.fmt, createdAt: Date.now(), batchId: id, statut: "brouillon" };
         try { await store.save("posts", j.postId, doc); posts.unshift({ id: j.postId, ...doc, updatedAt: Date.now() }); } catch {}
         if (j.slot) { const pl = plannings.find(x => x.id === j.slot.planId); if (pl?.slots[j.slot.i]) { pl.slots[j.slot.i].postId = j.postId; try { await store.save("plannings", pl.id, pl); } catch {} } }
       } catch (e) { if (e?.code === "cancelled") { j.status = "stop"; break; } j.status = "erreur"; j.err = errCopy(e); }
@@ -2298,6 +2365,7 @@ document.querySelectorAll(".subtabs button").forEach(b => b.onclick = () => {
   if (!editId && b.dataset.sub !== "fiche") { vmsg("Enregistre d'abord le client (au moins son nom).", true); showSub("fiche"); return; }
   showSub(b.dataset.sub);
 });
+const STATUTS = { onboarding: "Onboarding", actif: "Actif", pause: "En pause", termine: "Terminé" };
 function readiness(v){
   const nbEx = splitPosts(v.exemples).length;
   const items = [
@@ -2316,6 +2384,7 @@ function renderClientHead(){
   if (!v) { $("#client-head").innerHTML = `<div><strong>Nouveau client</strong><small>Remplis au moins son nom dans « Fiche &amp; voix », puis enregistre.</small></div>`; return; }
   const r = readiness(v);
   $("#client-head").innerHTML = `<div><div class="who"><div class="av">${esc(initials(v.nom))}</div><div><strong>${esc(v.nom)}</strong><small>${esc(v.titre || v.niche || "")}</small></div></div>
+    <div class="contact">${v.statut ? `<span class="st st-${esc(v.statut)}">${esc(STATUTS[v.statut] || v.statut)}</span>` : ""}${v.entreprise ? `<span>${esc(v.entreprise)}</span>` : ""}${v.formule ? `<span>${esc(v.formule)}</span>` : ""}${v.email ? `<a href="mailto:${esc(v.email)}">${esc(v.email)}</a>` : ""}${v.tel ? `<a href="tel:${esc(v.tel.replace(/\s/g, ""))}">${esc(v.tel)}</a>` : ""}${/^https?:\/\//.test(v.linkedin || "") ? `<a href="${esc(v.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>` : ""}${/^https?:\/\//.test(v.site || "") ? `<a href="${esc(v.site)}" target="_blank" rel="noopener">Site</a>` : ""}${v.debut ? `<span>client depuis le ${esc(new Date(v.debut).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }))}</span>` : ""}</div>
     <div class="ib"><button class="btn btn-s go" data-ch="ecrire">Écrire</button><button class="btn btn-s" data-ch="batch">Batch</button><button class="btn btn-s" data-ch="planning">Planning</button></div></div>
     <div class="ready"><div class="barl"><span>Fiche prête à</span><b>${r.pct}%</b></div><div class="bar"><i style="width:${r.pct}%"></i></div>
     <ul class="checklist">${r.items.map(x => `<li class="${x[1] ? "ok" : ""}"><i>${x[1] ? "✓" : "○"}</i>${esc(x[0])}</li>`).join("")}</ul></div>`;
@@ -2627,6 +2696,7 @@ ${imgs.slice(0, 150).map((x, i) => `${i}. ${x.description || x.nom} [${(x.tags |
   finally { $("#b-photo").disabled = false; }
 };
 
+$("#b-pub").onclick = () => { const p = posts.find(x => x.id === lastRun?.postId); if (p) setPostStatut(p.id, isPub(p) ? "brouillon" : "publie"); };
 /* ---------- Démarrage ---------- */
 async function boot(){
   const me = await fetch("/api/login").catch(() => null);
