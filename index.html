@@ -596,7 +596,7 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
 <!-- ACCUEIL -->
 <section class="view" id="v-dash">
   <div class="dash-hero">
-    <p class="dash-kicker">signé. · studio de ghostwriting · <span id="app-version">version 30.09c · matière</span></p>
+    <p class="dash-kicker">signé. · studio de ghostwriting · <span id="app-version"></span></p>
     <h1 class="dash-title" id="dash-hello">Bonjour</h1>
     <p class="dash-sub">Vos idées. Nos mots. <em>Votre nom en bas.</em></p>
     <div class="dash-cta"><button class="btn" id="dash-new">+ Nouveau client</button><button class="btn l" id="dash-feed">Nourrir l'IA</button><button class="btn l" id="dash-batch">Lancer un batch</button></div>
@@ -779,7 +779,7 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
           <div class="ret"><label class="sr" for="f-ret">Consigne</label><input type="text" id="f-ret" placeholder="Ex. : plus cash, coupe le 3e paragraphe"><button class="btn" id="b-ret">OK</button></div>
           <div class="quick" id="quick"></div>
         </div>
-        <div class="panel full" id="hooks-box" hidden><h4>Autres accroches</h4><div id="hooks"></div></div>
+        <div class="panel full" id="hooks-box"><h4>Autres accroches</h4><div id="hooks"></div><div class="fb-row"><button class="btn btn-s" id="b-hooklab">Atelier : 8 nouvelles accroches</button><span class="hint" id="hooklab-msg"></span></div></div>
         <div class="panel full" id="photo-box"><h4>Photo pour ce post</h4>
           <p class="hint" style="margin:0 0 10px">L'IA choisit dans la banque de photos du client celles qui collent le mieux au post.</p>
           <button class="btn btn-s" id="b-photo">Suggérer une photo</button>
@@ -1150,7 +1150,7 @@ const BUILTIN = [
   { id:"b-oneliner", nom:"La punchline", accroche:"Une seule phrase ironique qui dit tout haut ce que la cible pense tout bas.", squelette:["Une phrase unique, du type « Bonjour à tous sauf à [cible de l'agacement] »","Rien d'autre, ou une ligne de contexte maximum"], mecaniques:["Le commentaire fait le reste du post","Ironie, pas méchanceté","Cible que tout le monde a déjà croisée"], longueur:"court", builtin:true }
 ];
 const allModeles = () => [...modeles, ...BUILTIN];
-const QUICK = ["Recentrer sur une seule idée","Plus court","Plus cash","Plus tendre","Plus aéré","Accroche plus forte","Moins d'emojis","Fin plus factuelle","Plus de concret"];
+const QUICK = ["Recentrer sur une seule idée","Accroche plus spécifique","Plus court","Plus cash","Plus tendre","Plus aéré","Accroche plus forte","Moins d'emojis","Fin plus factuelle","Plus de concret"];
 
 /* ---------- UI de base ---------- */
 function renderTiles(){
@@ -1402,7 +1402,9 @@ Procédés : ${(m.mecaniques || []).join(" ; ")}`;
 const UNIVERSAL_RULES = `# RÈGLES GÉNÉRALES D'ÉCRITURE (valables pour tout le monde ; en cas de conflit, la voix l'emporte)
 
 ## Règle zéro
-N'utilise QUE les informations dont tu disposes : la matière brute et la fiche de la voix. N'invente jamais un vécu, une émotion, un chiffre, une date, un prénom, une citation ou un épisode.
+Deux catégories, deux règles :
+- JAMAIS INVENTÉ (les faits vérifiables) : chiffres, montants, résultats, dates, durées, prénoms, noms d'entreprises ou de clients, lieux, événements, anecdotes vécues, citations, projets précis (« aller au Japon », « ouvrir un 2e bureau »). Ils viennent uniquement de la matière brute et de la fiche. Exemple interdit : « mon client a fait 50K€ » si ce n'est écrit nulle part.
+- AUTORISÉ DANS LA LIMITE DU RAISONNABLE (ce que la personne pense et ressent) : convictions, valeurs, intentions, aspirations générales, motivations, émotions ordinaires face à une situation, réflexions et transitions. Exemple autorisé : « je veux un monde meilleur pour les entrepreneurs ». À 3 conditions : c'est cohérent avec la fiche (positionnement, cible, style), ça ne contredit rien de ce qui y est écrit, et ça n'engage pas la personne sur un terrain sensible ou contractuel (santé, famille, religion, politique, promesse de résultat, prix, garantie).
 Le post doit être publiable tel quel : AUCUN trou, AUCUN crochet, AUCUN « [à compléter] », AUCUN « [x] » (seul [lien] est autorisé quand la fin le demande).
 Si un détail manque (un montant, une date, une phrase exacte, ce que la personne est devenue), écris la phrase sans ce détail : « Une cliente était prête à me payer le jour même » plutôt qu'un montant inventé ou un trou. Si c'est l'histoire entière qui manque, ne la raconte pas : choisis un autre angle du même sujet qui s'appuie sur des faits réels de la fiche (un fait du parcours, une conviction, une habitude, une méthode). Un post plus simple mais vrai et complet vaut mieux qu'une histoire à trous.
 
@@ -1410,7 +1412,11 @@ Si un détail manque (un montant, une date, une phrase exacte, ce que la personn
 - Ce que demande le sujet passe avant toutes les règles générales. S'il fixe un nombre (« 8 choses »), un format, un angle ou une cible, respecte-le exactement : 8 éléments si on demande 8, jamais moins, jamais plus.
 - Respecte l'angle exact du sujet, sans le déformer. Avant d'écrire, formule ce que le sujet promet au lecteur ; chaque ligne du post doit tenir cette promesse. « Ce qui compte si on bosse ensemble », c'est ce que le lecteur va trouver, vivre et gagner en travaillant avec la personne (sa méthode, ses engagements, sa façon de travailler), pas une liste de ses échecs ni des consignes adressées au lecteur.
 - Chaque élément doit correspondre littéralement à ce que le sujet annonce : « les choses que j'aimerais faire dans ma vie » = des activités, des expériences, des projets de vie. Pas un objectif de chiffre d'affaires, pas une chose à éviter, pas une anecdote recyclée tordue pour rentrer dans la case.
-- Si la fiche et la matière ne contiennent pas assez de faits réels pour tenir la demande (ex. « 8 choses que j'aimerais faire » alors que la fiche ne parle d'aucune envie), N'ÉCRIS PAS le post : ne comble pas avec des faits hors sujet et ne réduis pas le nombre demandé. Réponds uniquement avec la balise ===MANQUE=== suivie de 3 à 6 questions précises et simples à poser à la personne pour obtenir cette matière. Ne le fais que pour ce cas : pour un sujet d'opinion, de méthode ou d'actualité, écris avec ce que tu as.
+- Si la fiche et la matière ne contiennent pas assez de faits concrets (au sens de la règle zéro) pour tenir la demande (ex. « 8 choses que j'aimerais faire » alors que la fiche ne parle d'aucune envie), N'ÉCRIS PAS le post : ne comble pas avec des faits hors sujet et ne réduis pas le nombre demandé. Réponds uniquement avec la balise ===MANQUE=== suivie de 3 à 6 questions précises et simples à poser à la personne pour obtenir cette matière. Ne le fais que pour ce cas : pour un sujet d'opinion, de méthode ou d'actualité, écris avec ce que tu as.
+- Le post ne parle JAMAIS de sa propre fabrication : pas de « on m'a demandé… », pas de nombre prévu puis raté (« j'en ai donné 2 sur 8 »), pas d'allusion aux questions posées, à la matière manquante ou à une liste « à compléter plus tard ». Il doit se lire comme écrit spontanément par la personne.
+- Si, même avec les réponses de la personne, il y a moins d'éléments réels que le nombre demandé, ramène le sujet au nombre réel (« Les 2 choses que… ») et écris un vrai post autour de ces éléments, sans mentionner le nombre prévu. Signale-le seulement dans les notes.
+- Le contexte tient en 1 ou 2 lignes, et seulement s'il sert la big idea. Chaque preuve chiffrée doit prouver la big idea elle-même (une « pire journée à 1K€ » ne prouve rien sur des envies de vie).
+- Chaque élément d'une liste d'envies ou de projets gagne à avoir un détail concret et personnel (pourquoi, depuis quand, ce que ça représente) plutôt qu'une justification générique.
 - Un même fait ou une même anecdote n'apparaît qu'une seule fois dans le post (jamais dans l'accroche, puis dans la liste, puis dans le PS).
 - Les chiffres internes au post doivent être cohérents entre eux (nombre d'éléments annoncé, comptes, comparaisons).
 - Un post qui parle d'une collaboration est une promesse faite au lecteur, pas une liste d'injonctions (« Tu arrêtes… », « Tu délègues… ») : on ne fait pas la leçon à un futur client.
@@ -1424,10 +1430,41 @@ Si un détail manque (un montant, une date, une phrase exacte, ce que la personn
 - Pour un post d'annonce ou de vente, la big idea est la raison unique pour laquelle l'offre existe (pourquoi elle, pourquoi maintenant). Pas une liste de raisons.
 - Si la matière contient plusieurs bonnes idées, n'en garde qu'une ; les autres sont proposées dans les notes pour d'autres posts.
 
-## Accroche
-- Ce sont les 2 premières lignes visibles avant « voir plus ». Ligne 1 : un fait concret ou chiffré. Ligne 2 : le contraste ou la tension (« Pourtant », « Mais », « Aujourd'hui »).
-- Jamais de mise en contexte, jamais « Aujourd'hui je vais vous parler de », « Je voulais partager ». L'opinion générale sans ancrage est l'accroche la plus faible.
-- Leviers qui surperforment, seulement si la matière le permet : un tiers connu et sa décision surprenante avec la raison annoncée mais pas donnée (« pour une raison précise : »), l'histoire d'un proche, une scène avec deux personnes que tout oppose, une erreur et son coût exact, une citation choc entre guillemets, une idée reçue qualifiée d'arnaque, un chiffre précis et inattendu.
+## Accroche (c'est elle qui fait 80 % des vues : travaille-la comme un titre de une)
+Forme LinkedIn
+- Ce sont les 2 premières lignes, visibles avant « voir plus » (environ 140 caractères sur mobile). Ligne 1 courte : 12 mots maximum, idéalement moins de 70 caractères. Ligne 2 : la tension, le contraste ou la boucle ouverte qui oblige à cliquer. Puis une ligne vide.
+- L'accroche promet, le corps livre : jamais de promesse que le post ne tient pas.
+- Elle pose la big idea sous sa forme la plus tendue, sans la résoudre : on annonce le résultat, pas le comment ni le pourquoi.
+
+Les 5 critères d'une accroche qui arrête le pouce
+1. Spécifique : un chiffre précis, un nom, une durée, une scène datée. « 3 clients en 11 jours » bat « plusieurs clients rapidement ».
+2. Tendue : un contraste, un paradoxe, un aveu, une décision contre-intuitive. Il se passe quelque chose.
+3. Ouverte : une question se pose dans la tête du lecteur (comment ? pourquoi ? et après ?) et seule la suite y répond.
+4. Pour la cible : la personne visée se reconnaît ou sent que ça la concerne directement.
+5. Humaine : elle sonne comme une phrase dite à voix haute par la personne, dans sa voix, pas comme un titre d'article.
+Test du générique : si l'accroche pourrait être signée par n'importe qui dans le secteur, elle est à jeter.
+
+Les leviers (varie-les d'un post à l'autre)
+- Le chiffre avant / après : point de départ modeste en ligne 1, résultat en ligne 2.
+- L'aveu contre-intuitif : « J'ai refusé… », « J'ai arrêté… », « J'ai eu tort sur… ».
+- La scène : un moment précis, avec un lieu et une heure, dans laquelle on entre en cours de route.
+- L'erreur et son coût exact.
+- La citation choc entre guillemets, dite par quelqu'un (client, proche, concurrent), puis qui l'a dite.
+- Le contre-pied : une idée reçue du secteur, puis « c'est faux » ou « c'est ce qui vous bloque ».
+- Le tiers connu et sa décision surprenante, raison annoncée mais pas donnée.
+- Le face-à-face : deux personnes, deux situations, un écart qui choque.
+- La promesse chiffrée de liste (« 8 choses que… »), quand le sujet est une liste, avec un enjeu en ligne 2.
+- Le one-liner ironique, pour les voix qui s'y prêtent.
+
+Interdits d'accroche
+- Commencer par « Aujourd'hui », « Je voulais », « Petit post », « Il y a quelque chose », « Et si… », « Saviez-vous que », « Hello », « Bonjour à tous ».
+- Une question générique (« Vous aussi vous galérez ? ») ou une statistique sans source.
+- Une opinion générale sans ancrage, un thème au lieu d'une idée (« Parlons personal branding »).
+- Un emoji en début de ligne, une phrase entière en majuscules, des signaux d'alerte (🚨, ⚠️).
+- Tout dévoiler dès l'accroche : si on n'a plus besoin de lire la suite, c'est raté.
+
+Méthode obligatoire
+- Écris d'abord 5 accroches candidates, chacune avec un levier différent. Note-les mentalement sur les 5 critères, garde la meilleure pour ouvrir le post, et donne les 4 autres comme alternatives.
 
 ## Corps et rythme
 - Une idée par paragraphe, une ligne vide entre chaque, 1 à 2 phrases par paragraphe (environ 110 à 145 caractères). Jamais de pavé.
@@ -1549,16 +1586,17 @@ Si la matière manque pour tenir la demande (voir « La demande d'abord »), ré
 Sinon, réponds exactement avec ces quatre balises, rien avant :
 ===IDÉE===
 (la big idea du post, en une phrase)
-===POST===
-(le post complet)
 ===ACCROCHES===
-(3 accroches alternatives, une par ligne, 1 à 2 phrases chacune, trois angles différents, mêmes règles)
+(5 accroches candidates, la meilleure en premier, une par ligne, sous la forme : ligne 1 // ligne 2 | levier utilisé)
+===POST===
+(le post complet, qui commence par la meilleure des 5 accroches)
 ===NOTES===
 Type : (type de post)
 Pourquoi l'accroche marche : (1 phrase)
 Conseil : (1 phrase concrète pour la publication)
 Pour aller plus loin : (si un détail vécu manquant aurait rendu le post plus fort, dis lequel en 1 phrase, sinon « rien »)
-Autres posts possibles : (les idées de la matière que tu as écartées pour garder une seule big idea, 1 ligne chacune, sinon « aucun »)`;
+Autres posts possibles : (les idées de la matière que tu as écartées pour garder une seule big idea, 1 ligne chacune, sinon « aucun »)
+À vérifier : (les phrases où tu as prêté à la personne une conviction, une intention ou une émotion qui n'est pas écrite dans la fiche ou la matière, pour qu'elle confirme ; sinon « rien »)`;
 
 function buildPrompt(v, d = readDemand()){
   return `Tu es un ghostwriter LinkedIn francophone de très haut niveau. Tu écris UN post LinkedIn dans la voix de la personne décrite ci-dessous.
@@ -1575,20 +1613,22 @@ ${FORMAT_BLOCK}`;
 /* ---------- Génération ---------- */
 function parse(raw){
   const out = { post: "", hooks: [], notes: "", idee: "", manque: [] };
-  const mq = raw.indexOf("===MANQUE===");
-  if (mq >= 0 && raw.indexOf("===POST===") < 0) { out.manque = raw.slice(mq + 12).split("\n").map(s => s.replace(/^\s*(\d+[.)]|[-•*→])\s*/, "").trim()).filter(Boolean); return out; }
-  const ib = raw.indexOf("===IDÉE===");
-  if (ib >= 0) { const e = raw.indexOf("===POST===", ib); out.idee = raw.slice(ib + 10, e < 0 ? undefined : e).trim(); }
-  const p = raw.indexOf("===POST===");
-  if (p < 0) return out;
-  let rest = raw.slice(p + 10);
-  const a = rest.indexOf("===ACCROCHES===");
-  if (a < 0) { out.post = rest.replace(/=+[A-Z]*$/, "").trim(); return out; }
-  out.post = rest.slice(0, a).trim(); rest = rest.slice(a + 15);
-  const n = rest.indexOf("===NOTES===");
-  const h = n < 0 ? rest : rest.slice(0, n);
-  out.hooks = h.split("\n").map(s => s.replace(/^\s*(\d+[.)]|[-•*])\s*/, "").replace(/^["«]\s*|\s*["»]$/g, "").trim()).filter(s => s && !s.startsWith("==="));
-  if (n >= 0) out.notes = rest.slice(n + 11).trim();
+  const TAGS = ["===MANQUE===", "===IDÉE===", "===ACCROCHES===", "===POST===", "===NOTES==="];
+  const pos = TAGS.map(t => [t, raw.indexOf(t)]).filter(x => x[1] >= 0).sort((a, b) => a[1] - b[1]);
+  const sec = {};
+  pos.forEach(([t, i], k) => { sec[t] = raw.slice(i + t.length, k + 1 < pos.length ? pos[k + 1][1] : raw.length); });
+  const clean = s => s.replace(/=+[A-ZÉ]*\s*$/, "");
+  if (sec["===MANQUE==="] != null && sec["===POST==="] == null) {
+    out.manque = sec["===MANQUE==="].split("\n").map(s => s.replace(/^\s*(\d+[.)]|[-•*→])\s*/, "").trim()).filter(Boolean);
+    return out;
+  }
+  out.idee = clean(sec["===IDÉE==="] || "").trim();
+  if (sec["===POST==="] != null) out.post = clean(sec["===POST==="]).trim();
+  out.hooks = clean(sec["===ACCROCHES==="] || "").split("\n")
+    .map(s => s.replace(/^\s*(\d+[.)]|[-•*])\s*/, "").trim()).filter(s => s && !s.startsWith("==="))
+    .map(s => { const [txt, lev] = s.split(/\s\|\s/); return { text: txt.replace(/^["«]\s*|\s*["»]$/g, "").split(/\s*\/\/\s*/).join("\n").trim(), lever: (lev || "").trim() }; })
+    .filter(x => x.text);
+  out.notes = clean(sec["===NOTES==="] || "").trim();
   return out;
 }
 function errCopy(e){
@@ -1646,14 +1686,10 @@ async function run(input, meta){
 }
 function show(p){
   renderPost(p.post);
-  $("#hooks").innerHTML = "";
-  p.hooks.slice(0, 3).forEach(h => {
-    const b = document.createElement("button"); b.className = "hook";
-    b.innerHTML = esc(h) + "<small>Utiliser cette accroche</small>";
-    b.onclick = () => swapHook(h, b); $("#hooks").appendChild(b);
-  });
-  $("#hooks-box").hidden = !p.hooks.length;
-  $("#notes").textContent = (p.idee ? "Big idea : " + p.idee + "\n" : "") + (p.notes || ""); $("#notes-box").hidden = !(p.notes || p.idee);
+  const norm = s => s.replace(/\s+/g, " ").trim().toLowerCase();
+  const opening = norm((p.post || "").split("\n\n")[0]);
+  renderHooks(p.hooks.filter(x => norm(x.text) !== opening && !opening.startsWith(norm(x.text).slice(0, 40))).slice(0, 4));
+  $("#notes").textContent = (p.idee ? "Big idea : " + p.idee + "\n" : "") + (p.notes || "") + "\nÉcrit avec la version " + APP_VERSION; $("#notes-box").hidden = false;
 }
 function renderPost(t){ $("#li-text").innerHTML = esc(t).replace(/\[(?!lien\])[^\]\n]{1,120}\]/gi, m => `<mark>${m}</mark>`); runChecks(); }
 function swapHook(h, btn){
@@ -1737,6 +1773,9 @@ function checkItems(t, v, long = $("#f-long").value, sujet = lastRun?.sujet || $
   const items = []; const len = t.length, [mn, mx] = LONG_RANGE[long] || LONG_RANGE.standard;
   items.push([len >= mn * 0.9 && len <= mx * 1.15, `${len} caractères (visé : ${mn}-${mx})`]);
   const hook = t.split("\n\n")[0] || "";
+  const line1 = (t.split("\n")[0] || "").trim();
+  if (line1.length > 110) items.push([false, `Ligne 1 de ${line1.length} caractères : raccourcis-la (70 idéalement)`]);
+  if (/^(aujourd'hui|je voulais|petit post|il y a quelque chose|et si |saviez-vous|hello|bonjour à tous(?! sauf))/i.test(line1)) items.push([false, "Accroche qui commence par une formule usée (« Aujourd'hui », « Et si… », « Je voulais… »)"]);
   items.push([hook.length <= 220, hook.length <= 220 ? "L'accroche tient avant « voir plus »" : `Accroche de ${hook.length} caractères : elle sera coupée`]);
   const holes = (t.match(/\[(?!lien\])[^\]\n]{1,120}\]/gi) || []).length;
   items.push([holes === 0, holes ? `${holes} passage${holes > 1 ? "s" : ""} entre crochets : le post doit être publiable tel quel` : "Post complet, rien à compléter"]);
@@ -1758,6 +1797,8 @@ function checkItems(t, v, long = $("#f-long").value, sujet = lastRun?.sujet || $
   items.push([!gros.length, gros.length ? "Mots à censurer avec * : " + [...new Set(gros.map(w => w.toLowerCase()))].join(", ") : "Pas de mot grossier non censuré"]);
   const frag = (t.split("\n").filter(l => !/^\s*(→|👉)/.test(l)).join("\n").match(/(^|[.!…]\s+)([^.!?…\n]{1,14})\.(?=\s|$)/g) || []).filter(s => s.replace(/^[.!?…\s]+/, "").trim().split(/\s+/).length <= 3).length;
   items.push([frag < 2, frag >= 2 ? `${frag} bouts de phrase coupés (« Un lundi. 7h du matin. ») : recolle-les` : "Pas de phrases coupées en fragments"]);
+  const meta = /(on m'a demandé (les|de lister|mes) \d|j'en ai (donné|mis|écrit) \d|sur une liste de \d|les \d autres,? je les ai pas|prochaine liste que je vais)/i.test(t);
+  if (meta) items.push([false, "Le post parle de sa propre fabrication (« on m'a demandé 8… j'en ai donné 2 »)"]);
   const mindset = /(la vérité,? c'est que|ce n'est pas .{3,60}, c'est|ne sont pas celles? qui|ne sont pas ceux qui|étrange,? non|surprenant \?)/i.test(t);
   items.push([!mindset, mindset ? "Tournure mindset ou tic d'IA repérée (« La vérité, c'est que », « ce n'est pas X, c'est Y »…)" : "Pas de tournure mindset"]);
   const forbid = (v?.interdits || "").split("\n").map(s => s.trim().replace(/^["«]|["»]$/g, "")).filter(s => s && s.length <= 40);
@@ -1777,7 +1818,7 @@ function runChecks(){
 async function savePost(text){
   if (!lastRun || !text) return;
   const v = getVoix(lastRun.voixId);
-  const data = { voixId: lastRun.voixId, voixNom: v?.nom || "", sujet: lastRun.sujet || "", texte: text, format: lastRun.format || "", createdAt: lastRun.createdAt || Date.now() };
+  const data = { voixId: lastRun.voixId, voixNom: v?.nom || "", sujet: lastRun.sujet || "", texte: text, format: lastRun.format || "", createdAt: lastRun.createdAt || Date.now(), version: APP_VERSION };
   const prev = posts.find(p => p.id === lastRun.postId); data.statut = prev?.statut || "brouillon"; if (prev?.publishedAt) data.publishedAt = prev.publishedAt;
   try {
     await store.save("posts", lastRun.postId, data);
@@ -1798,7 +1839,7 @@ function renderHist(){
   const el = $("#hist");
   if (!list.length) { el.innerHTML = `<div class="empty"><strong>${histStatut === "publie" ? "Aucun post publié" : "Aucun brouillon"}</strong>${histStatut === "publie" ? "Les posts marqués « Publié » apparaîtront ici." : "Tout ce qui a été écrit est publié. Génère de nouveaux posts dans Écrire ou Batch."}</div>`; return; }
   el.innerHTML = list.map(p => `<article class="hitem">
-    <div class="meta">${esc(p.voixNom)} · ${isPub(p) ? "publié le " + new Date(p.publishedAt || p.updatedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" }) : "écrit le " + new Date(p.createdAt || p.updatedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}${p.batchId ? " · batch" : ""}</div>
+    <div class="meta">${esc(p.voixNom)}${p.version ? " · v" + esc(p.version) : ""} · ${isPub(p) ? "publié le " + new Date(p.publishedAt || p.updatedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" }) : "écrit le " + new Date(p.createdAt || p.updatedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}${p.batchId ? " · batch" : ""}</div>
     <strong>${esc(p.sujet || "Sans sujet")}</strong><p>${esc(p.texte)}</p>
     <div class="ib"><button class="btn btn-s" data-open="${esc(p.id)}">Ouvrir</button><button class="btn btn-s" data-copy="${esc(p.id)}">Copier</button>
     ${isPub(p) ? `<button class="btn btn-s" data-unpub="${esc(p.id)}">Remettre en brouillon</button>` : `<button class="btn btn-s pub" data-pub="${esc(p.id)}">Publié</button>`}
@@ -2163,7 +2204,7 @@ function rulesBlock(v){ return UNIVERSAL_RULES + "\n\n" + voiceRules(v); }
 async function relire(post, v, signal, d, idee){
   const issues = checkItems(post, v, d?.long, d?.sujet || lastRun?.sujet || $("#f-sujet").value).filter(x => !x[0] && !/caractères/.test(x[1])).map(x => x[1]);
   const prompt = `Tu es relectrice exigeante pour ${v.nom}. Voici un post LinkedIn à relire.
-Ta mission : le corriger pour qu'il respecte TOUTES les règles ci-dessous, en touchant le moins possible au texte. Tu ne changes ni l'histoire, ni les faits, ni la structure, ni l'accroche si elle respecte déjà les règles. Tu n'inventes rien. S'il reste un passage entre crochets à compléter (sauf [lien]), tu réécris la phrase sans ce détail pour que le post soit publiable tel quel, sans rien inventer. Tu gardes la mise en page (lignes vides, listes →, emojis existants, [lien]).
+Ta mission : le corriger pour qu'il respecte TOUTES les règles ci-dessous, en touchant le moins possible au texte. Tu ne changes ni l'histoire, ni les faits, ni la structure, ni l'accroche si elle respecte déjà les règles. Tu n'ajoutes aucun fait vérifiable (chiffre, résultat, date, nom, événement, anecdote) ; une conviction ou une intention cohérente avec la voix peut rester. S'il reste un passage entre crochets à compléter (sauf [lien]), tu réécris la phrase sans ce détail pour que le post soit publiable tel quel, sans rien inventer. Tu gardes la mise en page (lignes vides, listes →, emojis existants, [lien]).
 
 Traque en priorité : phrases coupées en fragments pour l'effet, nombres écrits en lettres, gros mots non censurés, tournures mindset et maximes, « ce n'est pas X, c'est Y » et toutes ses variantes, triplets rythmés, phrases choc isolées, questions rhétoriques plaquées, métaphore ou punchline finale, jargon non vulgarisé, tiret cadratin, mots interdits de la voix, tics d'IA, fautes d'orthographe.
 Sujet demandé : « ${(d?.sujet || $("#f-sujet").value || "").trim()} ». S'il fixe un nombre ou un angle, le post doit le respecter exactement.
@@ -2441,7 +2482,7 @@ $("#bt-run").onclick = async () => {
       try {
         const out = await generateOne(v, d, { signal: ctl2.signal, tier: settings.tier, relect: settings.relect, onStage: s => { j.status = s; renderJobs(); } });
         j.texte = out.post; j.postId = uid(); j.status = "fait";
-        const doc = { voixId: v.id, voixNom: v.nom, sujet: j.sujet, texte: j.texte, format: d.fmt, createdAt: Date.now(), batchId: id, statut: "brouillon" };
+        const doc = { voixId: v.id, voixNom: v.nom, sujet: j.sujet, texte: j.texte, format: d.fmt, createdAt: Date.now(), batchId: id, statut: "brouillon", version: APP_VERSION };
         try { await store.save("posts", j.postId, doc); posts.unshift({ id: j.postId, ...doc, updatedAt: Date.now() }); } catch {}
         if (j.slot) { const pl = plannings.find(x => x.id === j.slot.planId); if (pl?.slots[j.slot.i]) { pl.slots[j.slot.i].postId = j.postId; try { await store.save("plannings", pl.id, pl); } catch {} } }
       } catch (e) { if (e?.code === "cancelled") { j.status = "stop"; break; } if (e?.code === "manque") { j.status = "manque"; j.err = "Il manque de la matière. À demander au client :\n- " + e.questions.join("\n- "); } else { j.status = "erreur"; j.err = errCopy(e); } }
@@ -3025,7 +3066,7 @@ function hideManque(){ $("#manque-box").hidden = true; $(".stage").hidden = fals
 $("#manque-go").onclick = async () => {
   const ans = $("#manque-ans").value.trim(); if (!ans) { $("#manque-ans").focus(); return; }
   const qs = [...$("#manque-q").querySelectorAll("li")].map(li => li.textContent);
-  $("#f-matiere").value = [$("#f-matiere").value.trim(), "Réponses de la personne :\n" + ans].filter(Boolean).join("\n\n");
+  $("#f-matiere").value = [$("#f-matiere").value.trim(), "Réponses de la personne :\n" + ans + "\n\n(Consigne : c'est toute la matière disponible. Écris le post avec, sans reposer de questions. S'il y a moins d'éléments que prévu, ramène le sujet au nombre réel, sans jamais mentionner la demande initiale ni le nombre prévu.)"].filter(Boolean).join("\n\n");
   const v = getVoix(activeId);
   if ($("#manque-save").checked && v) {
     const id = uid(); const doc = { voixId: v.id, type: "texte", titre: "Réponses : " + ($("#f-sujet").value.trim().split("\n")[0] || "questions de l'IA").slice(0, 80), faits: "QUESTIONS\n" + qs.map(q => "- " + q).join("\n") + "\n\nRÉPONSES\n" + ans, extrait: ans.slice(0, 20000), createdAt: Date.now() };
@@ -3035,12 +3076,52 @@ $("#manque-go").onclick = async () => {
 };
 $("#manque-force").onclick = () => {
   hideManque();
-  $("#f-matiere").value = [$("#f-matiere").value.trim(), "(Consigne : écris avec la matière disponible, ne réponds pas ===MANQUE===. Adapte l'angle pour rester vrai, sans inventer.)"].filter(Boolean).join("\n\n");
+  $("#f-matiere").value = [$("#f-matiere").value.trim(), "(Consigne : écris avec la matière disponible, ne réponds pas ===MANQUE===. Adapte l'angle et le nombre d'éléments pour rester vrai, sans inventer et sans jamais mentionner la demande initiale.)"].filter(Boolean).join("\n\n");
   generate();
+};
+
+const APP_VERSION = "30.09g";
+
+/* =================== ACCROCHES =================== */
+function renderHooks(list, append){
+  if (!append) $("#hooks").innerHTML = "";
+  list.forEach(x => {
+    const b = document.createElement("button"); b.className = "hook";
+    b.innerHTML = esc(x.text).replace(/\n/g, "<br>") + `<small>${x.lever ? esc(x.lever) + " · " : ""}Utiliser cette accroche</small>`;
+    b.onclick = () => swapHook(x.text, b); $("#hooks").appendChild(b);
+  });
+}
+$("#b-hooklab").onclick = async () => {
+  const v = getVoix(lastRun?.voixId || activeId), post = currentText();
+  if (!v || !post || !sample) return;
+  const btn = $("#b-hooklab"); btn.disabled = true; $("#hooklab-msg").textContent = "L'atelier travaille…";
+  try {
+    const hooksRules = UNIVERSAL_RULES.slice(UNIVERSAL_RULES.indexOf("## Accroche"), UNIVERSAL_RULES.indexOf("## Corps et rythme"));
+    const r = await sample(`Tu es un spécialiste des accroches LinkedIn. Écris 8 nouvelles accroches pour le post ci-dessous, dans la voix de ${v.nom}.
+${hooksRules}
+VOIX
+Style : ${v.style || "-"}
+Interdits : ${v.interdits || "-"}
+Règles apprises : ${v.regles || "-"}
+
+Contraintes : 8 leviers différents, chaque accroche tient en 2 lignes, reste fidèle aux faits du post (n'ajoute aucun chiffre ni fait absent du post), nombres en chiffres, aucun tiret cadratin.
+
+POST :
+<<<
+${post.slice(0, 5000)}
+>>>
+
+Réponds UNIQUEMENT avec 8 lignes, la meilleure en premier, sous la forme : ligne 1 // ligne 2 | levier`, { modelTier: "default", cache: false });
+    const list = parse("===ACCROCHES===\n" + r.text).hooks.slice(0, 8);
+    if (!list.length) throw new Error();
+    renderHooks(list); $("#hooklab-msg").textContent = "Clique sur une accroche pour l'essayer. « Remettre celle-ci » annule.";
+  } catch (e) { $("#hooklab-msg").textContent = e?.code ? errCopy(e) : "L'atelier n'a rien donné, réessaie."; }
+  finally { btn.disabled = false; }
 };
 
 /* ---------- Démarrage ---------- */
 async function boot(){
+  $("#app-version").textContent = "version " + APP_VERSION;
   const me = await fetch("/api/login").catch(() => null);
   if (!me || me.status !== 200) { window.__showLogin(); return; }
   renderTiles(); renderSeg();
