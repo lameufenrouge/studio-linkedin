@@ -37,6 +37,7 @@
   --card:#1D2226; --card-ink:#ECECEC; --card-sub:#9AA0A6; --stage:#0B0A26; color-scheme:dark;
 }
 *,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none !important}
 html,body{height:100%}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
@@ -457,6 +458,12 @@ textarea{resize:vertical;line-height:1.45}
 .tpl-card .ib{display:flex;gap:6px;margin-top:auto;padding-top:6px}
 .tpl-card .go{background:#3B4BFF;color:#fff;border-color:#3B4BFF}
 .linkbtn{background:none;border:0;padding:0;color:var(--rouge);font-weight:800;cursor:pointer;text-decoration:underline;font-size:inherit}
+
+.manque{border-color:var(--rouge);border-width:2px}
+.manque h4{font-size:1.05rem}
+.manque ol{margin:0 0 12px;padding-left:22px;display:grid;gap:6px;font-weight:600}
+.chk{display:flex;gap:8px;align-items:center;font-size:.88rem;font-weight:600;cursor:pointer}
+.chk input{accent-color:var(--rouge);width:17px;height:17px}
 /* Historique */
 .hist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
 .hitem{background:var(--panel);border:1.5px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px}
@@ -589,7 +596,7 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
 <!-- ACCUEIL -->
 <section class="view" id="v-dash">
   <div class="dash-hero">
-    <p class="dash-kicker">signé. · studio de ghostwriting</p>
+    <p class="dash-kicker">signé. · studio de ghostwriting · <span id="app-version">version 30.09c · matière</span></p>
     <h1 class="dash-title" id="dash-hello">Bonjour</h1>
     <p class="dash-sub">Vos idées. Nos mots. <em>Votre nom en bas.</em></p>
     <div class="dash-cta"><button class="btn" id="dash-new">+ Nouveau client</button><button class="btn l" id="dash-feed">Nourrir l'IA</button><button class="btn l" id="dash-batch">Lancer un batch</button></div>
@@ -747,6 +754,15 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
           <button class="sbtn" id="b-pub" hidden>Marquer comme publié</button>
           <button class="sbtn" id="b-stop" hidden>Arrêter</button>
         </div>
+      </div>
+      <div class="panel manque" id="manque-box" hidden>
+        <h4>Il me manque de la matière pour ce sujet</h4>
+        <p class="hint" style="margin:0 0 10px">Plutôt que d'inventer ou de tordre des faits hors sujet, voici ce qu'il faudrait savoir. Réponds en vrac (ou dicte), je relance le post avec.</p>
+        <ol id="manque-q"></ol>
+        <label class="sr" for="manque-ans">Tes réponses</label>
+        <textarea id="manque-ans" rows="6" placeholder="Tes réponses, même en vrac…"></textarea>
+        <div class="fb-row"><label class="chk"><input type="checkbox" id="manque-save" checked> Ajouter aussi ces réponses à la fiche du client</label></div>
+        <div class="fb-row"><button class="btn-go x" id="manque-go" style="width:auto;padding:12px 18px;font-size:1rem"><span>Relancer le post avec ces réponses</span></button><button class="btn btn-s" id="manque-force">Écrire quand même avec ce que tu as</button></div>
       </div>
       <div class="board" id="board" hidden>
         <div class="panel"><h4>Vérifications</h4><ul class="checks" id="checks"></ul><button class="btn btn-s" id="b-fix" hidden style="margin-top:10px">Corriger ces points</button></div>
@@ -1393,6 +1409,10 @@ Si un détail manque (un montant, une date, une phrase exacte, ce que la personn
 ## La demande d'abord
 - Ce que demande le sujet passe avant toutes les règles générales. S'il fixe un nombre (« 8 choses »), un format, un angle ou une cible, respecte-le exactement : 8 éléments si on demande 8, jamais moins, jamais plus.
 - Respecte l'angle exact du sujet, sans le déformer. Avant d'écrire, formule ce que le sujet promet au lecteur ; chaque ligne du post doit tenir cette promesse. « Ce qui compte si on bosse ensemble », c'est ce que le lecteur va trouver, vivre et gagner en travaillant avec la personne (sa méthode, ses engagements, sa façon de travailler), pas une liste de ses échecs ni des consignes adressées au lecteur.
+- Chaque élément doit correspondre littéralement à ce que le sujet annonce : « les choses que j'aimerais faire dans ma vie » = des activités, des expériences, des projets de vie. Pas un objectif de chiffre d'affaires, pas une chose à éviter, pas une anecdote recyclée tordue pour rentrer dans la case.
+- Si la fiche et la matière ne contiennent pas assez de faits réels pour tenir la demande (ex. « 8 choses que j'aimerais faire » alors que la fiche ne parle d'aucune envie), N'ÉCRIS PAS le post : ne comble pas avec des faits hors sujet et ne réduis pas le nombre demandé. Réponds uniquement avec la balise ===MANQUE=== suivie de 3 à 6 questions précises et simples à poser à la personne pour obtenir cette matière. Ne le fais que pour ce cas : pour un sujet d'opinion, de méthode ou d'actualité, écris avec ce que tu as.
+- Un même fait ou une même anecdote n'apparaît qu'une seule fois dans le post (jamais dans l'accroche, puis dans la liste, puis dans le PS).
+- Les chiffres internes au post doivent être cohérents entre eux (nombre d'éléments annoncé, comptes, comparaisons).
 - Un post qui parle d'une collaboration est une promesse faite au lecteur, pas une liste d'injonctions (« Tu arrêtes… », « Tu délègues… ») : on ne fait pas la leçon à un futur client.
 
 ## Big idea (le principe numéro 1 du copywriting)
@@ -1522,7 +1542,11 @@ Longueur : ${LONG_GUIDE[d.long] || LONG_GUIDE.standard}
 Ton : ${TON_GUIDE[d.ton] || TON_GUIDE.voix}`;
 }
 const FORMAT_BLOCK = `# FORMAT DE RÉPONSE
-Réponds exactement avec ces quatre balises, rien avant :
+Si la matière manque pour tenir la demande (voir « La demande d'abord »), réponds UNIQUEMENT :
+===MANQUE===
+(3 à 6 questions à poser à la personne, une par ligne)
+
+Sinon, réponds exactement avec ces quatre balises, rien avant :
 ===IDÉE===
 (la big idea du post, en une phrase)
 ===POST===
@@ -1550,7 +1574,9 @@ ${FORMAT_BLOCK}`;
 
 /* ---------- Génération ---------- */
 function parse(raw){
-  const out = { post: "", hooks: [], notes: "", idee: "" };
+  const out = { post: "", hooks: [], notes: "", idee: "", manque: [] };
+  const mq = raw.indexOf("===MANQUE===");
+  if (mq >= 0 && raw.indexOf("===POST===") < 0) { out.manque = raw.slice(mq + 12).split("\n").map(s => s.replace(/^\s*(\d+[.)]|[-•*→])\s*/, "").trim()).filter(Boolean); return out; }
   const ib = raw.indexOf("===IDÉE===");
   if (ib >= 0) { const e = raw.indexOf("===POST===", ib); out.idee = raw.slice(ib + 10, e < 0 ? undefined : e).trim(); }
   const p = raw.indexOf("===POST===");
@@ -1588,7 +1614,7 @@ function showCard(v){
 }
 async function run(input, meta){
   if (!sample) { msg("La génération marche quand la page est ouverte dans Claude.", true); return; }
-  const v = getVoix(meta.voixId); showCard(v);
+  const v = getVoix(meta.voixId); hideManque(); showCard(v);
   if (matchMedia("(max-width:1150px)").matches) $(".stage").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
   $("#li-text").textContent = ""; $("#hooks-box").hidden = true; $("#notes-box").hidden = true; $("#checks").innerHTML = ""; $("#b-save").hidden = true;
   ctl = new AbortController(); setBusy(true); msg("Écriture en cours…");
@@ -1599,6 +1625,7 @@ async function run(input, meta){
       onText: ({ text }) => { raw = text; const p = parse(text); if (p.post) { $("#li-text").textContent = p.post; meter(p.post.length); msg(""); } }
     });
     raw = r.text; const p = parse(raw);
+    if (p.manque.length) { showManque(p.manque); return; }
     if (p.post && $("#f-relect").value === "on" && v) {
       show(p); msg("Relecture en cours : je traque les tics et les règles non respectées…");
       $("#li-text").classList.add("caret");
@@ -1721,7 +1748,7 @@ function checkItems(t, v, long = $("#f-long").value, sujet = lastRun?.sujet || $
   const nbItems = (t.match(/^\s*→/gm) || []).length;
   const want = +((String(sujet || "").match(/\b(\d{1,2})\s+(choses|erreurs|conseils|règles|habitudes|raisons|leçons|étapes|points|trucs|outils|questions|signes|idées|façons|clés|piliers|principes)\b/i) || [])[1] || 0);
   if (want) items.push([nbItems === want, nbItems === want ? `${want} éléments, comme demandé` : `Le sujet demande ${want} éléments, le post en a ${nbItems}`]);
-  if (nbItems > 7) items.push([false, `Liste de ${nbItems} éléments : garde les 4 à 6 plus forts`]);
+  else if (nbItems > 7) items.push([false, `Liste de ${nbItems} éléments : garde les 4 à 6 plus forts`]);
   if (/\d\s%/.test(t)) items.push([false, "Pourcentage avec espace : écris « +20% » collé"]);
   const nbChiffres = (t.match(/\d[\d.,]*\s?(k€|k|€|%)/gi) || []).length;
   if (nbChiffres > 5) items.push([false, `${nbChiffres} chiffres dans le post : trop empilé, garde les 1 ou 2 qui servent l'angle`]);
@@ -2353,7 +2380,7 @@ Réponds UNIQUEMENT avec un tableau JSON : [{"sujet":"...","format":"story|opini
   return (Array.isArray(r) ? r : []).filter(x => x?.sujet).slice(0, n);
 }
 function jobCard(j, k){
-  const st = { attente: ["", "En attente"], ecriture: ["run", "Écriture…"], relecture: ["run", "Relecture…"], fait: ["ok", "Prêt"], erreur: ["err", "Erreur"], stop: ["", "Arrêté"] }[j.status] || ["", j.status];
+  const st = { attente: ["", "En attente"], ecriture: ["run", "Écriture…"], relecture: ["run", "Relecture…"], fait: ["ok", "Prêt"], erreur: ["err", "Erreur"], stop: ["", "Arrêté"], manque: ["err", "Matière manquante"] }[j.status] || ["", j.status];
   return `<article class="bjob" data-k="${k}"><header><strong><span class="n">${k + 1}.</span>${esc(j.sujet)}</strong><span class="chip-st ${st[0]}">${st[1]}</span></header>
     ${j.texte ? `<p>${esc(j.texte)}</p><div class="ib"><button class="btn btn-s" data-open>Ouvrir</button><button class="btn btn-s" data-copy>Copier</button></div>` : ""}
     ${j.err ? `<p>${esc(j.err)}</p>` : ""}</article>`;
@@ -2373,7 +2400,9 @@ function renderJobs(){
 }
 async function generateOne(v, d, o){
   const r = await sample(buildPrompt(v, d), { signal: o.signal, cache: false, modelTier: o.tier });
-  const p = parse(r.text); if (!p.post) p.post = r.text.trim();
+  const p = parse(r.text);
+  if (p.manque.length) { const e = new Error("manque"); e.code = "manque"; e.questions = p.manque; throw e; }
+  if (!p.post) p.post = r.text.trim();
   if (o.relect) { o.onStage?.("relecture"); try { p.post = await relire(p.post, v, o.signal, d, p.idee); } catch (e) { if (e?.code === "cancelled") throw e; } }
   return p;
 }
@@ -2415,7 +2444,7 @@ $("#bt-run").onclick = async () => {
         const doc = { voixId: v.id, voixNom: v.nom, sujet: j.sujet, texte: j.texte, format: d.fmt, createdAt: Date.now(), batchId: id, statut: "brouillon" };
         try { await store.save("posts", j.postId, doc); posts.unshift({ id: j.postId, ...doc, updatedAt: Date.now() }); } catch {}
         if (j.slot) { const pl = plannings.find(x => x.id === j.slot.planId); if (pl?.slots[j.slot.i]) { pl.slots[j.slot.i].postId = j.postId; try { await store.save("plannings", pl.id, pl); } catch {} } }
-      } catch (e) { if (e?.code === "cancelled") { j.status = "stop"; break; } j.status = "erreur"; j.err = errCopy(e); }
+      } catch (e) { if (e?.code === "cancelled") { j.status = "stop"; break; } if (e?.code === "manque") { j.status = "manque"; j.err = "Il manque de la matière. À demander au client :\n- " + e.questions.join("\n- "); } else { j.status = "erreur"; j.err = errCopy(e); } }
       renderJobs();
     }
   };
@@ -2983,6 +3012,33 @@ async function syncTemplatesFrom(v){
     if (!$("#v-voix").hidden) { $("#tpl-msg").textContent = `Template ${names} mis à jour avec la nouvelle voix de ${v.nom}.`; renderTemplates(); }
   } catch {} finally { syncing = false; }
 }
+
+/* =================== MATIÈRE MANQUANTE =================== */
+function showManque(qs){
+  $(".stage").hidden = true; $("#card").hidden = true; $("#s-actions").hidden = true; $("#board").hidden = true; $("#meter").hidden = true;
+  $("#void").hidden = true; $("#manque-box").hidden = false;
+  $("#manque-q").innerHTML = qs.map(q => `<li>${esc(q)}</li>`).join("");
+  $("#manque-ans").value = ""; msg("Il manque de la matière : réponds aux questions ci-dessous.");
+  $("#manque-box").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function hideManque(){ $("#manque-box").hidden = true; $(".stage").hidden = false; }
+$("#manque-go").onclick = async () => {
+  const ans = $("#manque-ans").value.trim(); if (!ans) { $("#manque-ans").focus(); return; }
+  const qs = [...$("#manque-q").querySelectorAll("li")].map(li => li.textContent);
+  $("#f-matiere").value = [$("#f-matiere").value.trim(), "Réponses de la personne :\n" + ans].filter(Boolean).join("\n\n");
+  const v = getVoix(activeId);
+  if ($("#manque-save").checked && v) {
+    const id = uid(); const doc = { voixId: v.id, type: "texte", titre: "Réponses : " + ($("#f-sujet").value.trim().split("\n")[0] || "questions de l'IA").slice(0, 80), faits: "QUESTIONS\n" + qs.map(q => "- " + q).join("\n") + "\n\nRÉPONSES\n" + ans, extrait: ans.slice(0, 20000), createdAt: Date.now() };
+    try { await store.save("sources", id, doc); sources.unshift({ id, ...doc, updatedAt: Date.now() }); } catch {}
+  }
+  hideManque(); generate();
+};
+$("#manque-force").onclick = () => {
+  hideManque();
+  $("#f-matiere").value = [$("#f-matiere").value.trim(), "(Consigne : écris avec la matière disponible, ne réponds pas ===MANQUE===. Adapte l'angle pour rester vrai, sans inventer.)"].filter(Boolean).join("\n\n");
+  generate();
+};
+
 /* ---------- Démarrage ---------- */
 async function boot(){
   const me = await fetch("/api/login").catch(() => null);
