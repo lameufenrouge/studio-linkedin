@@ -443,6 +443,19 @@ textarea{resize:vertical;line-height:1.45}
 .cl-card:hover{border-color:var(--rouge);box-shadow:0 12px 30px -20px rgba(59,75,255,.6)}
 .cl-card .fresh{align-self:flex-start;font-size:.76rem;font-weight:800;background:#DDF7E8;color:#0E5A33;border-radius:999px;padding:3px 10px}
 .back{background:none;border:0;color:var(--rouge);font-weight:800;cursor:pointer;padding:4px 0;margin-bottom:12px;font-size:.95rem}
+
+/* Templates de voix */
+.tpl{margin-bottom:18px}
+.tpl-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:12px}
+.tpl-cur{font-size:.84rem;color:var(--muted);background:var(--blush);border-radius:999px;padding:5px 12px}
+.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin-bottom:6px}
+.tpl-card{border:1.5px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:6px;background:var(--field)}
+.tpl-card strong{font-size:.98rem}
+.tpl-card .tag{margin-left:6px}
+.tpl-card p{margin:0;font-size:.82rem;color:var(--muted);line-height:1.4}
+.tpl-card blockquote{margin:4px 0 0;font-family:var(--serif);font-style:italic;font-size:1.02rem;line-height:1.25;white-space:pre-wrap;border-left:3px solid var(--rouge);padding-left:10px}
+.tpl-card .ib{display:flex;gap:6px;margin-top:auto;padding-top:6px}
+.tpl-card .go{background:#3B4BFF;color:#fff;border-color:#3B4BFF}
 /* Historique */
 .hist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
 .hitem{background:var(--panel);border:1.5px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px}
@@ -896,6 +909,11 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
     </div>
     <div class="field"><label for="p-notes">Notes internes <span class="hint">jamais utilisées pour écrire les posts</span></label><textarea id="p-notes" rows="3" placeholder="Préférences de validation, jours de dispo, contact assistante, points de vigilance…"></textarea></div>
   </div>
+  <div class="panel tpl">
+    <div class="tpl-head"><div><h4 class="feed-t">Template de voix</h4><p class="hint" style="margin:0">Applique un ton déjà prêt. Il remplace le style, les règles, les interdits et les extraits de ton, jamais les infos, le vécu ni les exemples du client.</p></div><span class="tpl-cur" id="tpl-cur"></span></div>
+    <div class="tpl-grid" id="tpl-grid"></div>
+    <div class="fb-row"><button class="btn btn-s" id="tpl-save">Créer un template à partir de la voix de ce client</button><span class="hint" id="tpl-msg"></span></div>
+  </div>
   <div class="two">
     <div>
       <div class="callout">
@@ -923,6 +941,7 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
         <div class="field"><label for="p-interdits">Interdits</label><textarea id="p-interdits" rows="4" placeholder="Un mot ou une tournure par ligne"></textarea></div>
       </div>
       <div class="field"><label for="p-regles">Règles apprises <span class="hint">tes corrections, une par ligne, priorité maximale</span></label><textarea id="p-regles" rows="5" placeholder="Se remplit quand tu corriges un post. Tu peux aussi écrire tes règles ici."></textarea></div>
+      <div class="field"><label for="p-tonExemples">Extraits de ton <span class="hint">viennent du template : situations inventées qui montrent le ton</span></label><textarea id="p-tonExemples" rows="4"></textarea><input type="hidden" id="p-template"></div>
       <div class="field"><label for="p-references">Avant / après de référence <span class="hint">une version refusée puis la version validée, pour caler l'oreille</span></label><textarea id="p-references" rows="6" placeholder="VERSION REFUSÉE :&#10;…&#10;&#10;VERSION VALIDÉE :&#10;…"></textarea></div>
       <div class="field"><span class="lbl2">Posts validés <span class="hint">servent de modèle de niveau attendu</span></span><div id="valides-list" class="valides"></div></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -1114,7 +1133,7 @@ const BUILTIN = [
   { id:"b-oneliner", nom:"La punchline", accroche:"Une seule phrase ironique qui dit tout haut ce que la cible pense tout bas.", squelette:["Une phrase unique, du type « Bonjour à tous sauf à [cible de l'agacement] »","Rien d'autre, ou une ligne de contexte maximum"], mecaniques:["Le commentaire fait le reste du post","Ironie, pas méchanceté","Cible que tout le monde a déjà croisée"], longueur:"court", builtin:true }
 ];
 const allModeles = () => [...modeles, ...BUILTIN];
-const QUICK = ["Plus court","Plus cash","Plus tendre","Plus aéré","Accroche plus forte","Moins d'emojis","Fin plus factuelle","Plus de concret"];
+const QUICK = ["Recentrer sur une seule idée","Plus court","Plus cash","Plus tendre","Plus aéré","Accroche plus forte","Moins d'emojis","Fin plus factuelle","Plus de concret"];
 
 /* ---------- UI de base ---------- */
 function renderTiles(){
@@ -1150,7 +1169,7 @@ const getVoix = id => voix.find(v => v.id === id);
 const initials = n => (n || "?").split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
 
 /* ---------- Voix ---------- */
-const PF = ["nom","titre","niche","activite","cible","style","afaire","interdits","exemples","regles","references","entreprise","email","tel","linkedin","site","formule","debut","statut","notes"];
+const PF = ["nom","titre","niche","activite","cible","style","afaire","interdits","exemples","regles","references","tonExemples","template","entreprise","email","tel","linkedin","site","formule","debut","statut","notes"];
 function renderVoixSelect(){
   const sel = $("#f-voix");
   sel.innerHTML = voix.length ? voix.map(v => `<option value="${esc(v.id)}">${esc(v.nom || "Sans nom")}</option>`).join("") : `<option value="">Aucune voix</option>`;
@@ -1172,7 +1191,7 @@ function loadVoixForm(id){
   PF.forEach(k => $("#p-" + k).value = v[k] || "");
   if (!v.statut) $("#p-statut").value = id ? "actif" : "onboarding";
   renderValides(v);
-  renderClientHead(); renderSources(); renderContenus();
+  renderClientHead(); renderSources(); renderContenus(); renderTemplates();
   showSub(id ? curSub : "fiche");
   $("#b-delv").hidden = !id; $("#v-msg").textContent = ""; $("#an-msg").textContent = ""; renderVTabs();
 }
@@ -1370,6 +1389,15 @@ N'utilise QUE les informations dont tu disposes : la matière brute et la fiche 
 Le post doit être publiable tel quel : AUCUN trou, AUCUN crochet, AUCUN « [à compléter] », AUCUN « [x] » (seul [lien] est autorisé quand la fin le demande).
 Si un détail manque (un montant, une date, une phrase exacte, ce que la personne est devenue), écris la phrase sans ce détail : « Une cliente était prête à me payer le jour même » plutôt qu'un montant inventé ou un trou. Si c'est l'histoire entière qui manque, ne la raconte pas : choisis un autre angle du même sujet qui s'appuie sur des faits réels de la fiche (un fait du parcours, une conviction, une habitude, une méthode). Un post plus simple mais vrai et complet vaut mieux qu'une histoire à trous.
 
+## Big idea (le principe numéro 1 du copywriting)
+- Avant d'écrire, fixe LA big idea du post : une seule phrase, une seule idée que le lecteur doit retenir. C'est une affirmation concrète, un peu surprenante ou tendue, jamais un thème (« je reviens à ce qui m'a fait démarrer, et c'est la preuve que ça marche » et non « mon parcours »).
+- Un post = une big idea = un seul fil. Une seule histoire, un seul moment, un seul arc. Jamais un résumé de parcours ou un CV : si trois histoires se battent pour la même place, garde la plus forte.
+- Test de chaque paragraphe : est-ce qu'il prouve, illustre ou fait avancer la big idea ? Si ce n'est pas le cas, il saute, même s'il est vrai, joli ou flatteur.
+- Une preuve forte vaut mieux que quatre moyennes. 3 ou 4 faits de la fiche maximum dans un post.
+- L'accroche est la big idea sous sa forme la plus tendue, et la fin y revient : le lecteur doit sentir la boucle.
+- Pour un post d'annonce ou de vente, la big idea est la raison unique pour laquelle l'offre existe (pourquoi elle, pourquoi maintenant). Pas une liste de raisons.
+- Si la matière contient plusieurs bonnes idées, n'en garde qu'une ; les autres sont proposées dans les notes pour d'autres posts.
+
 ## Accroche
 - Ce sont les 2 premières lignes visibles avant « voir plus ». Ligne 1 : un fait concret ou chiffré. Ligne 2 : le contraste ou la tension (« Pourtant », « Mais », « Aujourd'hui »).
 - Jamais de mise en contexte, jamais « Aujourd'hui je vais vous parler de », « Je voulais partager ». L'opinion générale sans ancrage est l'accroche la plus faible.
@@ -1427,6 +1455,11 @@ Style : ${v.style || "-"}
 ${v.afaire || "-"}
 Interdits (ne jamais utiliser) :
 ${v.interdits || "-"}
+${(v.tonExemples || "").trim() ? `
+Extraits de ton (inventés pour montrer la manière d'écrire : imite le rythme, le registre et la ponctuation, ne raconte JAMAIS ces situations comme vécues) :
+<<<
+${v.tonExemples.trim()}
+>>>` : ""}
 ${(v.references || "").trim() ? `
 Avant / après de référence (une version refusée, puis la version validée par la personne : imite la manière d'écrire de la version validée, jamais ses phrases ni ses faits pour un autre sujet) :
 <<<
@@ -1473,7 +1506,9 @@ Longueur : ${LONG_GUIDE[d.long] || LONG_GUIDE.standard}
 Ton : ${TON_GUIDE[d.ton] || TON_GUIDE.voix}`;
 }
 const FORMAT_BLOCK = `# FORMAT DE RÉPONSE
-Réponds exactement avec ces trois balises, rien avant :
+Réponds exactement avec ces quatre balises, rien avant :
+===IDÉE===
+(la big idea du post, en une phrase)
 ===POST===
 (le post complet)
 ===ACCROCHES===
@@ -1482,7 +1517,8 @@ Réponds exactement avec ces trois balises, rien avant :
 Type : (type de post)
 Pourquoi l'accroche marche : (1 phrase)
 Conseil : (1 phrase concrète pour la publication)
-Pour aller plus loin : (si un détail vécu manquant aurait rendu le post plus fort, dis lequel en 1 phrase, sinon « rien »)`;
+Pour aller plus loin : (si un détail vécu manquant aurait rendu le post plus fort, dis lequel en 1 phrase, sinon « rien »)
+Autres posts possibles : (les idées de la matière que tu as écartées pour garder une seule big idea, 1 ligne chacune, sinon « aucun »)`;
 
 function buildPrompt(v, d = readDemand()){
   return `Tu es un ghostwriter LinkedIn francophone de très haut niveau. Tu écris UN post LinkedIn dans la voix de la personne décrite ci-dessous.
@@ -1498,7 +1534,9 @@ ${FORMAT_BLOCK}`;
 
 /* ---------- Génération ---------- */
 function parse(raw){
-  const out = { post: "", hooks: [], notes: "" };
+  const out = { post: "", hooks: [], notes: "", idee: "" };
+  const ib = raw.indexOf("===IDÉE===");
+  if (ib >= 0) { const e = raw.indexOf("===POST===", ib); out.idee = raw.slice(ib + 10, e < 0 ? undefined : e).trim(); }
   const p = raw.indexOf("===POST===");
   if (p < 0) return out;
   let rest = raw.slice(p + 10);
@@ -1548,7 +1586,7 @@ async function run(input, meta){
     if (p.post && $("#f-relect").value === "on" && v) {
       show(p); msg("Relecture en cours : je traque les tics et les règles non respectées…");
       $("#li-text").classList.add("caret");
-      try { p.post = await relire(p.post, v, ctl.signal); } catch (e) { if (e?.code === "cancelled") throw e; }
+      try { p.post = await relire(p.post, v, ctl.signal, undefined, p.idee); } catch (e) { if (e?.code === "cancelled") throw e; }
       $("#li-text").classList.remove("caret"); msg("Relu et corrigé.");
     }
     resetFeedback();
@@ -1572,7 +1610,7 @@ function show(p){
     b.onclick = () => swapHook(h, b); $("#hooks").appendChild(b);
   });
   $("#hooks-box").hidden = !p.hooks.length;
-  $("#notes").textContent = p.notes; $("#notes-box").hidden = !p.notes;
+  $("#notes").textContent = (p.idee ? "Big idea : " + p.idee + "\n" : "") + (p.notes || ""); $("#notes-box").hidden = !(p.notes || p.idee);
 }
 function renderPost(t){ $("#li-text").innerHTML = esc(t).replace(/\[(?!lien\])[^\]\n]{1,120}\]/gi, m => `<mark>${m}</mark>`); runChecks(); }
 function swapHook(h, btn){
@@ -2077,12 +2115,13 @@ function pickExemples(v, d = readDemand()){
 
 /* ---------- Relecture ---------- */
 function rulesBlock(v){ return UNIVERSAL_RULES + "\n\n" + voiceRules(v); }
-async function relire(post, v, signal, d){
+async function relire(post, v, signal, d, idee){
   const issues = checkItems(post, v, d?.long).filter(x => !x[0] && !/caractères/.test(x[1])).map(x => x[1]);
   const prompt = `Tu es relectrice exigeante pour ${v.nom}. Voici un post LinkedIn à relire.
 Ta mission : le corriger pour qu'il respecte TOUTES les règles ci-dessous, en touchant le moins possible au texte. Tu ne changes ni l'histoire, ni les faits, ni la structure, ni l'accroche si elle respecte déjà les règles. Tu n'inventes rien. S'il reste un passage entre crochets à compléter (sauf [lien]), tu réécris la phrase sans ce détail pour que le post soit publiable tel quel, sans rien inventer. Tu gardes la mise en page (lignes vides, listes →, emojis existants, [lien]).
 
 Traque en priorité : phrases coupées en fragments pour l'effet, nombres écrits en lettres, gros mots non censurés, tournures mindset et maximes, « ce n'est pas X, c'est Y » et toutes ses variantes, triplets rythmés, phrases choc isolées, questions rhétoriques plaquées, métaphore ou punchline finale, jargon non vulgarisé, tiret cadratin, mots interdits de la voix, tics d'IA, fautes d'orthographe.
+${idee ? `Big idea du post : « ${idee} ». Supprime ou condense tout paragraphe qui ne la sert pas (digression, fait de parcours, deuxième histoire, justification en trop), sans rien ajouter de nouveau. Vérifie que l'accroche et la fin s'y rattachent.` : ""}
 ${issues.length ? "Problèmes déjà repérés automatiquement :\n- " + issues.join("\n- ") : ""}
 
 ${rulesBlock(v)}
@@ -2315,7 +2354,7 @@ function renderJobs(){
 async function generateOne(v, d, o){
   const r = await sample(buildPrompt(v, d), { signal: o.signal, cache: false, modelTier: o.tier });
   const p = parse(r.text); if (!p.post) p.post = r.text.trim();
-  if (o.relect) { o.onStage?.("relecture"); try { p.post = await relire(p.post, v, o.signal, d); } catch (e) { if (e?.code === "cancelled") throw e; } }
+  if (o.relect) { o.onStage?.("relecture"); try { p.post = await relire(p.post, v, o.signal, d, p.idee); } catch (e) { if (e?.code === "cancelled") throw e; } }
   return p;
 }
 $("#bt-run").onclick = async () => {
@@ -2796,6 +2835,102 @@ $("#cl-search").addEventListener("input", renderClientGrid);
 $("#cl-back").onclick = () => { clientMode = "list"; renderClientsView(); window.scrollTo(0, 0); };
 $("#cl-new").onclick = () => { loadVoixForm(null); showSub("fiche"); renderClientsView(); $("#p-nom").focus(); };
 
+
+/* =================== TEMPLATES DE VOIX =================== */
+const BASE_TEMPLATES = [
+  { id: "t-corpo", nom: "Dirigeant posé", description: "Corporate mais incarné : précis, crédible, factuel, sans langue de bois.",
+    style: "Ton de dirigeant : posé, précis, crédible. Le « je » reste présent pour incarner, le « nous » pour l'équipe. Phrases complètes et claires, vocabulaire professionnel sans jargon creux. Les chiffres et les décisions portent le propos. Pas d'argot, 0 à 1 emoji. L'émotion passe par les faits, pas par les adjectifs. Accroche factuelle et forte : un chiffre, une décision, un contre-pied du secteur.",
+    afaire: "Ouvrir sur un fait chiffré ou une décision concrète\nExpliquer le raisonnement derrière chaque décision\nNommer les erreurs et ce qu'elles ont appris, sans dramatiser\nCiter l'équipe par son rôle ou son prénom quand c'est pertinent\nFinir sur une conséquence concrète ou un cap",
+    interdits: "synergie\nravi de vous annoncer\nfier de partager\nexcellence opérationnelle\nà l'ère de\nen cette période\nleadership inspirant",
+    regles: "Vouvoiement quand on s'adresse au lecteur\nAucun gros mot, même censuré\nUn emoji maximum par post\nToujours une position claire sur un sujet du secteur : un post corporate tiède ne sera pas vu",
+    echantillons: ["En mars, nous avons refusé notre plus gros appel d'offres de l'année.\nLe cahier des charges était clair. Nos délais, eux, ne l'étaient pas.", "Nous avons recruté 4 personnes en 6 mois, et 2 sont parties avant la fin de leur période d'essai.\nLe problème ne venait pas d'elles, il venait de notre intégration."] },
+  { id: "t-douce", nom: "Douce et apaisée", description: "Chaleureuse, intime, sans leçon : on raconte, on ne prescrit pas.",
+    style: "Voix chaleureuse et apaisée, comme une conversation à deux. Tutoiement bienveillant. Phrases qui respirent, rythme calme, beaucoup de concret (un moment, un lieu, un geste). La vulnérabilité est dite simplement. Emojis doux et rares (🤍, 🌿) en fin de phrase. Jamais moralisatrice : elle partage ce qu'elle vit. Même douce, l'accroche arrête le scroll : un aveu, un moment précis, un contraste.",
+    afaire: "Ouvrir sur un moment précis et vécu\nNommer l'émotion avec des mots simples\nLaisser de la place au lecteur (« peut-être que toi aussi… »)\nUne seule idée, développée lentement\nFinir sur une phrase douce et concrète, pas sur une morale",
+    interdits: "il faut\ntu dois\nla clé du bonheur\nlâcher prise\nprendre soin de soi est essentiel",
+    regles: "Pas de gros mots\n1 à 2 emojis doux maximum\nPas d'injonction : on raconte, on ne prescrit pas\nLa douceur n'empêche pas une accroche forte : un aveu ou un contraste dès la ligne 1",
+    echantillons: ["Ce matin, j'ai annulé 3 rendez-vous.\nPas parce que j'étais malade, parce que je n'arrivais plus à entendre ma propre voix.", "Pendant 2 ans, j'ai répondu « ça va » à tout le monde.\nC'est une cliente qui m'a posé la question autrement 🤍"] },
+  { id: "t-cash", nom: "Cash et directe", description: "Sans filtre, oral, tranchée : dit tout haut ce que le secteur pense tout bas.",
+    style: "Voix directe et sans filtre. Tutoiement, oral assumé (« bah », « genre », « en fait »), phrases courtes mais entières, humour piquant. Prises de position tranchées, toujours appuyées sur du vécu. Gros mots possibles, toujours censurés. 1 à 3 emojis d'émotion en fin de phrase.",
+    afaire: "Accroche qui prend position ou qui dérange\nAppuyer chaque avis sur une scène vécue\nAutodérision pour rester sympathique\nNuance entre parenthèses pour rester crédible\nFin sèche, sans morale",
+    interdits: "je pense que peut-être\nn'hésitez pas\nmindset\nsoyons honnêtes",
+    regles: "Tutoiement\nGros mots toujours censurés (p*tain, m*rde)\nOn tape sur des pratiques, jamais sur une personne précise\nUne seule punchline, pas de rafale de phrases choc",
+    echantillons: ["On m'a demandé de baisser mes prix de 30%.\nJ'ai dit oui... à condition qu'on retire 30% du travail 🤡", "Tout le monde veut « plus de visibilité ».\nPersonne ne m'a jamais demandé « plus de ventes ». Et c'est bien ça le problème."] },
+  { id: "t-experte", nom: "Experte pédagogue", description: "Claire et généreuse : vulgarise, explique le pourquoi, donne des cas concrets.",
+    style: "Voix d'experte qui vulgarise : claire, structurée, généreuse en exemples. Elle explique le pourquoi avant le comment, avec des analogies simples et des chiffres précis. Listes → pour les étapes. 👉 pour l'idée clé, pas d'autres emojis. Autorité par la précision, jamais par la posture.",
+    afaire: "Accroche : une idée reçue du secteur, puis sa correction\nUn cas client ou un exemple vécu par idée\nVulgariser chaque terme technique\nListes → de 3 à 5 étapes quand c'est un process\nFinir sur ce que le lecteur peut faire dès demain",
+    interdits: "il est important de noter\nen conclusion\nde nos jours\nexpert reconnu\nvoici mes conseils",
+    regles: "Toujours un cas vécu, sinon c'est un article de blog et pas un post\nPas de jargon non expliqué\n👉 pour l'idée clé, aucun autre emoji décoratif",
+    echantillons: ["« Il faut publier tous les jours sur LinkedIn. »\nC'est le conseil que j'entends le plus. Et chez mes clients, c'est celui qui donne le moins de résultats.", "Un devis, c'est comme une première impression.\nSi le client doit le relire 2 fois pour comprendre ce qu'il paie, il a déjà décroché."] },
+  { id: "t-humour", nom: "Décalée et drôle", description: "Observatrice et pleine d'autodérision : la blague sert toujours une vraie idée.",
+    style: "Voix légère et drôle, qui observe le quotidien pro. Tutoiement, autodérision, situations absurdes racontées avec précision. Le rire sert le message : chaque blague amène une vraie idée. Emojis expressifs (🙃 😅 🤡) avec parcimonie.",
+    afaire: "Accroche : une situation absurde et précise\nL'autodérision d'abord\nUne vraie leçon derrière la blague\nChute drôle mais factuelle",
+    interdits: "lol\nxD\nblague à part\nplus sérieusement",
+    regles: "Une seule idée derrière la blague\n3 emojis maximum\nJamais d'humour qui repose sur un stéréotype ou qui vise une personne",
+    echantillons: ["J'ai passé 45 minutes à préparer un call.\nLe client s'est connecté depuis sa voiture, avec son chien qui aboyait à chaque slide 🙃", "Mon agenda disait « journée focus ».\nMon téléphone n'a visiblement pas reçu le mémo."] }
+];
+let templates = [];
+const allTemplates = () => [...BASE_TEMPLATES.map(t => ({ ...t, base: true })), ...templates];
+function renderTemplates(){
+  const cur = $("#p-template").value;
+  $("#tpl-cur").innerHTML = cur ? `Voix basée sur : <b>${esc(cur)}</b>` : "";
+  $("#tpl-grid").innerHTML = allTemplates().map(t => `<article class="tpl-card">
+      <strong>${esc(t.nom)}</strong>${t.base ? "" : '<span class="tag g">perso</span>'}
+      <p>${esc(t.description || "")}</p>
+      ${(t.echantillons || [])[0] ? `<blockquote>${esc(t.echantillons[0])}</blockquote>` : ""}
+      <div class="ib"><button class="btn btn-s go" data-apply="${esc(t.id)}">Appliquer</button>${t.base ? "" : `<button class="btn btn-s" data-rmt="${esc(t.id)}">Supprimer</button>`}</div>
+    </article>`).join("");
+  $("#tpl-grid").querySelectorAll("[data-apply]").forEach(b => b.onclick = () => applyTemplate(allTemplates().find(t => t.id === b.dataset.apply)));
+  $("#tpl-grid").querySelectorAll("[data-rmt]").forEach(b => b.onclick = async () => {
+    if (!confirm("Supprimer ce template ? Les clients qui l'utilisent gardent leur voix.")) return;
+    try { await store.del("templates", b.dataset.rmt); } catch {}
+    templates = templates.filter(t => t.id !== b.dataset.rmt); renderTemplates();
+  });
+}
+function applyTemplate(t){
+  if (!t) return;
+  const has = ["style", "afaire", "interdits", "regles"].some(k => $("#p-" + k).value.trim());
+  if (has && !confirm(`Appliquer « ${t.nom} » ? Le style, À faire, Interdits, Règles apprises et Extraits de ton de ce client seront remplacés. Ses infos, son vécu et ses exemples ne bougent pas.`)) return;
+  $("#p-style").value = t.style || ""; $("#p-afaire").value = t.afaire || ""; $("#p-interdits").value = t.interdits || ""; $("#p-regles").value = t.regles || "";
+  $("#p-tonExemples").value = (t.echantillons || []).join("\n---\n"); $("#p-template").value = t.nom;
+  renderTemplates(); renderClientHead();
+  $("#tpl-msg").textContent = `« ${t.nom} » appliqué. Ajuste si besoin, puis clique sur « Enregistrer le client ».`;
+}
+$("#tpl-save").onclick = async () => {
+  const v = getVoix(editId);
+  if (!v) { $("#tpl-msg").textContent = "Enregistre d'abord le client."; return; }
+  const style = $("#p-style").value.trim(), ex = splitPosts($("#p-exemples").value).slice(0, 4);
+  if (!style && !ex.length) { $("#tpl-msg").textContent = "Il faut au moins un style décrit ou des exemples de posts."; return; }
+  const nom = prompt("Nom du template :", `Voix ${(v.nom || "").split(/\s+/)[0]}`); if (!nom) return;
+  $("#tpl-save").disabled = true; $("#tpl-msg").textContent = "Je transpose la voix en retirant tout ce qui est personnel…";
+  try {
+    const r = await sample(`Voici la voix d'écriture LinkedIn de ${v.nom}. Crée un TEMPLATE DE VOIX transposable à n'importe quelle autre personne.
+Garde UNIQUEMENT la manière d'écrire : ton, registre, rythme, ponctuation, tics d'oral, emojis, façon d'ouvrir et de finir, règles d'écriture.
+Retire TOUT ce qui appartient à sa vie : faits, chiffres, prénoms, entreprise, offres, histoires, niche, cible, sujets de prédilection. Si une règle mélange ton et faits, ne garde que la partie ton. Remplace les exemples de phrases personnels par des exemples neutres.
+
+STYLE :
+${style || "-"}
+À FAIRE :
+${$("#p-afaire").value.trim() || "-"}
+INTERDITS :
+${$("#p-interdits").value.trim() || "-"}
+RÈGLES APPRISES :
+${$("#p-regles").value.trim() || "-"}
+EXEMPLES DE SES POSTS (pour sentir le ton, ne rien en reprendre) :
+<<<
+${ex.join("\n---\n").slice(0, 12000)}
+>>>
+
+Réponds UNIQUEMENT en JSON :
+{"description":"1 phrase pour reconnaître ce ton","style":"paragraphe de 5 à 8 phrases","afaire":"une règle par ligne","interdits":"un mot ou une tournure par ligne","regles":"une règle par ligne","echantillons":["3 extraits inventés de 2 à 3 lignes, sur des situations pro neutres, qui montrent parfaitement ce ton, sans aucun fait réel de cette personne"]}`, { modelTier: "default", cache: false });
+    const t = r.text.replace(/```json|```/g, ""); const j = JSON.parse(t.slice(t.indexOf("{"), t.lastIndexOf("}") + 1));
+    const id = uid(); const doc = { nom: nom.trim(), description: String(j.description || ""), style: String(j.style || ""), afaire: String(j.afaire || ""), interdits: String(j.interdits || ""), regles: String(j.regles || ""), echantillons: Array.isArray(j.echantillons) ? j.echantillons.map(String).slice(0, 4) : [], source: v.id };
+    await store.save("templates", id, doc); templates.unshift({ id, ...doc });
+    $("#tpl-msg").textContent = `Template « ${doc.nom} » créé. Il est disponible pour tous les clients.`; renderTemplates();
+  } catch (e) { $("#tpl-msg").textContent = e?.code ? errCopy(e) : "La transposition a échoué, réessaie."; }
+  finally { $("#tpl-save").disabled = false; }
+};
+
 /* ---------- Démarrage ---------- */
 async function boot(){
   const me = await fetch("/api/login").catch(() => null);
@@ -2807,7 +2942,7 @@ async function boot(){
     const [s, d, dl] = await Promise.all([window.claude.use("sample").catch(() => null), window.claude.use("db").catch(() => null), window.claude.use("downloads").catch(() => null)]);
     sample = s; db = d; downloads = dl;
   }
-  [voix, posts, modeles, idees, plannings, batches, sources] = await Promise.all(["voix", "posts", "modeles", "idees", "plannings", "batches", "sources"].map(c => store.list(c)));
+  [voix, posts, modeles, idees, plannings, batches, sources, templates] = await Promise.all(["voix", "posts", "modeles", "idees", "plannings", "batches", "sources", "templates"].map(c => store.list(c)));
   renderVoixSelect(); loadVoixForm(voix[0]?.id || null); renderModeles(); renderIdeas(); initPlanning();
   msg(sample ? "" : "Génération indisponible.", !sample);
   if (!voix.length) goTab("voix"); else goTab("dash");
