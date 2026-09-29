@@ -1159,7 +1159,7 @@ function renderVoixSelect(){
   const v = getVoix(activeId);
   $("#rail-av").textContent = initials(v?.nom); $("#rail-nom").textContent = v?.nom || "Aucune voix"; $("#rail-titre").textContent = v?.titre || "";
 }
-$("#f-voix").onchange = () => { activeId = $("#f-voix").value; renderVoixSelect(); $("#i-niche").value = getVoix(activeId)?.niche || ""; if (!$("#v-batch").hidden) renderBatchForm(); if (!$("#v-dash").hidden) renderDash(); };
+$("#f-voix").onchange = () => { activeId = $("#f-voix").value; renderVoixSelect(); $("#i-niche").value = getVoix(activeId)?.niche || ""; if (!$("#v-batch").hidden) renderBatchForm(); if (!$("#v-dash").hidden) renderDash(); if (!$("#v-voix").hidden && clientMode === "detail" && activeId) loadVoixForm(activeId); if (!$("#v-hist").hidden) { $("#h-client").value = activeId; renderHist(); } };
 function renderVTabs(){
   $("#vtabs").innerHTML = voix.map(v => `<button class="vtab" data-id="${esc(v.id)}" aria-current="${v.id === editId}">${esc(v.nom || "Sans nom")}</button>`).join("")
     + `<button class="vtab" data-id="" aria-current="${!editId}">+ Nouveau client</button>`;
@@ -1167,6 +1167,7 @@ function renderVTabs(){
 }
 function loadVoixForm(id){
   clientMode = "detail";
+  if (id && getVoix(id) && activeId !== id) { activeId = id; renderVoixSelect(); $("#i-niche").value = getVoix(id).niche || ""; }
   editId = id; const v = getVoix(id) || {};
   PF.forEach(k => $("#p-" + k).value = v[k] || "");
   if (!v.statut) $("#p-statut").value = id ? "actif" : "onboarding";
