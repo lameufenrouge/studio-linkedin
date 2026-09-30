@@ -2974,7 +2974,7 @@ async function toggleDepot(v, regen, keepOpen){
   box.hidden = false;
   box.innerHTML = `<p class="hint" style="margin:0 0 8px">Ce lien est personnel : ${esc(prenom)} y valide les posts et plannings que tu lui partages, et y dépose ses infos et ses photos. Il ne voit rien d'autre du studio.</p>
     <div class="depot-url"><input type="text" readonly value="${esc(url)}" aria-label="Lien de dépôt"><button class="btn btn-s go" data-c="url">Copier le lien</button></div>
-    <div class="fb-row"><button class="btn btn-s" data-c="mail">Copier un message prêt à envoyer</button>${v.email ? `<a class="btn btn-s" href="mailto:${esc(v.email)}?subject=${encodeURIComponent("Votre espace signé.")}&body=${encodeURIComponent(mail)}">Envoyer par email</a>` : ""}<button class="btn btn-s" data-c="regen">Changer le lien</button></div>
+    <div class="fb-row"><button class="btn btn-s" data-c="mail">Copier un message prêt à envoyer</button>${v.email ? `<button class="btn btn-s" data-c="preview">Voir le mail</button><button class="btn btn-s" data-c="rich">Copier le mail mis en forme</button>` : ""}<button class="btn btn-s" data-c="regen">Changer le lien</button></div>
     <p class="invite-st">${v.invite?.sentAt ? `Lien envoyé à <b>${esc(v.invite.to)}</b> le ${new Date(v.invite.sentAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })} à ${new Date(v.invite.sentAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}` : "Le lien n'a pas encore été envoyé par email."} ${v.email ? `<button class="linkbtn" data-c="resend">${v.invite?.sentAt ? "Renvoyer le mail" : "Envoyer le mail"}</button>` : ""}</p>
     <p class="hint" id="depot-msg" style="margin:8px 0 0"></p>`;
   box.querySelector("[data-c=url]").onclick = async e => { await copyText(url); e.target.textContent = "Copié"; setTimeout(() => e.target.textContent = "Copier le lien", 1500); };
@@ -2985,6 +2985,21 @@ async function toggleDepot(v, regen, keepOpen){
     else toggleDepot(v, true);
   };
   box.querySelector("[data-c=resend]")?.addEventListener("click", async e => { e.target.textContent = "Envoi…"; await sendInvite(v.id); });
+  const getMail = async () => { const r = await fetch("/api/invite", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ voixId: v.id, preview: true }) }); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || "Aperçu indisponible"); return j; };
+  box.querySelector("[data-c=preview]")?.addEventListener("click", async () => {
+    const w = window.open("", "_blank");
+    try { const j = await getMail(); w.document.open(); w.document.write(j.html); w.document.close(); w.document.title = j.subject; }
+    catch (e) { w?.close(); $("#depot-msg").textContent = e.message; }
+  });
+  box.querySelector("[data-c=rich]")?.addEventListener("click", async e => {
+    try {
+      const j = await getMail();
+      if (window.ClipboardItem && navigator.clipboard?.write) await navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([j.html], { type: "text/html" }), "text/plain": new Blob([j.text], { type: "text/plain" }) })]);
+      else await copyText(j.text);
+      e.target.textContent = "Copié : colle-le dans ton mail"; $("#depot-msg").textContent = `Objet à mettre : « ${j.subject} »`;
+      setTimeout(() => e.target.textContent = "Copier le mail mis en forme", 2500);
+    } catch (err) { $("#depot-msg").textContent = err.message; }
+  });
 }
 async function copyText(t){ try { await navigator.clipboard.writeText(t); } catch { const ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); } catch {} ta.remove(); } }
 function newFromClient(v){ return sources.filter(s => s.voixId === v.id && s.origine === "client" && (s.createdAt || 0) > (v.depotSeen || 0)).length; }
@@ -3181,7 +3196,7 @@ $("#manque-force").onclick = () => {
   generate();
 };
 
-const APP_VERSION = "30.09l";
+const APP_VERSION = "30.09m";
 
 /* =================== ACCROCHES =================== */
 function renderHooks(list, append){
