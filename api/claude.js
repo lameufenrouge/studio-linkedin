@@ -2,6 +2,21 @@ import { requireAuth } from "./_auth.js";
 
 // OpenRouter si OPENROUTER_API_KEY est défini, sinon API Anthropic directe
 const useOR = !!process.env.OPENROUTER_API_KEY;
+const AUDIO_MODEL = process.env.MODEL_AUDIO || "google/gemini-2.5-flash";
+
+// Messages multimodaux : { type: "image", media_type, data } et { type: "audio", format, data }
+function normalize(messages) {
+  return messages.map(m => {
+    if (!Array.isArray(m.content)) return m;
+    return { ...m, content: m.content.map(part => {
+      if (part.type === "image") return useOR
+        ? { type: "image_url", image_url: { url: `data:${part.media_type};base64,${part.data}` } }
+        : { type: "image", source: { type: "base64", media_type: part.media_type, data: part.data } };
+      if (part.type === "audio") return { type: "input_audio", input_audio: { data: part.data, format: part.format } };
+      return part;
+    }) };
+  });
+}
 const MODELS = useOR ? {
   complex: process.env.MODEL_COMPLEX || "anthropic/claude-opus-5.5",
   default: process.env.MODEL_DEFAULT || "anthropic/claude-sonnet-5",
@@ -14,11 +29,13 @@ const MODELS = useOR ? {
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
-  if (!requireAuth(req, res)) return;
+  if (!(await requireAuth(req, res))) return;
   const { input, tier = "default" } = req.body || {};
-  const messages = typeof input === "string" ? [{ role: "user", content: input }] : input;
-  if (!Array.isArray(messages) || !messages.length) return res.status(400).json({ error: "bad_input" });
-  const model = MODELS[tier] || MODELS.default;
+  const raw = typeof input === "string" ? [{ role: "user", content: input }] : input;
+  if (!Array.isArray(raw) || !raw.length) return res.status(400).json({ error: "bad_input" });
+  if (tier === "audio" && !useOR) return res.status(400).json({ error: "audio_unsupported" });
+  const messages = normalize(raw);
+  const model = tier === "audio" ? AUDIO_MODEL : (MODELS[tier] || MODELS.default);
 
   const upstream = useOR
     ? await fetch("https://openrouter.ai/api/v1/chat/completions", {

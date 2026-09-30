@@ -10,3 +10,7 @@ create index if not exists studio_docs_col_updated on studio_docs (collection, u
 -- Sécurité : RLS activé sans aucune règle = personne ne peut lire la table
 -- depuis le navigateur. Seul le serveur (clé service_role) y a accès.
 alter table studio_docs enable row level security;
+
+-- Banque d'images (à exécuter une fois) : un espace de stockage privé pour les photos des clients
+insert into storage.buckets (id, name, public) values ('studio-images', 'studio-images', false)
+on conflict (id) do nothing;

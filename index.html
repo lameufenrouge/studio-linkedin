@@ -467,6 +467,7 @@ textarea{resize:vertical;line-height:1.45}
 
 .me-line{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;font-size:.8rem;color:var(--rail-mute);margin-bottom:10px}
 .me-line span{color:var(--rail-ink);font-weight:700}
+.me-line .warn-srv{color:#F0A64A;font-weight:600}
 .me-line .linkbtn{color:var(--rail-mute);font-weight:600;font-size:.8rem}
 .eq-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
 .eq-row > div:first-child{flex:1 1 100%;min-width:0}
@@ -3149,7 +3150,7 @@ $("#manque-force").onclick = () => {
   generate();
 };
 
-const APP_VERSION = "30.09i";
+const APP_VERSION = "30.09j";
 
 /* =================== ACCROCHES =================== */
 function renderHooks(list, append){
@@ -3192,13 +3193,19 @@ Réponds UNIQUEMENT avec 8 lignes, la meilleure en premier, sous la forme : lign
 /* =================== ÉQUIPE & COMPTE =================== */
 const ROLES = { admin: "Admin", ghostwriter: "Ghostwriter" };
 function renderMe(){
-  if (!me) return;
+  $("#me-team").onclick = () => goTab("equipe");
+  $("#me-out").onclick = logout; $("#more-out").onclick = logout;
+  if (!me) {
+    $("#me-name").innerHTML = '<span class="warn-srv">Comptes pas encore actifs : le serveur n\'est pas à jour</span>';
+    $("#me-out").hidden = true; $("#more-out").hidden = true;
+    return;
+  }
   $("#me-name").textContent = me.nom || me.email;
   $("#me-team").onclick = () => goTab("equipe");
   $("#me-out").onclick = logout; $("#more-out").onclick = logout;
 }
 async function renderEquipe(){
-  if (!me) return;
+  if (!me) { $("#eq-me").textContent = "Les comptes ne sont pas encore actifs : les fichiers serveur (dossier api) de la mise à jour « comptes » ne sont pas en ligne."; $("#eq-admin").hidden = true; return; }
   $("#eq-me").textContent = `${me.nom ? me.nom + " · " : ""}${me.email} · ${ROLES[me.role] || me.role}`;
   $("#eq-admin").hidden = me.role !== "admin";
   if (me.role !== "admin") return;
@@ -3237,7 +3244,7 @@ async function boot(){
   const resp = await fetch("/api/login").catch(() => null);
   const who = resp ? await resp.json().catch(() => ({})) : {};
   if (!resp || resp.status !== 200) { showSetup(!!who.setup); window.__showLogin(); if (who.error) $("#login-msg").textContent = who.error; return; }
-  me = who.user; renderMe();
+  me = who.user || null; renderMe();
   renderTiles(); renderSeg();
   $("#li-text").contentEditable = editableMode();
   msg("Chargement…");

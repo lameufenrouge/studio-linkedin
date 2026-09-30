@@ -1,8 +1,10 @@
 import { supaBase, supaHeaders } from "./_supa.js";
+import { DB_VERSION } from "./db.js";
 
 // Diagnostic : ouvre /api/health dans le navigateur. N'affiche jamais les clés.
 export default async function handler(req, res) {
   const out = {
+    version_db: DB_VERSION,
     SUPABASE_URL: supaBase() || "MANQUANTE",
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ? "présente" : "MANQUANTE",
     OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY ? "présente" : "absente",
