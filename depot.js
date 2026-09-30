@@ -95,6 +95,24 @@ async function findClient(token) {
   const rows = await r.json();
   return rows[0] ? { id: rows[0].id, ...rows[0].data } : null;
 }
+async function listDocs(col, voixId, extra = "") {
+  const r = await fetch(`${docs()}?collection=eq.${col}&data->>voixId=eq.${encodeURIComponent(voixId)}${extra}&select=id,data&order=updated_at.desc&limit=100`, { headers: supaHeaders() });
+  if (!r.ok) return [];
+  return (await r.json()).map(x => ({ id: x.id, ...x.data }));
+}
+async function getDoc(col, id) {
+  const r = await fetch(`${docs()}?collection=eq.${col}&id=eq.${encodeURIComponent(id)}&select=id,data&limit=1`, { headers: supaHeaders() });
+  if (!r.ok) return null;
+  const x = (await r.json())[0]; return x ? { id: x.id, ...x.data } : null;
+}
+async function putDoc(col, id, data) {
+  const body = { ...data, updatedAt: Date.now() }; delete body.id;
+  const r = await fetch(`${docs()}?on_conflict=collection,id`, {
+    method: "POST", headers: { ...supaHeaders(), Prefer: "resolution=merge-duplicates,return=minimal" },
+    body: JSON.stringify({ collection: col, id, data: body, updated_at: Date.now() }),
+  });
+  if (!r.ok) throw new Error("save");
+}
 async function saveSource(data) {
   const id = crypto.randomUUID();
   const r = await fetch(`${docs()}?on_conflict=collection,id`, {
@@ -113,7 +131,15 @@ export default async function handler(req, res) {
   if (!c) return res.status(404).json({ error: "Ce lien n'est plus valide. Demandez-en un nouveau à votre contact signé." });
   const prenom = String(c.nom || "").split(/\s+/)[0];
 
-  if (req.method === "GET") return res.status(200).json({ prenom });
+  if (req.method === "GET") {
+    // Uniquement ce qui concerne CE client, et seulement les champs utiles à la validation
+    const [plans, posts] = await Promise.all([listDocs("plannings", c.id), listDocs("posts", c.id, "&data->>partage=eq.true")]);
+    return res.status(200).json({
+      prenom,
+      plannings: plans.filter(p => (p.slots || []).length).map(p => ({ id: p.id, titre: p.titre || "Planning", slots: p.slots.map((s, i) => ({ i, date: s.date, objectif: s.objectif || "", sujet: s.sujet || "", accroche: s.accroche || "", statut: s.statut || "attente", retour: s.retour || "" })) })),
+      posts: posts.map(p => ({ id: p.id, sujet: p.sujet || "", texte: p.texte || "", validation: p.validation || "attente", clientComment: p.clientComment || "", sharedAt: p.sharedAt || p.updatedAt || 0 })).sort((a, b) => b.sharedAt - a.sharedAt),
+    });
+  }
   if (req.method !== "POST") return res.status(405).end();
 
   const b = req.body || {};
@@ -125,6 +151,25 @@ export default async function handler(req, res) {
       const { id, path } = await uploadImage(c.id, b.data64, "image/jpeg");
       const r = await saveImageDoc(id, { voixId: c.id, path, nom: String(b.nom || "").slice(0, 120), ...meta, width: b.width || 0, height: b.height || 0, createdAt: Date.now(), origine: "client" });
       if (!r.ok) throw new Error("save");
+      return res.status(200).json({ ok: true });
+    }
+    if (b.action === "slot" || b.action === "plan-all") {
+      const plan = await getDoc("plannings", String(b.planId || ""));
+      if (!plan || plan.voixId !== c.id) return res.status(404).json({ error: "Planning introuvable." });
+      const now = Date.now();
+      if (b.action === "plan-all") plan.slots.forEach(s => { if ((s.statut || "attente") === "attente") Object.assign(s, { statut: "valide", parClient: true, clientAt: now }); });
+      else {
+        const s = plan.slots[+b.i]; if (!s) return res.status(404).json({ error: "Sujet introuvable." });
+        Object.assign(s, { statut: b.statut === "revoir" ? "revoir" : b.statut === "attente" ? "attente" : "valide", retour: String(b.retour ?? s.retour ?? "").slice(0, 2000), parClient: true, clientAt: now });
+      }
+      await putDoc("plannings", plan.id, plan);
+      return res.status(200).json({ ok: true });
+    }
+    if (b.action === "post") {
+      const post = await getDoc("posts", String(b.postId || ""));
+      if (!post || post.voixId !== c.id || !post.partage) return res.status(404).json({ error: "Post introuvable." });
+      Object.assign(post, { validation: b.validation === "revoir" ? "revoir" : "valide", clientComment: String(b.comment || "").slice(0, 3000), clientAt: Date.now() });
+      await putDoc("posts", post.id, post);
       return res.status(200).json({ ok: true });
     }
     if (b.action === "info") {

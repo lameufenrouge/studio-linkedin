@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>signé. · Espace de dépôt</title>
+<title>signé. · Votre espace</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%2316134A%22/%3E%3Ctext x=%2250%22 y=%2266%22 font-size=%2266%22 font-family=%22sans-serif%22 font-weight=%22800%22 text-anchor=%22middle%22 fill=%22white%22%3Es%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,7 +35,7 @@ button,input,textarea,select{font:inherit;color:inherit}
 .sig{position:absolute;right:-40px;bottom:-26px;width:min(80%,520px);opacity:.5}
 .sig path{fill:none;stroke:var(--cobalt);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
 main{padding:22px 16px 40px}
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:-44px 0 18px;position:relative;z-index:2}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:-44px 0 18px;position:relative;z-index:2}
 .tab{background:var(--panel);border:1.5px solid var(--line);border-radius:18px;padding:16px;text-align:left;cursor:pointer;box-shadow:0 10px 30px -18px rgba(11,10,38,.5)}
 .tab b{display:block;font-size:1.05rem}
 .tab span{color:var(--muted);font-size:.84rem}
@@ -71,6 +71,37 @@ input:focus,textarea:focus{outline:none;border-color:var(--cobalt)}
 .sent h3{margin:0 0 8px;font-size:.95rem}
 .sent ul{margin:0;padding-left:18px;color:var(--muted);font-size:.9rem}
 .gone{max-width:520px;margin:60px auto;text-align:center;padding:0 20px}
+
+.tab .count{font-style:normal;background:var(--cobalt);color:#fff;border-radius:999px;padding:1px 8px;font-size:.78rem;margin-left:4px;vertical-align:middle}
+@media (max-width:520px){.tabs{grid-template-columns:1fr 1fr}.tab[data-tab="valider"]{grid-column:1/-1}}
+.sec-t{font-size:1.1rem;font-weight:800;margin:6px 0 10px}
+.vpost{margin-bottom:14px}
+.vpost .li{background:#fff;color:#191919;border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;font-family:-apple-system,system-ui,"Segoe UI",Roboto,Arial,sans-serif;font-size:14.5px;line-height:1.45;white-space:pre-wrap;max-height:240px;overflow:hidden;position:relative}
+.vpost .li.open{max-height:none}
+.vpost .li:not(.open)::after{content:"";position:absolute;left:0;right:0;bottom:0;height:60px;background:linear-gradient(transparent,#fff)}
+.more{background:none;border:0;color:var(--cobalt);font-weight:800;cursor:pointer;padding:6px 0}
+.chip{display:inline-block;font-size:.75rem;font-weight:800;border-radius:999px;padding:3px 10px;background:var(--brume);color:var(--cobalt)}
+.chip.ok{background:#DDF7E8;color:#0E5A33}
+.chip.rv{background:#FFF1DC;color:#8A4A00}
+.vhead{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-bottom:8px}
+.vhead strong{font-size:1rem}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.acts .ok{background:var(--cobalt);color:#fff;border-color:var(--cobalt)}
+.comment{margin-top:10px}
+.comment textarea{min-height:80px}
+.slot{border-top:1.5px solid var(--line);padding:14px 0}
+.slot:first-of-type{border-top:0}
+.slot .d{font-weight:800;text-transform:none}
+.slot .d::first-letter{text-transform:uppercase}
+.slot .s{font-weight:700;margin:4px 0}
+.slot .a{font-family:var(--serif);font-style:italic;font-size:1.1rem;color:var(--muted);margin:2px 0 0;line-height:1.25}
+.seg2{display:flex;gap:6px;margin-top:10px}
+.seg2 button{flex:1;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:9px;font-weight:800;cursor:pointer}
+.seg2 button.on-ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.seg2 button.on-rv{background:#B45309;border-color:#B45309;color:#fff}
+.slot textarea{margin-top:8px;min-height:60px}
+.plan-h{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);color:#fff;border-radius:12px;padding:12px 18px;font-weight:700;z-index:50;box-shadow:0 10px 30px -10px rgba(0,0,0,.5);max-width:90vw}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 </style>
 </head>
@@ -79,18 +110,25 @@ input:focus,textarea:focus{outline:none;border-color:var(--cobalt)}
   <div class="wrap">
     <div class="wm">signé<i>.</i></div>
     <h1 id="hello">Bonjour</h1>
-    <p>Déposez ici ce qui fera vos prochains posts. <em>On s'occupe des mots.</em></p>
+    <p>Validez vos posts, déposez vos idées. <em>On s'occupe des mots.</em></p>
   </div>
   <svg class="sig" viewBox="0 0 640 110" aria-hidden="true"><path d="M8 70 C 40 20, 70 12, 64 52 C 58 92, 26 84, 48 50 C 70 18, 104 26, 98 62 C 95 82, 118 80, 138 48 C 154 24, 172 34, 166 62 C 162 80, 196 74, 224 42 C 246 18, 262 44, 292 54 C 340 70, 420 40, 500 46 C 560 50, 600 58, 632 52"/></svg>
 </header>
 
 <main class="wrap" id="app" hidden>
-  <div class="tabs" role="group" aria-label="Que voulez-vous envoyer ?">
-    <button class="tab" data-tab="info" aria-pressed="true"><b>Partager une info</b><span>Une anecdote, un chiffre, un document, un vocal</span></button>
-    <button class="tab" data-tab="photo" aria-pressed="false"><b>Envoyer des photos</b><span>Pour illustrer vos posts</span></button>
+  <div class="tabs" role="group" aria-label="Votre espace">
+    <button class="tab" data-tab="valider" aria-pressed="true"><b>À valider <em class="count" id="count" hidden></em></b><span>Vos posts et votre planning</span></button>
+    <button class="tab" data-tab="info" aria-pressed="false"><b>Partager une info</b><span>Anecdote, chiffre, document, vocal</span></button>
+    <button class="tab" data-tab="photo" aria-pressed="false"><b>Photos</b><span>Pour illustrer vos posts</span></button>
   </div>
 
-  <section class="card" id="tab-info">
+  <section id="tab-valider">
+    <div id="val-empty" class="card" hidden><h3 style="margin:0 0 6px">Rien à valider pour le moment</h3><p class="hint" style="margin:0">Dès que l'équipe signé. vous partage un post ou un planning, il apparaît ici.</p></div>
+    <div id="val-posts"></div>
+    <div id="val-plans"></div>
+  </section>
+
+  <section class="card" id="tab-info" hidden>
     <div class="types" id="types">
       <button data-t="texte" aria-pressed="true">Écrire</button><button data-t="vocal" aria-pressed="false">Vocal</button><button data-t="doc" aria-pressed="false">Document</button><button data-t="lien" aria-pressed="false">Lien</button><button data-t="capture" aria-pressed="false">Capture d'écran</button>
     </div>
@@ -135,8 +173,58 @@ async function api(body){
 /* Onglets */
 document.querySelectorAll(".tab").forEach(b => b.onclick = () => {
   document.querySelectorAll(".tab").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
-  $("#tab-info").hidden = b.dataset.tab !== "info"; $("#tab-photo").hidden = b.dataset.tab !== "photo";
+  ["valider", "info", "photo"].forEach(t => $("#tab-" + t).hidden = b.dataset.tab !== t);
 });
+
+/* À valider */
+let data = { posts: [], plannings: [] };
+const fmtD = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }); };
+const OBJ = { attraction: "Visibilité", qualification: "Crédibilité", conversion: "Vente" };
+function renderValider(){
+  const pend = data.posts.filter(p => p.validation === "attente").length + data.plannings.reduce((n, p) => n + p.slots.filter(s => s.statut === "attente").length, 0);
+  $("#count").hidden = !pend; $("#count").textContent = pend;
+  $("#val-empty").hidden = !!(data.posts.length || data.plannings.length);
+  $("#val-posts").innerHTML = data.posts.length ? `<h2 class="sec-t">Vos posts</h2>` + data.posts.map(p => `<article class="card vpost" data-id="${esc(p.id)}">
+      <div class="vhead"><strong>${esc(p.sujet || "Post")}</strong>${p.validation === "valide" ? '<span class="chip ok">Validé</span>' : p.validation === "revoir" ? '<span class="chip rv">Modification demandée</span>' : '<span class="chip">À valider</span>'}</div>
+      <div class="li">${esc(p.texte)}</div><button class="more" data-more>Lire tout le post</button>
+      ${p.validation === "revoir" && p.clientComment ? `<p class="hint" style="margin:8px 0 0">Votre demande : « ${esc(p.clientComment)} »</p>` : ""}
+      <div class="acts">${p.validation === "attente" ? `<button class="btn ok" data-ok>Je valide ce post</button><button class="btn" data-rv>Demander une modification</button>` : `<button class="btn" data-reset>Changer d'avis</button>`}</div>
+      <div class="comment" hidden><label>Qu'est-ce qu'on change ?</label><textarea placeholder="Ex. : je ne dirais pas ça comme ça, on peut ajouter le chiffre de mars…"></textarea><div class="acts"><button class="btn ok" data-send>Envoyer ma demande</button></div></div>
+    </article>`).join("") : "";
+  $("#val-posts").querySelectorAll(".vpost").forEach(c => {
+    const id = c.dataset.id, li = c.querySelector(".li");
+    c.querySelector("[data-more]").onclick = e => { li.classList.toggle("open"); e.target.textContent = li.classList.contains("open") ? "Réduire" : "Lire tout le post"; };
+    c.querySelector("[data-ok]")?.addEventListener("click", () => act({ action: "post", postId: id, validation: "valide" }, "Merci, post validé."));
+    c.querySelector("[data-rv]")?.addEventListener("click", () => { c.querySelector(".comment").hidden = false; c.querySelector("textarea").focus(); });
+    c.querySelector("[data-send]")?.addEventListener("click", () => { const t = c.querySelector("textarea").value.trim(); if (!t) return c.querySelector("textarea").focus(); act({ action: "post", postId: id, validation: "revoir", comment: t }, "Demande envoyée à l'équipe."); });
+    c.querySelector("[data-reset]")?.addEventListener("click", () => { const p = data.posts.find(x => x.id === id); p.validation = "attente"; renderValider(); });
+  });
+  $("#val-plans").innerHTML = data.plannings.map(pl => `<section class="card" style="margin-top:14px" data-plan="${esc(pl.id)}">
+      <div class="plan-h"><h2 class="sec-t" style="margin:0">Planning · ${esc(pl.titre.replace(/^[^·]+·\s*/, ""))}</h2>${pl.slots.some(s => s.statut === "attente") ? '<button class="btn ok" data-all style="background:var(--cobalt);color:#fff;border-color:var(--cobalt)">Tout valider</button>' : '<span class="chip ok">Tout est traité</span>'}</div>
+      ${pl.slots.map(s => `<div class="slot" data-i="${s.i}"><div class="d">${esc(fmtD(s.date))}${s.objectif ? ` <span class="chip">${esc(OBJ[s.objectif] || "")}</span>` : ""}</div>
+        <p class="s">${esc(s.sujet || "Sujet à définir")}</p>${s.accroche ? `<p class="a">« ${esc(s.accroche)} »</p>` : ""}
+        <div class="seg2"><button data-st="valide" class="${s.statut === "valide" ? "on-ok" : ""}">Je valide</button><button data-st="revoir" class="${s.statut === "revoir" ? "on-rv" : ""}">À revoir</button></div>
+        <textarea placeholder="Un commentaire ? (facultatif)" ${s.statut === "revoir" || s.retour ? "" : "hidden"}>${esc(s.retour)}</textarea></div>`).join("")}
+    </section>`).join("");
+  $("#val-plans").querySelectorAll("[data-plan]").forEach(sec => {
+    const planId = sec.dataset.plan;
+    sec.querySelector("[data-all]")?.addEventListener("click", () => act({ action: "plan-all", planId }, "Planning validé, merci !"));
+    sec.querySelectorAll(".slot").forEach(sl => {
+      const i = +sl.dataset.i, ta = sl.querySelector("textarea");
+      sl.querySelectorAll("[data-st]").forEach(b => b.onclick = () => {
+        if (b.dataset.st === "revoir" && ta.hidden) { ta.hidden = false; ta.focus(); }
+        act({ action: "slot", planId, i, statut: b.dataset.st, retour: ta.value.trim() }, b.dataset.st === "valide" ? "Sujet validé." : "Noté, l'équipe va revoir ce sujet.", true);
+      });
+      ta.addEventListener("change", () => act({ action: "slot", planId, i, statut: sl.querySelector(".on-ok") ? "valide" : "revoir", retour: ta.value.trim() }, "Commentaire envoyé.", true));
+    });
+  });
+}
+let toastT;
+function toast(t, err){ let el = $("#toast"); if (!el) { el = document.createElement("div"); el.id = "toast"; el.className = "toast"; document.body.appendChild(el); } el.textContent = t; el.style.background = err ? "#B45309" : "var(--encre)"; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => el.hidden = true, 2600); }
+async function act(body, okMsg, keepScroll){
+  try { await api(body); toast(okMsg); data = await api(); renderValider(); }
+  catch (e) { toast(e.message, true); }
+}
 
 /* Types d'info */
 const T = {
@@ -254,7 +342,7 @@ drop.addEventListener("drop", e => sendPhotos(e.dataTransfer.files));
 
 /* Démarrage */
 setType("texte");
-api().then(j => { $("#hello").textContent = j.prenom ? `Bonjour ${j.prenom}` : "Bonjour"; $("#app").hidden = false; })
+api().then(j => { data = { posts: j.posts || [], plannings: j.plannings || [] }; $("#hello").textContent = j.prenom ? `Bonjour ${j.prenom}` : "Bonjour"; $("#app").hidden = false; renderValider(); })
   .catch(e => { $("#gone").hidden = false; $("#gone-t").textContent = e.status === 404 && e.known ? "Ce lien n'est plus valide" : "Le dépôt est momentanément indisponible"; $("#gone-msg").textContent = e.message + (e.known ? "" : " Réessayez dans quelques minutes."); });
 })();
 </script>

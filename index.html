@@ -474,6 +474,14 @@ textarea{resize:vertical;line-height:1.45}
 .eq-row strong{display:block}
 .eq-row small{color:var(--muted);font-size:.8rem}
 .eq-row select{width:auto;padding:6px 8px;font-size:.84rem}
+
+.vstate{display:inline-block;margin-left:8px;font-size:.72rem;font-weight:800;border-radius:999px;padding:2px 9px;vertical-align:middle}
+.v-attente{background:var(--blush);color:var(--rouge)}
+.v-valide{background:#DDF7E8;color:#0E5A33}
+.v-revoir{background:#FFF1DC;color:#8A4A00}
+.hitem p.ccom{color:#8A4A00;font-style:italic;-webkit-line-clamp:unset}
+.by-client{display:inline-block;font-size:.68rem;font-weight:800;background:#DDF7E8;color:#0E5A33;border-radius:999px;padding:2px 8px;margin-bottom:5px}
+.cl-btns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 /* Historique */
 .hist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
 .hitem{background:var(--panel);border:1.5px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px}
@@ -774,6 +782,7 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
           <button class="sbtn w" id="b-copy">Copier le post</button>
           <button class="sbtn" id="b-save" hidden>Enregistrer les modifs</button>
           <button class="sbtn" id="b-regen">Autre version</button>
+          <button class="sbtn" id="b-share" hidden>Envoyer au client</button>
           <button class="sbtn" id="b-pub" hidden>Marquer comme publié</button>
           <button class="sbtn" id="b-stop" hidden>Arrêter</button>
         </div>
@@ -890,7 +899,7 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
 <!-- VOIX -->
 <section class="view" id="v-voix" hidden>
   <div id="clients-list">
-    <div class="cl-head"><div><h1 class="h x">Clients</h1><p class="lead">Tous les clients de l'agence. Clique sur un client pour ouvrir sa fiche.</p></div><button class="btn-go x cl-new" id="cl-new"><span>+ Nouveau client</span></button></div>
+    <div class="cl-head"><div><h1 class="h x">Clients</h1><p class="lead">Tous les clients de l'agence. Clique sur un client pour ouvrir sa fiche.</p></div><div class="cl-btns"><button class="btn" id="cl-demo">Créer un client test</button><button class="btn-go x cl-new" id="cl-new"><span>+ Nouveau client</span></button></div></div>
     <div class="cl-tools"><input type="text" id="cl-search" placeholder="Chercher un client, une entreprise…" aria-label="Chercher un client"><div class="cl-filter" id="cl-filter"></div></div>
     <div class="clients" id="cl-grid"></div>
   </div>
@@ -1228,6 +1237,7 @@ function goTab(name){
   document.querySelectorAll(".nav button[data-view]").forEach(x => { if (x.dataset.view === name) x.setAttribute("aria-current", "page"); else x.removeAttribute("aria-current"); });
   if (MORE_VIEWS.includes(name)) $("#nav-more").setAttribute("aria-current", "page"); else $("#nav-more").removeAttribute("aria-current");
   $("#more-sheet").hidden = true; $("#nav-more").setAttribute("aria-expanded", "false");
+  if (["dash", "hist", "planning", "voix"].includes(name)) refreshData().then(ch => { if (!ch) return; if (!$("#v-dash").hidden) renderDash(); if (!$("#v-hist").hidden) renderHist(); if (!$("#v-planning").hidden) renderPlanning(); if (!$("#v-voix").hidden && clientMode === "list") renderClientGrid(); });
   if (name === "dash") renderDash();
   if (name === "equipe") renderEquipe();
   if (name === "voix") renderClientsView();
@@ -1877,7 +1887,7 @@ async function savePost(text){
   if (!lastRun || !text) return;
   const v = getVoix(lastRun.voixId);
   const data = { voixId: lastRun.voixId, voixNom: v?.nom || "", sujet: lastRun.sujet || "", texte: text, format: lastRun.format || "", createdAt: lastRun.createdAt || Date.now(), version: APP_VERSION };
-  const prev = posts.find(p => p.id === lastRun.postId); data.statut = prev?.statut || "brouillon"; if (prev?.publishedAt) data.publishedAt = prev.publishedAt;
+  const prev = posts.find(p => p.id === lastRun.postId); data.statut = prev?.statut || "brouillon"; ["partage", "validation", "clientComment", "sharedAt", "clientAt"].forEach(k => { if (prev?.[k] != null) data[k] = prev[k]; }); if (prev?.publishedAt) data.publishedAt = prev.publishedAt;
   try {
     await store.save("posts", lastRun.postId, data);
     const full = { id: lastRun.postId, ...data, updatedAt: Date.now() }; const i = posts.findIndex(p => p.id === lastRun.postId);
@@ -1898,14 +1908,17 @@ function renderHist(){
   if (!list.length) { el.innerHTML = `<div class="empty"><strong>${histStatut === "publie" ? "Aucun post publié" : "Aucun brouillon"}</strong>${histStatut === "publie" ? "Les posts marqués « Publié » apparaîtront ici." : "Tout ce qui a été écrit est publié. Génère de nouveaux posts dans Écrire ou Batch."}</div>`; return; }
   el.innerHTML = list.map(p => `<article class="hitem">
     <div class="meta">${esc(p.voixNom)}${p.version ? " · v" + esc(p.version) : ""} · ${isPub(p) ? "publié le " + new Date(p.publishedAt || p.updatedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" }) : "écrit le " + new Date(p.createdAt || p.updatedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}${p.batchId ? " · batch" : ""}</div>
-    <strong>${esc(p.sujet || "Sans sujet")}</strong><p>${esc(p.texte)}</p>
-    <div class="ib"><button class="btn btn-s" data-open="${esc(p.id)}">Ouvrir</button><button class="btn btn-s" data-copy="${esc(p.id)}">Copier</button>
+    <strong>${esc(p.sujet || "Sans sujet")}</strong>${p.partage ? `<span class="vstate v-${esc(p.validation || "attente")}">${esc(VALID_LBL[p.validation || "attente"])}</span>` : ""}
+    ${p.partage && p.validation === "revoir" && p.clientComment ? `<p class="ccom">« ${esc(p.clientComment)} »</p>` : ""}<p>${esc(p.texte)}</p>
+    <div class="ib"><button class="btn btn-s" data-open="${esc(p.id)}">Ouvrir</button><button class="btn btn-s" data-copy="${esc(p.id)}">Copier</button>${!p.partage || p.validation === "revoir" ? `<button class="btn btn-s" data-share="${esc(p.id)}">${p.partage ? "Renvoyer au client" : "Envoyer au client"}</button>` : ""}
     ${isPub(p) ? `<button class="btn btn-s" data-unpub="${esc(p.id)}">Remettre en brouillon</button>` : `<button class="btn btn-s pub" data-pub="${esc(p.id)}">Publié</button>`}
     <button class="btn btn-s" data-del="${esc(p.id)}" aria-label="Supprimer">Supprimer</button></div>
   </article>`).join("");
   el.querySelectorAll("[data-open]").forEach(b => b.onclick = () => openPost(b.dataset.open));
   el.querySelectorAll("[data-copy]").forEach(b => b.onclick = async () => { await copyForLinkedIn(posts.find(p => p.id === b.dataset.copy)?.texte || ""); b.textContent = "Copié"; setTimeout(() => b.textContent = "Copier", 1500); });
   el.querySelectorAll("[data-pub]").forEach(b => b.onclick = () => setPostStatut(b.dataset.pub, "publie"));
+  el.querySelectorAll("[data-share]").forEach(b => b.onclick = () => sharePost(b.dataset.share));
+  const sv = getVoix(sel.value); if (sv) markClientSeen(sv);
   el.querySelectorAll("[data-unpub]").forEach(b => b.onclick = () => setPostStatut(b.dataset.unpub, "brouillon"));
   el.querySelectorAll("[data-del]").forEach(b => b.onclick = async () => {
     if (!confirm("Supprimer ce post ?")) return;
@@ -1925,6 +1938,8 @@ $("#h-client").onchange = renderHist;
 document.querySelectorAll("#h-seg button").forEach(b => b.onclick = () => { histStatut = b.dataset.s; renderHist(); });
 function updatePubButton(){
   const p = posts.find(x => x.id === lastRun?.postId);
+  $("#b-share").hidden = !p;
+  if (p) $("#b-share").textContent = !p.partage ? "Envoyer au client" : p.validation === "valide" ? "Validé par le client ✓" : p.validation === "revoir" ? "Modif demandée : renvoyer" : "En attente du client";
   $("#b-pub").hidden = !p; if (!p) return;
   $("#b-pub").textContent = isPub(p) ? "Publié ✓" : "Marquer comme publié";
   $("#b-pub").classList.toggle("w", isPub(p));
@@ -2015,7 +2030,7 @@ function renderPlanning(){
       <td class="c-fmt"><select class="sl-fmt" aria-label="Format">${s.format && FMT_LABEL[s.format] ? "" : `<option value="" selected>À choisir</option>`}${FORMATS.filter(f => f[0] !== "auto").map(([v, l]) => `<option value="${v}" ${s.format === v ? "selected" : ""}>${l}</option>`).join("")}</select></td>
       <td class="c-sujet" data-label="Sujet"><textarea class="sl-sujet" rows="3" aria-label="Sujet" placeholder="Sujet à définir">${esc(s.sujet)}</textarea>${s.question ? `<small>${esc(s.question)}</small>` : ""}</td>
       <td class="c-hook" data-label="Accroche envisagée"><textarea class="sl-hook" rows="3" aria-label="Accroche envisagée">${esc(s.accroche || "")}</textarea></td>
-      <td class="c-val" data-label="Validation"><div class="val">
+      <td class="c-val" data-label="Validation">${s.parClient ? '<span class="by-client">par le client</span>' : ""}<div class="val">
         <button type="button" class="v-ok" aria-pressed="${s.statut === "valide"}">Validé</button>
         <button type="button" class="v-rv" aria-pressed="${s.statut === "revoir"}">À revoir</button>
       </div></td>
@@ -2027,6 +2042,7 @@ function renderPlanning(){
     <div class="tbl-wrap"><table class="ptable">
       <thead><tr><th>Date</th><th>Objectif</th><th>Format</th><th>Sujet</th><th>Accroche envisagée</th><th>Validation</th><th>Retour client</th><th></th></tr></thead>
       <tbody>${rows}</tbody></table></div>`;
+  if (curPlan) { const pv = getVoix(curPlan.voixId); if (pv) markClientSeen(pv); }
   el.querySelectorAll("tr[data-i]").forEach(tr => {
     const i = +tr.dataset.i, s = curPlan.slots[i];
     const bind = (sel, key) => tr.querySelector(sel).onchange = e => { s[key] = e.target.value.trim(); savePlan(); };
@@ -2425,6 +2441,7 @@ function renderDash(){
   slots.filter(s => s.statut === "revoir" && s.date >= today).forEach(s => todo.push({ w: 1, cls: "w", t: "À revoir : " + (s.sujet || "sujet"), sub: `${s.plan.voixNom || ""} · ${fmtDay(s.date)}`, go: () => { curPlan = s.plan; fillPlanForm(s.plan); goTab("planning"); } }));
   week.filter(s => !(s.postId && posts.some(p => p.id === s.postId))).forEach(s => todo.push({ w: 2, cls: "", t: "À écrire : " + (s.sujet || "sujet à définir"), sub: `${s.plan.voixNom || ""} · ${fmtDay(s.date)}${s.statut === "valide" ? " · validé" : ""}`, go: () => { curPlan = s.plan; if (getVoix(s.plan.voixId)) { activeId = s.plan.voixId; renderVoixSelect(); } useSlot(s.i); } }));
   voix.filter(v => readiness(v).pct < 70).forEach(v => todo.push({ w: 3, cls: "", t: `Compléter la fiche de ${v.nom}`, sub: `Prête à ${readiness(v).pct}% : ${readiness(v).missing.slice(0, 2).join(", ")}`, go: () => { loadVoixForm(v.id); showSub(readiness(v).missing[0] === "une info ajoutée" ? "nourrir" : "fiche"); goTab("voix"); } }));
+  voix.forEach(v => { const c = clientNews(v); if (c.n) todo.push({ w: -1, cls: c.rv ? "w" : "o", t: `Retours de ${v.nom} : ${[c.ok ? c.ok + " validé" + (c.ok > 1 ? "s" : "") : "", c.rv ? c.rv + " à revoir" : ""].filter(Boolean).join(", ")}`, sub: "Depuis son espace client", go: () => { activeId = v.id; renderVoixSelect(); if (c.hasPosts || !c.hasPlan) { histStatut = "brouillon"; goTab("hist"); $("#h-client").value = v.id; renderHist(); } else { const pl = plannings.find(p => p.voixId === v.id); curPlan = pl; if (pl) fillPlanForm(pl); goTab("planning"); } } }); });
   voix.forEach(v => { const n = newFromClient(v); if (n) todo.push({ w: 0, cls: "o", t: `${v.nom} a envoyé ${n} nouvelle${n > 1 ? "s" : ""} info${n > 1 ? "s" : ""}`, sub: "Via son lien de dépôt", go: () => { loadVoixForm(v.id); showSub("nourrir"); goTab("voix"); } }); });
   todo.sort((a, b) => a.w - b.w);
   $("#dash-todo").innerHTML = todo.length ? "" : `<div class="row-item" style="cursor:default"><span class="dot o"></span><span>Rien d'urgent. Tout ce qui est prévu cette semaine est écrit.</span></div>`;
@@ -2619,7 +2636,7 @@ function renderClientHead(){
   const r = readiness(v);
   $("#client-head").innerHTML = `<div><div class="who"><div class="av">${esc(initials(v.nom))}</div><div><strong>${esc(v.nom)}</strong><small>${esc(v.titre || v.niche || "")}</small></div></div>
     <div class="contact">${v.statut ? `<span class="st st-${esc(v.statut)}">${esc(STATUTS[v.statut] || v.statut)}</span>` : ""}${v.entreprise ? `<span>${esc(v.entreprise)}</span>` : ""}${v.formule ? `<span>${esc(v.formule)}</span>` : ""}${v.email ? `<a href="mailto:${esc(v.email)}">${esc(v.email)}</a>` : ""}${v.tel ? `<a href="tel:${esc(v.tel.replace(/\s/g, ""))}">${esc(v.tel)}</a>` : ""}${/^https?:\/\//.test(v.linkedin || "") ? `<a href="${esc(v.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>` : ""}${/^https?:\/\//.test(v.site || "") ? `<a href="${esc(v.site)}" target="_blank" rel="noopener">Site</a>` : ""}${v.debut ? `<span>client depuis le ${esc(new Date(v.debut).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }))}</span>` : ""}</div>
-    <div class="ib"><button class="btn btn-s go" data-ch="ecrire">Écrire</button><button class="btn btn-s" data-ch="batch">Batch</button><button class="btn btn-s" data-ch="planning">Planning</button><button class="btn btn-s" id="b-depot">Lien de dépôt client</button></div>
+    <div class="ib"><button class="btn btn-s go" data-ch="ecrire">Écrire</button><button class="btn btn-s" data-ch="batch">Batch</button><button class="btn btn-s" data-ch="planning">Planning</button><button class="btn btn-s" id="b-depot">Espace client</button></div>
     <div class="depot" id="depot-box" hidden></div></div>
     <div class="ready"><div class="barl"><span>Fiche prête à</span><b>${r.pct}%</b></div><div class="bar"><i style="width:${r.pct}%"></i></div>
     <ul class="checklist">${r.items.map(x => `<li class="${x[1] ? "ok" : ""}"><i>${x[1] ? "✓" : "○"}</i>${esc(x[0])}</li>`).join("")}</ul></div>`;
@@ -2946,11 +2963,11 @@ async function toggleDepot(v, regen){
     renderClientHead(); return toggleDepot(getVoix(v.id));
   }
   const url = depotUrl(v), prenom = (v.nom || "").split(/\s+/)[0];
-  const mail = `Bonjour ${prenom},\n\nVoici votre espace de dépôt signé. : ${url}\n\nVous pouvez y envoyer à tout moment ce qui peut nourrir vos posts : une anecdote, un chiffre, un document, un vocal, et vos photos pour les illustrer. Depuis votre téléphone ou votre ordinateur, sans créer de compte.\n\nÀ très vite,`;
+  const mail = `Bonjour ${prenom},\n\nVoici votre espace signé. : ${url}\n\nVous y retrouverez vos posts et votre planning à valider, et vous pourrez nous envoyer à tout moment une anecdote, un chiffre, un document, un vocal ou vos photos. Depuis votre téléphone ou votre ordinateur, sans créer de compte.\n\nÀ très vite,`;
   box.hidden = false;
-  box.innerHTML = `<p class="hint" style="margin:0 0 8px">Ce lien est personnel : ${esc(prenom)} y dépose ses infos et ses photos, sans voir le reste du studio. Tout arrive dans sa fiche, marqué « envoyé par le client ».</p>
+  box.innerHTML = `<p class="hint" style="margin:0 0 8px">Ce lien est personnel : ${esc(prenom)} y valide les posts et plannings que tu lui partages, et y dépose ses infos et ses photos. Il ne voit rien d'autre du studio.</p>
     <div class="depot-url"><input type="text" readonly value="${esc(url)}" aria-label="Lien de dépôt"><button class="btn btn-s go" data-c="url">Copier le lien</button></div>
-    <div class="fb-row"><button class="btn btn-s" data-c="mail">Copier un message prêt à envoyer</button>${v.email ? `<a class="btn btn-s" href="mailto:${esc(v.email)}?subject=${encodeURIComponent("Votre espace de dépôt signé.")}&body=${encodeURIComponent(mail)}">Envoyer par email</a>` : ""}<button class="btn btn-s" data-c="regen">Changer le lien</button></div>
+    <div class="fb-row"><button class="btn btn-s" data-c="mail">Copier un message prêt à envoyer</button>${v.email ? `<a class="btn btn-s" href="mailto:${esc(v.email)}?subject=${encodeURIComponent("Votre espace signé.")}&body=${encodeURIComponent(mail)}">Envoyer par email</a>` : ""}<button class="btn btn-s" data-c="regen">Changer le lien</button></div>
     <p class="hint" id="depot-msg" style="margin:8px 0 0"></p>`;
   box.querySelector("[data-c=url]").onclick = async e => { await copyText(url); e.target.textContent = "Copié"; setTimeout(() => e.target.textContent = "Copier le lien", 1500); };
   box.querySelector("[data-c=mail]").onclick = async e => { await copyText(mail); e.target.textContent = "Message copié"; setTimeout(() => e.target.textContent = "Copier un message prêt à envoyer", 1500); };
@@ -2993,6 +3010,7 @@ function renderClientGrid(){
 }
 $("#cl-search").addEventListener("input", renderClientGrid);
 $("#cl-back").onclick = () => { clientMode = "list"; renderClientsView(); window.scrollTo(0, 0); };
+$("#cl-demo").onclick = createDemoClient;
 $("#cl-new").onclick = () => { loadVoixForm(null); showSub("fiche"); renderClientsView(); $("#p-nom").focus(); };
 
 
@@ -3150,7 +3168,7 @@ $("#manque-force").onclick = () => {
   generate();
 };
 
-const APP_VERSION = "30.09j";
+const APP_VERSION = "30.09k";
 
 /* =================== ACCROCHES =================== */
 function renderHooks(list, append){
@@ -3237,6 +3255,77 @@ $("#eq-pw").onclick = async () => {
   $("#eq-pw-msg").className = "msg" + (r.ok ? "" : " err"); $("#eq-pw-msg").textContent = r.ok ? "Mot de passe changé. Tes autres appareils devront se reconnecter." : (j.error || "Impossible.");
   if (r.ok) { $("#eq-cur").value = ""; $("#eq-new").value = ""; }
 };
+
+/* =================== ESPACE CLIENT : partage & retours =================== */
+const VALID_LBL = { attente: "En attente du client", valide: "Validé par le client", revoir: "Modif demandée" };
+async function sharePost(id){
+  const p = posts.find(x => x.id === id); if (!p) return;
+  const v = getVoix(p.voixId);
+  Object.assign(p, { partage: true, validation: "attente", clientComment: "", sharedAt: Date.now() });
+  const body = { ...p }; delete body.id;
+  try { await store.save("posts", id, body); } catch { msg("Impossible de partager ce post.", true); return; }
+  if (v && !v.depotToken) { try { await updateVoix(v.id, { depotToken: newToken() }); } catch {} }
+  const nv = getVoix(p.voixId);
+  if (lastRun?.postId === id) { updatePubButton(); msg(`Envoyé dans l'espace de ${nv?.nom || "ton client"}. Son lien : ${nv?.depotToken ? depotUrl(nv) : "fiche client > Espace client"}`); }
+  if (!$("#v-hist").hidden) renderHist();
+}
+async function unsharePost(id){
+  const p = posts.find(x => x.id === id); if (!p) return;
+  p.partage = false; const body = { ...p }; delete body.id;
+  try { await store.save("posts", id, body); } catch {}
+  if (!$("#v-hist").hidden) renderHist();
+  if (lastRun?.postId === id) updatePubButton();
+}
+$("#b-share").onclick = () => { const p = posts.find(x => x.id === lastRun?.postId); if (!p) return;
+  if (p.partage && p.validation === "attente") { if (confirm("Retirer ce post de l'espace client ?")) unsharePost(p.id); return; }
+  if (p.partage && p.validation === "valide") return;
+  savePost(currentText()).then(() => sharePost(p.id)); };
+
+/* Rafraîchir les données : les réponses des clients arrivent pendant que l'app est ouverte */
+let lastRefresh = Date.now();
+async function refreshData(force){
+  if (!force && Date.now() - lastRefresh < 10000) return false;
+  lastRefresh = Date.now();
+  try {
+    const [p2, pl2, s2, v2] = await Promise.all(["posts", "plannings", "sources", "voix"].map(c => store.list(c)));
+    posts = p2; plannings = pl2; sources = s2; voix = v2;
+    if (curPlan) curPlan = plannings.find(x => x.id === curPlan.id) || curPlan;
+    return true;
+  } catch { return false; }
+}
+function clientNews(v){
+  const seen = v.portalSeen || 0;
+  const ps = posts.filter(p => p.voixId === v.id && p.partage && (p.clientAt || 0) > seen);
+  const ss = allSlots().filter(s => s.plan.voixId === v.id && s.parClient && (s.clientAt || 0) > seen);
+  const ok = ps.filter(p => p.validation === "valide").length + ss.filter(s => s.statut === "valide").length;
+  const rv = ps.filter(p => p.validation === "revoir").length + ss.filter(s => s.statut === "revoir").length;
+  return { ok, rv, n: ps.length + ss.length, hasPlan: ss.length > 0, hasPosts: ps.length > 0 };
+}
+async function markClientSeen(v){ if (v && clientNews(v).n) { try { await updateVoix(v.id, { portalSeen: Date.now() }); } catch {} } }
+
+/* Client test pour voir les deux vues */
+async function createDemoClient(){
+  if (!confirm("Créer un client test avec un planning et 2 posts à valider ? Tu pourras le supprimer ensuite.")) return;
+  const id = uid(), today = new Date(), next = d => { const x = new Date(today); x.setDate(x.getDate() + d); return iso(x); };
+  const v = { nom: "Client Test", titre: "CEO de Démo & Co", entreprise: "Démo & Co", statut: "onboarding", niche: "conseil en organisation pour PME",
+    cible: "Dirigeants de PME de 10 à 50 salariés", activite: "Cabinet de conseil fondé en 2019. 14 clients accompagnés en 2025.", style: "Posé, concret, vouvoiement.",
+    email: "", depotToken: newToken(), exemples: "", valides: [], updatedAt: Date.now() };
+  try {
+    await store.save("voix", id, v); voix.unshift({ id, ...v });
+    const pid = uid(), plan = { voixId: id, voixNom: v.nom, titre: `${v.nom} · démo`, debut: next(1), semaines: 1, jours: ["1", "3", "5"], strat: "classique",
+      slots: [
+        { date: next(1), semaine: 0, statut: "attente", objectif: "attraction", format: "story", sujet: "Le jour où nous avons refusé notre plus gros client", accroche: "En mars, nous avons refusé 80K€.\nEt c'était la meilleure décision de l'année." },
+        { date: next(3), semaine: 0, statut: "attente", objectif: "qualification", format: "liste", sujet: "Les 3 signes qu'une PME a besoin de réorganiser ses équipes", accroche: "Vos réunions durent 2h ?\nC'est rarement un problème de réunion." },
+        { date: next(5), semaine: 0, statut: "attente", objectif: "conversion", format: "cash", sujet: "Pourquoi notre accompagnement dure 90 jours, pas 12 mois", accroche: "On nous demande souvent pourquoi si court.\nLa réponse tient en un chiffre." }
+      ] };
+    await store.save("plannings", pid, plan); plannings.unshift({ id: pid, ...plan });
+    const mk = (sujet, texte) => ({ voixId: id, voixNom: v.nom, sujet, texte, format: "story", createdAt: Date.now(), statut: "brouillon", partage: true, validation: "attente", sharedAt: Date.now(), version: APP_VERSION });
+    const demo = [["Refuser un client", "En mars, nous avons refusé notre plus gros client de l'année.\nEt c'était la meilleure décision de 2026.\n\nIl voulait tout, tout de suite, avec une équipe à moitié convaincue.\n\nNous avons préféré dire non plutôt que de livrer un projet bancal.\n\n3 mois plus tard, il est revenu. Avec une équipe prête."], ["Les réunions de 2h", "Vos réunions durent 2h ?\nC'est rarement un problème de réunion.\n\nC'est presque toujours un problème de décision : personne ne sait qui tranche.\n\nChez nos clients, on commence par une seule question : qui décide quoi ?"]];
+    for (const [s, t] of demo) { const pidp = uid(), doc = mk(s, t); await store.save("posts", pidp, doc); posts.unshift({ id: pidp, ...doc }); }
+    activeId = id; renderVoixSelect(); loadVoixForm(id); showSub("nourrir"); renderClientsView();
+    setTimeout(() => toggleDepot(getVoix(id)), 50);
+  } catch { alert("Impossible de créer le client test."); }
+}
 
 /* ---------- Démarrage ---------- */
 async function boot(){
