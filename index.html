@@ -482,6 +482,8 @@ textarea{resize:vertical;line-height:1.45}
 .hitem p.ccom{color:#8A4A00;font-style:italic;-webkit-line-clamp:unset}
 .by-client{display:inline-block;font-size:.68rem;font-weight:800;background:#DDF7E8;color:#0E5A33;border-radius:999px;padding:2px 8px;margin-bottom:5px}
 .cl-btns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.req{font-size:.7rem;font-weight:800;color:var(--rouge);background:var(--blush);border-radius:999px;padding:1px 7px;margin-left:4px}
+.invite-st{margin:8px 0 0;font-size:.82rem;color:var(--muted)}
 /* Historique */
 .hist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
 .hitem{background:var(--panel);border:1.5px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px}
@@ -948,7 +950,7 @@ footer .links{margin-bottom:6px;display:flex;gap:16px}
     <h4 class="feed-t">Infos client</h4>
     <div class="infos-grid">
       <div class="field"><label for="p-entreprise">Entreprise</label><input type="text" id="p-entreprise"></div>
-      <div class="field"><label for="p-email">Email</label><input type="email" id="p-email" autocomplete="off"></div>
+      <div class="field"><label for="p-email">Email <span class="req">obligatoire</span></label><input type="email" id="p-email" autocomplete="off" placeholder="prenom@entreprise.fr"></div>
       <div class="field"><label for="p-tel">Téléphone</label><input type="tel" id="p-tel" autocomplete="off"></div>
       <div class="field"><label for="p-linkedin">Profil LinkedIn</label><input type="url" id="p-linkedin" placeholder="https://www.linkedin.com/in/…"></div>
       <div class="field"><label for="p-site">Site web</label><input type="url" id="p-site" placeholder="https://…"></div>
@@ -1279,16 +1281,21 @@ function loadVoixForm(id){
   $("#b-delv").hidden = !id; $("#v-msg").textContent = ""; $("#an-msg").textContent = ""; renderVTabs();
 }
 $("#b-savev").onclick = async () => {
-  const data = {}; PF.forEach(k => data[k] = $("#p-" + k).value.trim());
-  data.valides = getVoix(editId)?.valides || [];
+  const prevDoc = { ...(getVoix(editId) || {}) }; delete prevDoc.id; delete prevDoc.updatedAt;
+  const data = { ...prevDoc }; PF.forEach(k => data[k] = $("#p-" + k).value.trim());
+  data.valides = prevDoc.valides || [];
   if (!data.nom) { vmsg("Donne au moins un nom à ce client.", true); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email) && !prevDoc.demo) { vmsg("L'email du client est obligatoire (onglet « Fiche & voix » > Infos client) : c'est là qu'on lui envoie son espace.", true); $("#p-email").focus(); return; }
   const id = editId || uid(); const wasEdit = !!editId;
+  const emailChanged = wasEdit && prevDoc.email && prevDoc.email !== data.email;
   try {
     await store.save("voix", id, data);
     const full = { id, ...data, updatedAt: Date.now() }; const i = voix.findIndex(v => v.id === id);
     if (i >= 0) voix[i] = full; else voix.unshift(full);
     editId = id; activeId = id; renderVTabs(); renderVoixSelect(); $("#b-delv").hidden = false;
-    vmsg("Client enregistré. Il est maintenant actif."); syncTemplatesFrom(getVoix(id)); renderClientHead(); if (curSub === "fiche" && !wasEdit) showSub("nourrir");
+    vmsg("Client enregistré. Il est maintenant actif."); syncTemplatesFrom(getVoix(id));
+    if (!wasEdit) sendInvite(id, false, true);
+    else if (emailChanged && confirm(`L'email a changé. Envoyer le lien de son espace à ${data.email} ?`)) sendInvite(id); renderClientHead(); if (curSub === "fiche" && !wasEdit) showSub("nourrir");
   } catch (e) { vmsg("Enregistrement impossible (" + (e.code || "erreur") + ").", true); }
 };
 function vmsg(t, err){ $("#v-msg").textContent = t; $("#v-msg").className = "msg" + (err ? " err" : ""); }
@@ -2954,9 +2961,9 @@ $("#b-pub").onclick = () => { const p = posts.find(x => x.id === lastRun?.postId
 /* =================== LIEN DE DÉPÔT CLIENT =================== */
 function newToken(){ const a = new Uint8Array(24); crypto.getRandomValues(a); return btoa(String.fromCharCode(...a)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
 const depotUrl = v => `${location.origin}/d/${v.depotToken}`;
-async function toggleDepot(v, regen){
+async function toggleDepot(v, regen, keepOpen){
   const box = $("#depot-box");
-  if (!box.hidden && !regen) { box.hidden = true; return; }
+  if (!box.hidden && !regen && !keepOpen) { box.hidden = true; return; }
   if (!v.depotToken || regen) {
     try { await updateVoix(v.id, { depotToken: newToken() }); v = getVoix(v.id); }
     catch { box.hidden = false; box.innerHTML = `<p class="msg err">Impossible de créer le lien, réessaie.</p>`; return; }
@@ -2968,10 +2975,16 @@ async function toggleDepot(v, regen){
   box.innerHTML = `<p class="hint" style="margin:0 0 8px">Ce lien est personnel : ${esc(prenom)} y valide les posts et plannings que tu lui partages, et y dépose ses infos et ses photos. Il ne voit rien d'autre du studio.</p>
     <div class="depot-url"><input type="text" readonly value="${esc(url)}" aria-label="Lien de dépôt"><button class="btn btn-s go" data-c="url">Copier le lien</button></div>
     <div class="fb-row"><button class="btn btn-s" data-c="mail">Copier un message prêt à envoyer</button>${v.email ? `<a class="btn btn-s" href="mailto:${esc(v.email)}?subject=${encodeURIComponent("Votre espace signé.")}&body=${encodeURIComponent(mail)}">Envoyer par email</a>` : ""}<button class="btn btn-s" data-c="regen">Changer le lien</button></div>
+    <p class="invite-st">${v.invite?.sentAt ? `Lien envoyé à <b>${esc(v.invite.to)}</b> le ${new Date(v.invite.sentAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })} à ${new Date(v.invite.sentAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}` : "Le lien n'a pas encore été envoyé par email."} ${v.email ? `<button class="linkbtn" data-c="resend">${v.invite?.sentAt ? "Renvoyer le mail" : "Envoyer le mail"}</button>` : ""}</p>
     <p class="hint" id="depot-msg" style="margin:8px 0 0"></p>`;
   box.querySelector("[data-c=url]").onclick = async e => { await copyText(url); e.target.textContent = "Copié"; setTimeout(() => e.target.textContent = "Copier le lien", 1500); };
   box.querySelector("[data-c=mail]").onclick = async e => { await copyText(mail); e.target.textContent = "Message copié"; setTimeout(() => e.target.textContent = "Copier un message prêt à envoyer", 1500); };
-  box.querySelector("[data-c=regen]").onclick = () => { if (confirm("L'ancien lien ne marchera plus. Continuer ?")) toggleDepot(v, true); };
+  box.querySelector("[data-c=regen]").onclick = async () => {
+    if (!confirm("L'ancien lien ne marchera plus. Continuer ?")) return;
+    if (v.email && confirm(`Envoyer le nouveau lien à ${v.email} ?`)) { await sendInvite(v.id, true); toggleDepot(getVoix(v.id), false, true); }
+    else toggleDepot(v, true);
+  };
+  box.querySelector("[data-c=resend]")?.addEventListener("click", async e => { e.target.textContent = "Envoi…"; await sendInvite(v.id); });
 }
 async function copyText(t){ try { await navigator.clipboard.writeText(t); } catch { const ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); } catch {} ta.remove(); } }
 function newFromClient(v){ return sources.filter(s => s.voixId === v.id && s.origine === "client" && (s.createdAt || 0) > (v.depotSeen || 0)).length; }
@@ -3168,7 +3181,7 @@ $("#manque-force").onclick = () => {
   generate();
 };
 
-const APP_VERSION = "30.09k";
+const APP_VERSION = "30.09l";
 
 /* =================== ACCROCHES =================== */
 function renderHooks(list, append){
@@ -3309,7 +3322,7 @@ async function createDemoClient(){
   const id = uid(), today = new Date(), next = d => { const x = new Date(today); x.setDate(x.getDate() + d); return iso(x); };
   const v = { nom: "Client Test", titre: "CEO de Démo & Co", entreprise: "Démo & Co", statut: "onboarding", niche: "conseil en organisation pour PME",
     cible: "Dirigeants de PME de 10 à 50 salariés", activite: "Cabinet de conseil fondé en 2019. 14 clients accompagnés en 2025.", style: "Posé, concret, vouvoiement.",
-    email: "", depotToken: newToken(), exemples: "", valides: [], updatedAt: Date.now() };
+    email: "", demo: true, depotToken: newToken(), exemples: "", valides: [], updatedAt: Date.now() };
   try {
     await store.save("voix", id, v); voix.unshift({ id, ...v });
     const pid = uid(), plan = { voixId: id, voixNom: v.nom, titre: `${v.nom} · démo`, debut: next(1), semaines: 1, jours: ["1", "3", "5"], strat: "classique",
@@ -3325,6 +3338,21 @@ async function createDemoClient(){
     activeId = id; renderVoixSelect(); loadVoixForm(id); showSub("nourrir"); renderClientsView();
     setTimeout(() => toggleDepot(getVoix(id)), 50);
   } catch { alert("Impossible de créer le client test."); }
+}
+
+
+/* =================== INVITATION PAR EMAIL =================== */
+async function sendInvite(id, newLink, auto){
+  const r = await fetch("/api/invite", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ voixId: id, newLink: !!newLink }) }).catch(() => null);
+  const j = r ? await r.json().catch(() => ({})) : {};
+  const v = getVoix(id);
+  if (v && j.url) { v.depotToken = j.url.split("/d/")[1]; }
+  if (r?.ok && v) { v.invite = { to: j.to, sentAt: j.sentAt }; vmsg(`Client enregistré. Son espace est créé et le lien a été envoyé à ${j.to} depuis hello@agencesigne.com.`); }
+  else if (auto) vmsg(`Client enregistré. ${j.error || "Le mail n'a pas pu partir."}`, !j.url);
+  else alert(j.error || "Le mail n'a pas pu partir.");
+  renderClientHead();
+  if (!$("#depot-box")?.hidden && v) toggleDepot(v, false, true);
+  return !!r?.ok;
 }
 
 /* ---------- Démarrage ---------- */
