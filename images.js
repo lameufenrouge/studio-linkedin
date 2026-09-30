@@ -40,7 +40,7 @@ export async function uploadImage(voixId, data64, mime) {
 }
 
 export default async function handler(req, res) {
-  if (!requireAuth(req, res)) return;
+  if (!(await requireAuth(req, res))) return;
   if (!supaBase() || !process.env.SUPABASE_SERVICE_ROLE_KEY) return res.status(500).json({ error: "Variables Supabase manquantes" });
   try {
     if (req.method === "GET") {

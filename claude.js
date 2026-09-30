@@ -29,7 +29,7 @@ const MODELS = useOR ? {
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
-  if (!requireAuth(req, res)) return;
+  if (!(await requireAuth(req, res))) return;
   const { input, tier = "default" } = req.body || {};
   const raw = typeof input === "string" ? [{ role: "user", content: input }] : input;
   if (!Array.isArray(raw) || !raw.length) return res.status(400).json({ error: "bad_input" });
